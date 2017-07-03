@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using static DS4Windows.Global;
 
 namespace DS4Windows
 {
@@ -120,6 +121,7 @@ namespace DS4Windows
                             //ds4Device.Removal += On_Removal;
                             Devices.Add(ds4Device.MacAddress, ds4Device);
                             DevicePaths.Add(hDevice.DevicePath);
+                            LoadLinkedProfile(i, ds4Device.MacAddress);
                         }
                     }
                 }

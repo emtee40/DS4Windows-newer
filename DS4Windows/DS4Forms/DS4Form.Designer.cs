@@ -83,6 +83,11 @@
             this.bnLight1 = new System.Windows.Forms.Button();
             this.bnLight2 = new System.Windows.Forms.Button();
             this.bnLight4 = new System.Windows.Forms.Button();
+            this.chkLink2 = new System.Windows.Forms.CheckBox();
+            this.chkLink3 = new System.Windows.Forms.CheckBox();
+            this.chkLink4 = new System.Windows.Forms.CheckBox();
+            this.chkLink1 = new System.Windows.Forms.CheckBox();
+            this.lbLInk = new System.Windows.Forms.Label();
             this.lbNoControllers = new System.Windows.Forms.Label();
             this.tabProfiles = new System.Windows.Forms.TabPage();
             this.lBProfiles = new System.Windows.Forms.ListBox();
@@ -367,21 +372,21 @@
             // tLPControllers
             // 
             resources.ApplyResources(this.tLPControllers, "tLPControllers");
-            this.tLPControllers.Controls.Add(this.bnLight3, 5, 3);
+            this.tLPControllers.Controls.Add(this.bnLight3, 6, 3);
             this.tLPControllers.Controls.Add(this.pBStatus1, 1, 1);
             this.tLPControllers.Controls.Add(this.lbPad1, 0, 1);
             this.tLPControllers.Controls.Add(this.lbPad2, 0, 2);
-            this.tLPControllers.Controls.Add(this.bnEditC3, 4, 3);
-            this.tLPControllers.Controls.Add(this.bnEditC4, 4, 4);
+            this.tLPControllers.Controls.Add(this.bnEditC3, 5, 3);
+            this.tLPControllers.Controls.Add(this.bnEditC4, 5, 4);
             this.tLPControllers.Controls.Add(this.lbPad3, 0, 3);
             this.tLPControllers.Controls.Add(this.lbPad4, 0, 4);
-            this.tLPControllers.Controls.Add(this.cBController1, 3, 1);
-            this.tLPControllers.Controls.Add(this.bnEditC2, 4, 2);
-            this.tLPControllers.Controls.Add(this.cBController2, 3, 2);
-            this.tLPControllers.Controls.Add(this.cBController3, 3, 3);
-            this.tLPControllers.Controls.Add(this.bnEditC1, 4, 1);
-            this.tLPControllers.Controls.Add(this.cBController4, 3, 4);
-            this.tLPControllers.Controls.Add(this.lbSelectedProfile, 3, 0);
+            this.tLPControllers.Controls.Add(this.cBController1, 4, 1);
+            this.tLPControllers.Controls.Add(this.bnEditC2, 5, 2);
+            this.tLPControllers.Controls.Add(this.cBController2, 4, 2);
+            this.tLPControllers.Controls.Add(this.cBController3, 4, 3);
+            this.tLPControllers.Controls.Add(this.bnEditC1, 5, 1);
+            this.tLPControllers.Controls.Add(this.cBController4, 4, 4);
+            this.tLPControllers.Controls.Add(this.lbSelectedProfile, 4, 0);
             this.tLPControllers.Controls.Add(this.lbID, 0, 0);
             this.tLPControllers.Controls.Add(this.lbStatus, 1, 0);
             this.tLPControllers.Controls.Add(this.lbBattery, 2, 0);
@@ -392,9 +397,14 @@
             this.tLPControllers.Controls.Add(this.pBStatus2, 1, 2);
             this.tLPControllers.Controls.Add(this.pBStatus3, 1, 3);
             this.tLPControllers.Controls.Add(this.pBStatus4, 1, 4);
-            this.tLPControllers.Controls.Add(this.bnLight1, 5, 1);
-            this.tLPControllers.Controls.Add(this.bnLight2, 5, 2);
-            this.tLPControllers.Controls.Add(this.bnLight4, 5, 4);
+            this.tLPControllers.Controls.Add(this.bnLight1, 6, 1);
+            this.tLPControllers.Controls.Add(this.bnLight2, 6, 2);
+            this.tLPControllers.Controls.Add(this.bnLight4, 6, 4);
+            this.tLPControllers.Controls.Add(this.chkLink2, 3, 2);
+            this.tLPControllers.Controls.Add(this.chkLink3, 3, 3);
+            this.tLPControllers.Controls.Add(this.chkLink4, 3, 4);
+            this.tLPControllers.Controls.Add(this.chkLink1, 3, 1);
+            this.tLPControllers.Controls.Add(this.lbLInk, 3, 0);
             this.tLPControllers.Name = "tLPControllers";
             // 
             // bnLight3
@@ -612,6 +622,43 @@
             this.bnLight4.Tag = "3";
             this.bnLight4.UseVisualStyleBackColor = false;
             this.bnLight4.Click += new System.EventHandler(this.EditCustomLed);
+            // 
+            // chkLink2
+            // 
+            resources.ApplyResources(this.chkLink2, "chkLink2");
+            this.chkLink2.Name = "chkLink2";
+            this.chkLink2.Tag = "1";
+            this.chkLink2.UseVisualStyleBackColor = true;
+            this.chkLink2.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
+            // 
+            // chkLink3
+            // 
+            resources.ApplyResources(this.chkLink3, "chkLink3");
+            this.chkLink3.Name = "chkLink3";
+            this.chkLink3.Tag = "2";
+            this.chkLink3.UseVisualStyleBackColor = true;
+            this.chkLink3.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
+            // 
+            // chkLink4
+            // 
+            resources.ApplyResources(this.chkLink4, "chkLink4");
+            this.chkLink4.Name = "chkLink4";
+            this.chkLink4.Tag = "3";
+            this.chkLink4.UseVisualStyleBackColor = true;
+            this.chkLink4.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
+            // 
+            // chkLink1
+            // 
+            resources.ApplyResources(this.chkLink1, "chkLink1");
+            this.chkLink1.Name = "chkLink1";
+            this.chkLink1.Tag = "0";
+            this.chkLink1.UseVisualStyleBackColor = true;
+            this.chkLink1.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
+            // 
+            // lbLInk
+            // 
+            resources.ApplyResources(this.lbLInk, "lbLInk");
+            this.lbLInk.Name = "lbLInk";
             // 
             // lbNoControllers
             // 
@@ -1383,6 +1430,11 @@
         private System.Windows.Forms.RadioButton runStartProgRadio;
         private System.Windows.Forms.RadioButton runStartTaskRadio;
         private System.Windows.Forms.PictureBox uacPictureBox;
+        private System.Windows.Forms.Label lbLInk;
+        private System.Windows.Forms.CheckBox chkLink2;
+        private System.Windows.Forms.CheckBox chkLink3;
+        private System.Windows.Forms.CheckBox chkLink4;
+        private System.Windows.Forms.CheckBox chkLink1;
         //private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
     }
 }

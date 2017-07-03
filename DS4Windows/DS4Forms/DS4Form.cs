@@ -14,6 +14,7 @@ using System.Text;
 using System.Globalization;
 using Microsoft.Win32.TaskScheduler;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using static DS4Windows.Global;
 
 namespace DS4Windows
@@ -33,6 +34,7 @@ namespace DS4Windows
         protected Button[] lights;
         protected PictureBox[] statPB;
         protected ToolStripMenuItem[] shortcuts;
+        protected CheckBox[] linkBoxes;
         WebClient wc = new WebClient();
         Timer hotkeysTimer = new Timer();
         Timer autoProfilesTimer = new Timer();
@@ -114,6 +116,7 @@ namespace DS4Windows
                 (ToolStripMenuItem)notifyIcon1.ContextMenuStrip.Items[1],
                 (ToolStripMenuItem)notifyIcon1.ContextMenuStrip.Items[2],
                 (ToolStripMenuItem)notifyIcon1.ContextMenuStrip.Items[3] };
+            linkBoxes = new CheckBox[4] { chkLink1, chkLink2, chkLink3, chkLink4 };
             SystemEvents.PowerModeChanged += OnPowerChange;
             tSOptions.Visible = false;
             bool firstrun = false;
@@ -1217,6 +1220,11 @@ namespace DS4Windows
                 {
                     Pads[Index].Text = Program.rootHub.getDS4MacAddress(Index);
 
+                    // Stop the eventhandler while we set the initial state
+                    linkBoxes[Index].CheckedChanged -= LinkCheckChanged;
+                    linkBoxes[Index].Checked = CheckLinkedState(Pads[Index].Text);
+                    linkBoxes[Index].CheckedChanged += LinkCheckChanged;
+
                     switch (Program.rootHub.getDS4Status(Index))
                     {
                         case "USB": statPB[Index].Visible = true; statPB[Index].Image = Properties.Resources.USB; toolTip1.SetToolTip(statPB[Index], ""); break;
@@ -1398,6 +1406,7 @@ namespace DS4Windows
             cbs[device].Visible = on;
             shortcuts[device].Visible = on;
             Batteries[device].Visible = on;
+            linkBoxes[device].Visible = on;
         }
 
         /* TODO: Remove method in future */
@@ -1686,6 +1695,11 @@ namespace DS4Windows
                         lights[tdevice].BackColor = CustomColor[tdevice].ToColorA;
                     else
                         lights[tdevice].BackColor = MainColor[tdevice].ToColorA;
+                    if (linkBoxes[tdevice].Checked)
+                    {
+                        DS4Device d = Program.rootHub.DS4Controllers[tdevice];
+                        SaveLinkedProfile(d.MacAddress, cb.Items[cb.SelectedIndex].ToString());
+                    }
                 }
                 else if (cb.SelectedIndex == cb.Items.Count - 1 && cb.Items.Count > 1) //if +New Profile selected
                     ShowOptions(tdevice, "");
@@ -1709,6 +1723,32 @@ namespace DS4Windows
                 else //if +New Profile selected
                     ShowOptions(tdevice, "");
             }
+        }
+
+        private bool CheckLinkedState(string macAddress)
+        {
+            XmlDocument xDoc = new XmlDocument();
+            string m_LinkedProfiles = appdatapath + "\\LinkedProfiles.xml";
+            if (File.Exists(m_LinkedProfiles))
+            {
+                xDoc.Load(m_LinkedProfiles);
+                macAddress = Regex.Replace(macAddress, ":", string.Empty);
+
+                if (xDoc.SelectSingleNode("/LinkedControllers/MAC" + macAddress) != null)
+                    return true;
+                else
+                    return false;
+            }
+            else { return false; }
+        }
+
+        private void LinkCheckChanged (object sender, EventArgs e)
+        {
+            CheckBox chkBox = (CheckBox)sender;
+            int tdevice = Int32.Parse(chkBox.Tag.ToString());
+            DS4Device d = Program.rootHub.DS4Controllers[tdevice];
+            if (!chkBox.Checked) { DeleteExistingLinks(d.MacAddress); }
+            else { SaveLinkedProfile(d.MacAddress, cbs[tdevice].SelectedItem.ToString()); }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
