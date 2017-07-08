@@ -28,6 +28,8 @@ namespace DS4Windows
         delegate void ControllerRemovedDelegate(object sender, ControllerRemovedArgs args);
         delegate void DeviceStatusChangedDelegate(object sender, DeviceStatusChangeEventArgs args);
         delegate void DeviceSerialChangedDelegate(object sender, SerialChangeArgs args);
+        delegate void UpdateProfileAfterLinkDelegate(object sender, ProfileLinkArgs args);
+        delegate void CheckLinkStateDelegate(object sender, ProfileLinkArgs args);
         protected Label[] Pads, Batteries;
         protected ComboBox[] cbs;
         protected Button[] ebns;
@@ -340,6 +342,8 @@ namespace DS4Windows
             Global.ControllerRemoved += ControllerRemovedChange;
             Global.DeviceStatusChange += DeviceStatusChanged;
             Global.DeviceSerialChange += DeviceSerialChanged;
+            Global.UpdateProfileAfterLinkChange += UpdateProfileAfterLink;
+            Global.CheckLinkedState += IsProfileLinked;
 
             Enable_Controls(0, false);
             Enable_Controls(1, false);
@@ -1727,28 +1731,87 @@ namespace DS4Windows
 
         private bool CheckLinkedState(string macAddress)
         {
-            XmlDocument xDoc = new XmlDocument();
-            string m_LinkedProfiles = appdatapath + "\\LinkedProfiles.xml";
-            if (File.Exists(m_LinkedProfiles))
-            {
-                xDoc.Load(m_LinkedProfiles);
-                macAddress = Regex.Replace(macAddress, ":", string.Empty);
+                XmlDocument xDoc = new XmlDocument();
+                string m_LinkedProfiles = appdatapath + "\\LinkedProfiles.xml";
+                if (File.Exists(m_LinkedProfiles))
+                {
+                    xDoc.Load(m_LinkedProfiles);
+                    macAddress = Regex.Replace(macAddress, ":", string.Empty);
 
-                if (xDoc.SelectSingleNode("/LinkedControllers/MAC" + macAddress) != null)
-                    return true;
-                else
-                    return false;
-            }
-            else { return false; }
+                    if (xDoc.SelectSingleNode("/LinkedControllers/MAC" + macAddress) != null)
+                        return true;
+                    else
+                        return false;
+                }
+                else { return false; }
         }
 
-        private void LinkCheckChanged (object sender, EventArgs e)
+        protected void IsProfileLinked(object sender, ProfileLinkArgs args)
         {
+            if (this.InvokeRequired)
+            {
+                CheckLinkStateDelegate d = new CheckLinkStateDelegate(IsProfileLinked);
+                this.Invoke(d, new object[] { sender, args });
+            }
+            else
+            {
+                if (linkBoxes[args.getDevice()].Checked) { args.isLinked = true; }
+                else { args.isLinked = false; }
+            }
+        }
+
+        private void LinkCheckChanged(object sender, EventArgs args)
+        {
+            XmlDocument xDoc = new XmlDocument();
             CheckBox chkBox = (CheckBox)sender;
-            int tdevice = Int32.Parse(chkBox.Tag.ToString());
+            int tdevice = Convert.ToInt32(chkBox.Tag.ToString());
             DS4Device d = Program.rootHub.DS4Controllers[tdevice];
-            if (!chkBox.Checked) { DeleteExistingLinks(d.MacAddress); }
-            else { SaveLinkedProfile(d.MacAddress, cbs[tdevice].SelectedItem.ToString()); }
+            string m_Profile = appdatapath + @"\Profiles.xml";
+            if (File.Exists(m_Profile))
+            {
+                xDoc.Load(m_Profile);
+                string profile = xDoc.SelectSingleNode("/Profile/Controller" + (tdevice + 1).ToString()).InnerText;
+
+                if (!chkBox.Checked)
+                {
+                    DeleteExistingLinks(d.MacAddress);
+                    ProfilePath[tdevice] = profile;
+                    ProfileLinkArgs args_ = new ProfileLinkArgs(tdevice, profile);
+                    UpdateProfileAfterLink(sender, args_);
+                    LoadProfile(tdevice, false, Program.rootHub);
+                }
+                else { SaveLinkedProfile(d.MacAddress, cbs[tdevice].SelectedItem.ToString()); }
+            }
+            else { Log.LogToGui("Could not load slot specific profile. Profiles.xml is missing.", true); }
+        }
+
+        protected void UpdateProfileAfterLink(object sender, ProfileLinkArgs args)
+        {
+            if (this.InvokeRequired)
+            {
+                UpdateProfileAfterLinkDelegate d = new UpdateProfileAfterLinkDelegate(UpdateProfileAfterLink);
+
+                try
+                {
+                    // Not interested in waiting for result
+                    this.BeginInvoke(d, new object[] { sender, args });
+                }
+                catch { }
+            }
+            else
+            {
+                ComboBox.ObjectCollection items = cbs[args.getDevice()].Items;
+                for (int i = 0; i < items.Count; i++)
+                {
+                    string item = items[i].ToString();
+
+                    if (args.getProfile() == item)
+                    {
+                        cbs[args.getDevice()].SelectedItem = item;
+                        break;
+                    }
+                }
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

@@ -628,6 +628,7 @@
             resources.ApplyResources(this.chkLink2, "chkLink2");
             this.chkLink2.Name = "chkLink2";
             this.chkLink2.Tag = "1";
+            this.toolTip1.SetToolTip(this.chkLink2, resources.GetString("chkLink2.ToolTip"));
             this.chkLink2.UseVisualStyleBackColor = true;
             this.chkLink2.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
             // 
@@ -636,6 +637,7 @@
             resources.ApplyResources(this.chkLink3, "chkLink3");
             this.chkLink3.Name = "chkLink3";
             this.chkLink3.Tag = "2";
+            this.toolTip1.SetToolTip(this.chkLink3, resources.GetString("chkLink3.ToolTip"));
             this.chkLink3.UseVisualStyleBackColor = true;
             this.chkLink3.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
             // 
@@ -644,6 +646,7 @@
             resources.ApplyResources(this.chkLink4, "chkLink4");
             this.chkLink4.Name = "chkLink4";
             this.chkLink4.Tag = "3";
+            this.toolTip1.SetToolTip(this.chkLink4, resources.GetString("chkLink4.ToolTip"));
             this.chkLink4.UseVisualStyleBackColor = true;
             this.chkLink4.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
             // 
@@ -652,6 +655,7 @@
             resources.ApplyResources(this.chkLink1, "chkLink1");
             this.chkLink1.Name = "chkLink1";
             this.chkLink1.Tag = "0";
+            this.toolTip1.SetToolTip(this.chkLink1, resources.GetString("chkLink1.ToolTip"));
             this.chkLink1.UseVisualStyleBackColor = true;
             this.chkLink1.CheckedChanged += new System.EventHandler(this.LinkCheckChanged);
             // 
@@ -659,6 +663,7 @@
             // 
             resources.ApplyResources(this.lbLInk, "lbLInk");
             this.lbLInk.Name = "lbLInk";
+            this.toolTip1.SetToolTip(this.lbLInk, resources.GetString("lbLInk.ToolTip"));
             // 
             // lbNoControllers
             // 
@@ -1253,6 +1258,7 @@
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.pnlButton);
             this.Name = "DS4Form";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScpForm_Closing);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.ScpForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.ScpForm_DragEnter);
