@@ -8,6 +8,7 @@ using System.Drawing;
 
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace DS4Windows
 {
@@ -224,6 +225,30 @@ namespace DS4Windows
         }
     }
 
+    public class ProfileLinkArgs : EventArgs
+    {
+        private int device;
+        private string profile;
+
+        public ProfileLinkArgs(int device, string profile)
+        {
+            this.device = device;
+            this.profile = profile;
+        }
+
+        public int getDevice()
+        {
+            return device;
+        }
+
+        public string getProfile()
+        {
+            return profile;
+        }
+
+        public bool isLinked { get; set; }
+    }
+
     public class MultiValueDict<Key, Value> : Dictionary<Key, List<Value>>
     {
         public void Add(Key key, Value val)
@@ -281,6 +306,7 @@ namespace DS4Windows
             appdatapath = path;
             m_Config.m_Profile = appdatapath + "\\Profiles.xml";
             m_Config.m_Actions = appdatapath + "\\Actions.xml";
+            m_Config.m_LinkedProfiles = appdatapath + "\\LinkedProfiles.xml";
         }
 
         /// <summary>
@@ -353,6 +379,28 @@ namespace DS4Windows
                 SerialChangeArgs args = new SerialChangeArgs(index, serial);
                 DeviceSerialChange(sender, args);
             }
+        }
+
+        public static event EventHandler<ProfileLinkArgs> UpdateProfileAfterLinkChange;
+        public static void OnLinkedProfileLoad(object sender, int device, string profile)
+        {
+            if (UpdateProfileAfterLinkChange != null)
+            {
+                ProfileLinkArgs args = new ProfileLinkArgs(device, profile);
+                UpdateProfileAfterLinkChange(sender, args);
+            }
+        }
+
+        public static event EventHandler<ProfileLinkArgs> CheckLinkedState;
+        public static bool IsProfileLinked(object sender, int device, string profile)
+        {
+            if (CheckLinkedState != null)
+            {
+                ProfileLinkArgs args = new ProfileLinkArgs(device, profile);
+                CheckLinkedState(sender, args);
+                return args.isLinked;
+            }
+            else { return false; }
         }
 
         // general values
@@ -1046,6 +1094,20 @@ namespace DS4Windows
         {
             m_Config.SaveProfile(device, propath);
         }
+        public static bool SaveLinkedProfile(string macAddress, string profileName)
+        {
+            return m_Config.SaveLinkedProfile(macAddress, profileName);
+        }
+
+        public static bool DeleteExistingLinks(string macAddress)
+        {
+            return m_Config.DeleteExistingLinks(macAddress);
+        }
+
+        public static bool LoadLinkedProfile(int device, string macAddress)
+        {
+            return m_Config.LoadLinkedProfile(device, macAddress);
+        }
 
         private static byte applyRatio(byte b1, byte b2, double r)
         {
@@ -1145,6 +1207,7 @@ namespace DS4Windows
         //public String m_Profile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Tool" + "\\Profiles.xml";
         public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + "\\Profiles.xml";
         public String m_Actions = Global.appdatapath + "\\Actions.xml";
+        public String m_LinkedProfiles = Global.appdatapath + "\\LinkedProfiles.xml";
 
         protected XmlDocument m_Xdoc = new XmlDocument();
         // fifth value used for options, not fifth controller
@@ -2922,8 +2985,13 @@ namespace DS4Windows
         public bool Save()
         {
             bool Saved = true;
-
+            m_Xdoc.Load(m_Profile);
             XmlNode Node;
+
+            XmlNode prevProfile1 = m_Xdoc.SelectSingleNode("/Profile/Controller1").CloneNode(true);
+            XmlNode prevProfile2 = m_Xdoc.SelectSingleNode("/Profile/Controller2").CloneNode(true);
+            XmlNode prevProfile3 = m_Xdoc.SelectSingleNode("/Profile/Controller3").CloneNode(true);
+            XmlNode prevProfile4 = m_Xdoc.SelectSingleNode("/Profile/Controller4").CloneNode(true);
 
             m_Xdoc.RemoveAll();
 
@@ -2944,10 +3012,14 @@ namespace DS4Windows
             XmlNode xmlFormWidth = m_Xdoc.CreateNode(XmlNodeType.Element, "formWidth", null); xmlFormWidth.InnerText = formWidth.ToString(); Node.AppendChild(xmlFormWidth);
             XmlNode xmlFormHeight = m_Xdoc.CreateNode(XmlNodeType.Element, "formHeight", null); xmlFormHeight.InnerText = formHeight.ToString(); Node.AppendChild(xmlFormHeight);
 
-            XmlNode xmlController1 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller1", null); xmlController1.InnerText = profilePath[0]; Node.AppendChild(xmlController1);
-            XmlNode xmlController2 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller2", null); xmlController2.InnerText = profilePath[1]; Node.AppendChild(xmlController2);
-            XmlNode xmlController3 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller3", null); xmlController3.InnerText = profilePath[2]; Node.AppendChild(xmlController3);
-            XmlNode xmlController4 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller4", null); xmlController4.InnerText = profilePath[3]; Node.AppendChild(xmlController4);
+            if (!Global.IsProfileLinked(this, 0, "")) { XmlNode xmlController1 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller1", null); xmlController1.InnerText = profilePath[0]; Node.AppendChild(xmlController1); }
+            else { Node.AppendChild(prevProfile1); }
+            if (!Global.IsProfileLinked(this, 1, "")) { XmlNode xmlController2 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller2", null); xmlController2.InnerText = profilePath[1]; Node.AppendChild(xmlController2); }
+            else { Node.AppendChild(prevProfile2); }
+            if (!Global.IsProfileLinked(this, 2, "")) { XmlNode xmlController3 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller3", null); xmlController3.InnerText = profilePath[2]; Node.AppendChild(xmlController3); }
+            else { Node.AppendChild(prevProfile3); }
+            if (!Global.IsProfileLinked(this, 3, "")) { XmlNode xmlController4 = m_Xdoc.CreateNode(XmlNodeType.Element, "Controller4", null); xmlController4.InnerText = profilePath[3]; Node.AppendChild(xmlController4); }
+            else { Node.AppendChild(prevProfile4); }
 
             XmlNode xmlLastChecked = m_Xdoc.CreateNode(XmlNodeType.Element, "LastChecked", null); xmlLastChecked.InnerText = lastChecked.ToString(); Node.AppendChild(xmlLastChecked);
             XmlNode xmlCheckWhen = m_Xdoc.CreateNode(XmlNodeType.Element, "CheckWhen", null); xmlCheckWhen.InnerText = CheckWhen.ToString(); Node.AppendChild(xmlCheckWhen);
@@ -2980,6 +3052,109 @@ namespace DS4Windows
             return Saved;
         }
 
+        private void CreateLinks()
+        {
+            XmlDocument m_Xdoc = new XmlDocument();
+            XmlNode node;
+
+            node = m_Xdoc.CreateXmlDeclaration("1.0", "utf-8", String.Empty);
+            m_Xdoc.AppendChild(node);
+
+            node = m_Xdoc.CreateComment(String.Format(" Mac Address and Profile Linking Data. {0} ", DateTime.Now));
+            m_Xdoc.AppendChild(node);
+
+            node = m_Xdoc.CreateWhitespace("\r\n");
+            m_Xdoc.AppendChild(node);
+
+            node = m_Xdoc.CreateNode(XmlNodeType.Element, "LinkedControllers", "");
+            m_Xdoc.AppendChild(node);
+
+            try { m_Xdoc.Save(m_LinkedProfiles); }
+            catch (UnauthorizedAccessException) { Log.LogToGui("Unauthorized Access - Save failed to path: " + m_LinkedProfiles, false); }
+        }
+
+        public bool DeleteExistingLinks(string macAddress)
+        {
+            bool deleteSuccesful = false;
+            if (File.Exists(m_LinkedProfiles))
+            {
+                m_Xdoc.Load(m_LinkedProfiles);
+                macAddress = Regex.Replace(macAddress, ":", string.Empty);
+
+                if (m_Xdoc.SelectSingleNode("LinkedControllers/MAC" + macAddress) != null)
+                {
+                    XmlNode toDelete = m_Xdoc.SelectSingleNode("LinkedControllers/MAC" + macAddress);
+                    toDelete.ParentNode.RemoveChild(toDelete);
+                    try { m_Xdoc.Save(m_LinkedProfiles); deleteSuccesful = true; }
+                    catch (UnauthorizedAccessException) { Log.LogToGui("Unauthorized Access - Could not save to path: " + m_LinkedProfiles + " while deleting.", false); }
+                }
+            }
+            return deleteSuccesful;
+        }
+
+        public bool SaveLinkedProfile(string macAddress, string profileName)
+        {
+            bool saved = true;
+
+            if (File.Exists(m_LinkedProfiles))
+            {
+                m_Xdoc.Load(m_LinkedProfiles);
+
+                macAddress = Regex.Replace(macAddress, ":", string.Empty);
+
+                try
+                {
+                    m_Xdoc.SelectSingleNode("/LinkedControllers/MAC" + macAddress).InnerText = profileName;
+                }
+                catch
+                {
+                    XmlNode root = m_Xdoc.DocumentElement;
+                    XmlElement link = m_Xdoc.CreateElement("MAC" + macAddress);
+                    link.InnerText = profileName;
+                    root.AppendChild(link);
+                    m_Xdoc.Save(m_LinkedProfiles);
+                }
+            }
+            else
+            {
+                CreateLinks();
+                SaveLinkedProfile(macAddress, profileName);
+            }
+        
+            try { m_Xdoc.Save(m_LinkedProfiles); }
+            catch (UnauthorizedAccessException) { Log.LogToGui("Unauthorized Access - Save failed to path: " + m_LinkedProfiles, false); saved = false; }
+            return saved;
+        
+        }
+
+        public bool LoadLinkedProfile(int device, string macAddress)
+        {
+            if (File.Exists(m_LinkedProfiles))
+            {
+                XmlNode link;
+                bool profileLoaded = false;
+
+                m_Xdoc.Load(m_LinkedProfiles);
+                macAddress = Regex.Replace(macAddress, ":", string.Empty);
+                try
+                {
+                    link = m_Xdoc.SelectSingleNode("/LinkedControllers/MAC" + macAddress);
+                    if (link == null) { return false; }
+                    Global.ProfilePath[device] = link.InnerText;
+                    Global.OnLinkedProfileLoad(this, device, link.InnerText);
+                    profileLoaded = LoadProfile(device, false, Program.rootHub);
+                    if (profileLoaded) { Log.LogToGui("Controller " + (device + 1).ToString() + " is linked to the " + link.InnerText + " profile.", false); }
+                    else { Log.LogToGui("Stored Profile " + link.InnerText + " no longer exists", true); }
+                    return profileLoaded;
+                }
+                catch { Log.LogToGui("Controller " + (device + 1).ToString() + " isn't linked to a profile.", false); return false; }
+            }
+            else
+            {
+                Log.LogToGui("LinkedProfiles.xml can't be found.", false);
+                return false;
+            }
+        }
 
 
         private void CreateAction()
