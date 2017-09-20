@@ -43,40 +43,40 @@ namespace DS4Windows
         byte R2 { get { return _state.R2; } }
         int Battery { get { return _state.Battery; } }
 
-        public int GyroYaw { get { return _state.Motion.gyroYaw; } }
+        public int GyroYaw { get { return _state.Motion.fakeGyroYaw; } }
         public int getGyroYaw()
         {
-            return _state.Motion.gyroYaw;
+            return _state.Motion.fakeGyroYaw;
         }
 
-        public int GyroPitch { get { return _state.Motion.gyroPitch; } }
+        public int GyroPitch { get { return _state.Motion.fakeGyroPitch; } }
         public int getGyroPitch()
         {
-            return _state.Motion.gyroPitch;
+            return _state.Motion.fakeGyroPitch;
         }
 
-        public int GyroRoll { get { return _state.Motion.gyroRoll; } }
+        public int GyroRoll { get { return _state.Motion.fakeGyroRoll; } }
         public int getGyroRoll()
         {
-            return _state.Motion.gyroRoll;
+            return _state.Motion.fakeGyroRoll;
         }
 
-        public int AccelX { get { return _state.Motion.accelX; } }
+        public int AccelX { get { return _state.Motion.fakeAccelX; } }
         public int getAccelX()
         {
-            return _state.Motion.accelX;
+            return _state.Motion.fakeAccelX;
         }
 
-        public int AccelY { get { return _state.Motion.accelY; } }
+        public int AccelY { get { return _state.Motion.fakeAccelY; } }
         public int getAccelY()
         {
-            return _state.Motion.accelY;
+            return _state.Motion.fakeAccelY;
         }
 
-        public int AccelZ { get { return _state.Motion.accelZ; } }
+        public int AccelZ { get { return _state.Motion.fakeAccelZ; } }
         public int getAccelZ()
         {
-            return _state.Motion.accelZ;
+            return _state.Motion.fakeAccelZ;
         }
 
         public int OutputAccelX { get { return _state.Motion.outputAccelX; } }

@@ -41,12 +41,14 @@ namespace DS4Windows
 
         public virtual void sixaxisMoved(SixAxisEventArgs arg)
         {
-            int deltaX = 0, deltaY = 0;
-            deltaX = Global.getGyroMouseHorizontalAxis(deviceNumber) == 0 ? arg.sixAxis.gyroYawFull :
-                arg.sixAxis.gyroRollFull;
-            deltaY = -arg.sixAxis.gyroPitchFull;
-            //tempDouble = arg.sixAxis.elapsed * 0.001 * 200.0; // Base default speed on 5 ms
-            tempDouble = arg.sixAxis.elapsed * 200.0; // Base default speed on 5 ms
+            float deltaX = 0, deltaY = 0;
+            deltaX = Global.getGyroMouseHorizontalAxis(deviceNumber) == 0 ? arg.sixAxis.gyroYaw : arg.sixAxis.gyroRoll;
+            deltaY = -arg.sixAxis.gyroPitch;
+
+            if (arg.sixAxis.previous == null)
+                tempDouble = (double)(arg.sixAxis.timestampUs) / 200; // Base default speed on 5 ms
+            else
+                tempDouble = (double)(arg.sixAxis.timestampUs - arg.sixAxis.previous.timestampUs) / 200; // Base default speed on 5 ms
 
             gyroSmooth = Global.getGyroSmoothing(deviceNumber);
             double gyroSmoothWeight = 0.0;

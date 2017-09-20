@@ -48,7 +48,7 @@ namespace DS4Windows
             RXUnit = 0.0;
             RYUnit = 0.0;
             elapsedMicroSec = 0;
-            Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
+            Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0);
         }
 
         public DS4State(DS4State state)

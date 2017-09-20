@@ -905,7 +905,7 @@ namespace DS4Windows
                 double sxsens = getSXSens(device);
                 double szsens = getSZSens(device);
 
-                int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
+                int gyroX = cState.Motion.fakeAccelX, gyroZ = cState.Motion.fakeAccelZ;
                 int absx = Math.Abs(gyroX), absz = Math.Abs(gyroZ);
 
                 if (SXD > 0 || SXMax < 1.0 || sxAntiDead > 0)

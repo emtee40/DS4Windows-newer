@@ -1,67 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DS4Windows
 {
     public class SixAxisEventArgs : EventArgs
     {
         public readonly SixAxis sixAxis;
-        public readonly DateTime timeStamp;
-        public SixAxisEventArgs(DateTime utcTimestamp, SixAxis sa)
+        public readonly System.DateTime timeStamp;
+        public SixAxisEventArgs(System.DateTime utcTimestamp, SixAxis sa)
         {
             sixAxis = sa;
-            timeStamp = utcTimestamp;
+            this.timeStamp = utcTimestamp;
         }
     }
 
     public class SixAxis
     {
-        public const int ACC_RES_PER_G = 8192;
-        private const float F_ACC_RES_PER_G = ACC_RES_PER_G;
-        public const int GYRO_RES_IN_DEG_SEC = 16;
-        private const float F_GYRO_RES_IN_DEG_SEC = GYRO_RES_IN_DEG_SEC;
+        public readonly SixAxis previous;
 
-        public int gyroYaw, gyroPitch, gyroRoll, accelX, accelY, accelZ;
+        public readonly float gyroPitch, gyroYaw, gyroRoll; //in deg/s
+        public readonly float accelX, accelY, accelZ;       //in Gs/s^2
+        public readonly ulong timestampUs;                  //from controller, in microseconds
+
+        public readonly int fakeGyroPitch, fakeGyroYaw, fakeGyroRoll;
+        public readonly int fakeAccelX, fakeAccelY, fakeAccelZ;
         public int outputAccelX, outputAccelY, outputAccelZ;
-        public double accelXG, accelYG, accelZG;
-        public double angVelYaw, angVelPitch, angVelRoll;
-        public readonly int gyroYawFull, gyroPitchFull, gyroRollFull;
-        public readonly int accelXFull, accelYFull, accelZFull;
-        public readonly byte touchID;
-        public readonly double elapsed;
-        public readonly SixAxis previousAxis = null;
 
-        double recip = 1d / 8192d;
-        double tempDouble = 0d;
-
-        public SixAxis(int X, int Y, int Z,
-            int aX, int aY, int aZ,
-            double elapsedDelta, SixAxis prevAxis = null)
+        public SixAxis(ulong microseconds, float gX, float gY, float gZ, float aX, float aY, float aZ, SixAxis prevAxis = null)
         {
-            gyroYaw = -X / 256;
-            gyroPitch = Y / 256;
-            gyroRoll = -Z / 256;
-
-            gyroYawFull = -X; gyroPitchFull = Y; gyroRollFull = -Z;
-            accelXFull = -aX; accelYFull = -aY; accelZFull = aZ;
-
-            angVelYaw = gyroYawFull / F_GYRO_RES_IN_DEG_SEC;
-            angVelPitch = gyroPitchFull / F_GYRO_RES_IN_DEG_SEC;
-            angVelRoll = gyroRollFull / F_GYRO_RES_IN_DEG_SEC;
-
-            accelXG = tempDouble = accelXFull / F_ACC_RES_PER_G;
-            accelYG = tempDouble = accelYFull / F_ACC_RES_PER_G;
-            accelZG = tempDouble = accelZFull / F_ACC_RES_PER_G;
+            timestampUs = microseconds;
+            gyroPitch = gX;
+            gyroYaw = gY;
+            gyroRoll = gZ;
+            accelX = aX;
+            accelY = aY;
+            accelZ = aZ;
+            previous = prevAxis;
 
             // Put accel ranges between 0 - 128 abs
-            accelX = -aX / 64;
-            accelY = -aY / 64;
-            accelZ = aZ / 64;
-            outputAccelX = accelX;
-            outputAccelY = accelY;
-            outputAccelZ = accelZ;
+            fakeAccelX = (int)Math.Round(aX * (DS4Cal.ACC_RESOLUTION_PER_G / 64));
+            fakeAccelY = (int)Math.Round(aY * (DS4Cal.ACC_RESOLUTION_PER_G / 64));
+            fakeAccelZ = (int)Math.Round(-aZ * (DS4Cal.ACC_RESOLUTION_PER_G / 64));
+			
+            outputAccelX = fakeAccelX;
+            outputAccelY = fakeAccelY;
+            outputAccelZ = fakeAccelZ;
 
-            elapsed = elapsedDelta;
-            previousAxis = prevAxis;
+            // Legacy values
+            fakeGyroPitch = (int)Math.Round(gX / (256 / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC));
+            fakeGyroYaw =   (int)Math.Round(gY / (256 / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC));
+            fakeGyroRoll =  (int)Math.Round(gZ / (256 / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC));
         }
     }
 
@@ -69,46 +60,91 @@ namespace DS4Windows
     {
         public event EventHandler<SixAxisEventArgs> SixAccelMoved = null;
 
-        private int lastGyroYaw, lastGyroPitch, lastGyroRoll,
-            lastAX, lastAY, lastAZ;
+        private DS4Cal _cal = null;
 
-        private double lastElapsedDelta;
-        private byte[] previousPacket = new byte[8];
-
-        public void handleSixaxis(byte[] gyro, byte[] accel, DS4State state,
-            double elapsedDelta)
+        public void setCalibrationData(byte[] calibData)
         {
-            int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
-            int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
-            int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
-            int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
-            int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
-            int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
+            if (calibData == null)
+                _cal = null;
+            else
+                _cal = new DS4Cal(calibData);
+        }
 
-            SixAxisEventArgs args = null;
-            if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
+        private SixAxis _values = new SixAxis(0, 0, 0, 0, 0, 0, 0, null);
+        public SixAxis Values { get { return _values; } }
+
+        internal long _prevReportTimestamp = -1;
+        public void handleSixaxis(byte[] inputReport, DateTime receivedTimestamp, string MacAddress)
+        {
+            uint timestamp = (((uint)inputReport[11]) << 8) | ((uint)inputReport[10]);
+            ulong fullTimestamp = 0;
+
+            // convert wrapped time to absolute time
+            if (_prevReportTimestamp < 0) //first one, start from zero
+                fullTimestamp = ((uint)timestamp * 16) / 3;
+            else
             {
-                if (SixAccelMoved != null)
+                ushort delta;
+                if (_prevReportTimestamp > timestamp) //wrapped around
+                    delta = (ushort)(ushort.MaxValue - _prevReportTimestamp + timestamp + 1);
+                else
+                    delta = (ushort)(timestamp - _prevReportTimestamp);
+
+                fullTimestamp = Values.timestampUs + (((uint)delta * 16) / 3);
+            }
+            _prevReportTimestamp = timestamp;
+
+            if (_cal != null)
+            {
+                var calValues = _cal.ApplyCalToInReport(inputReport);
+
+#if DUMP_DS4_CALIBRATION
+                short[] preCal = calValues.Item1;
+                short[] posCal = calValues.Item2;
+                short[] delta = new short[preCal.Length];
+
+                for (int i=1; i<posCal.Length; i++)
                 {
-                    SixAxis sPrev = null, now = null;
-                    sPrev = new SixAxis(lastGyroYaw, lastGyroPitch, lastGyroRoll,
-                        lastAX, lastAY, lastAZ, lastElapsedDelta);
-
-                    now = new SixAxis(currentYaw, currentPitch, currentRoll,
-                        AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
-
-                    args = new SixAxisEventArgs(state.ReportTimeStamp, now);
-                    state.Motion = now;
-                    SixAccelMoved(this, args);
+                    preCal[i] = (short)-preCal[i];
+                    posCal[i] = (short)-posCal[i];
+                    delta[i] = (short)(posCal[i] - preCal[i]);
                 }
 
-                lastGyroYaw = currentYaw;
-                lastGyroPitch = currentPitch;
-                lastGyroRoll = currentRoll;
-                lastAX = AccelX;
-                lastAY = AccelY;
-                lastAZ = AccelZ;
-                lastElapsedDelta = elapsedDelta;
+                var fmt = "+00000;-00000";
+                Console.WriteLine(MacAddress.ToString() + "> " +
+                    String.Format("Cal applied (ts: {0}) pre: ({1} {2} {3}) ({4} {5} {6}) post: ({7} {8} {9}) ({10} {11} {12}) delta: ({13} {14} {15}) ({16} {17} {18})",
+                        ((double)(fullTimestamp) / 1000).ToString("0.000"),
+                        preCal[0].ToString(fmt), preCal[1].ToString(fmt), preCal[2].ToString(fmt), preCal[3].ToString(fmt), preCal[4].ToString(fmt), preCal[5].ToString(fmt),
+                        posCal[0].ToString(fmt), posCal[1].ToString(fmt), posCal[2].ToString(fmt), posCal[3].ToString(fmt), posCal[4].ToString(fmt), posCal[5].ToString(fmt),
+                        delta[0].ToString(fmt), delta[1].ToString(fmt), delta[2].ToString(fmt), delta[3].ToString(fmt), delta[4].ToString(fmt), delta[5].ToString(fmt))
+                );
+#endif
+            }
+
+            int intPitch = (short)(((ushort)inputReport[14] << 8) | (ushort)inputReport[13]);
+            int intYaw  = (short)-(((ushort)inputReport[16] << 8) | (ushort)inputReport[15]);
+            int intRoll = (short)-(((ushort)inputReport[18] << 8) | (ushort)inputReport[17]);
+            int intAccX = (short)-(((ushort)inputReport[20] << 8) | (ushort)inputReport[19]);
+            int intAccY = (short)-(((ushort)inputReport[22] << 8) | (ushort)inputReport[21]);
+            int intAccZ = (short)-(((ushort)inputReport[24] << 8) | (ushort)inputReport[23]);
+
+            float angVelPitch   = (float)(intPitch) / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC;  //in deg/s
+            float angVelYaw     = (float)(intYaw)   / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC;  //in deg/s
+            float angVelRoll    = (float)(intRoll)  / DS4Cal.GYRO_RESOLUTION_IN_DEG_SEC;  //in deg/s
+
+            float accelX = (float)(intAccX) / DS4Cal.ACC_RESOLUTION_PER_G; //in Gs/s^2
+            float accelY = (float)(intAccY) / DS4Cal.ACC_RESOLUTION_PER_G; //in Gs/s^2
+            float accelZ = (float)(intAccZ) / DS4Cal.ACC_RESOLUTION_PER_G; //in Gs/s^2
+
+            SixAxis sPrev;
+            sPrev = new SixAxis(Values.timestampUs, Values.gyroPitch, Values.gyroYaw, Values.gyroRoll, Values.accelX, Values.accelY, Values.accelZ);
+            _values = new SixAxis(fullTimestamp, angVelPitch, angVelYaw, angVelRoll, accelX, accelY, accelZ, sPrev);
+
+            SixAxisEventArgs args;
+            if (SixAccelMoved != null)
+            {
+                args = new SixAxisEventArgs(receivedTimestamp, Values);
+                SixAccelMoved(this, args);
             }
         }
     }
