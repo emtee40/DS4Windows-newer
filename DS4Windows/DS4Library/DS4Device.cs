@@ -471,10 +471,78 @@ namespace DS4Windows
 
         public void refreshCalibration()
         {
-            byte[] calibration = new byte[41];
-            calibration[0] = conType == ConnectionType.BT ? (byte)0x05 : (byte)0x02;
-            hDevice.readFeatureData(calibration);
-            sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
+            byte[] calibData = null;
+            if (ConnectionType == ConnectionType.BT || ConnectionType == ConnectionType.SONYWA)
+            {
+                var DS4_FEATURE_REPORT_5_LENGTH = 41; //we want this instead of 0x02 because it has CRC32
+                var NUM_BT_FEATURE_REPORT_5_TRIES = 5;
+
+                byte[] feature5Bytes = new byte[DS4_FEATURE_REPORT_5_LENGTH];
+
+                var BT_FEATURE_REPORT_5_CRC32_POS = DS4_FEATURE_REPORT_5_LENGTH - 4; //last 4 bytes are crc32
+                byte[] crcBuf = new byte[1 + BT_FEATURE_REPORT_5_CRC32_POS]; //0xA3 + the whole input report before the crc32
+
+                int numTries;
+                for (numTries = 0; numTries < NUM_BT_FEATURE_REPORT_5_TRIES; numTries++)
+                {
+                    feature5Bytes[0] = 0x05;
+                    if (hDevice.readFeatureData(feature5Bytes) == false)
+                        break;
+
+                    UInt32 recvCrc32 = BitConverter.ToUInt32(feature5Bytes, BT_FEATURE_REPORT_5_CRC32_POS);
+                    crcBuf[0] = 0xA3;
+                    Array.Copy(feature5Bytes, 0, crcBuf, 1, BT_FEATURE_REPORT_5_CRC32_POS);
+
+                    UInt32 calcCrc32 = Crc32.Compute(crcBuf);
+                    if (recvCrc32 != calcCrc32)
+                    {
+                        Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
+                                            "> invalid CRC32 getting calibration data (retries: " + numTries.ToString() +
+                                            "): 0x" + recvCrc32.ToString("X8") + " expected: 0x" + calcCrc32.ToString("X8"));
+                        continue;
+                    }
+                    else
+                    {
+                        crcBuf = null;
+                        calibData = feature5Bytes;
+                        break;
+                    }
+                }
+                crcBuf = null;
+
+                if (calibData != null)
+                {
+                    Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
+                                    "> Got calibration data over BT (tries: " + numTries.ToString() +
+                                    "): " + BitConverter.ToString(calibData).Replace('-', ' '));
+                }
+                else
+                {
+                    Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
+                                    "> Cannot get calibration data over BT (tried " + numTries.ToString() + " times)");
+                }
+            }
+            else if (ConnectionType == ConnectionType.USB)
+            {
+                var DS4_FEATURE_REPORT_2_LENGTH = 37;
+                calibData = new byte[DS4_FEATURE_REPORT_2_LENGTH];
+                calibData[0] = 0x02;
+
+                if (hDevice.readFeatureData(calibData) == false)
+                {
+                    Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
+                                    "> Error getting calibration data over USB");
+                    calibData = null;
+                }
+                else
+                {
+                    Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
+                                    "> Got calibration data over USB:" + BitConverter.ToString(calibData).Replace('-', ' '));
+                }
+            }
+
+            if (calibData != null)
+                sixAxis.setCalibrationData(ref calibData, conType == ConnectionType.USB);
         }
 
         public void StartUpdate()
@@ -801,6 +869,7 @@ namespace DS4Windows
 
                 utcNow = DateTime.UtcNow; // timestamp with UTC in case system time zone changes
                 resetHapticState();
+                cState.PacketCounter = pState.PacketCounter + 1;
                 cState.ReportTimeStamp = utcNow;
                 cState.LX = inputReport[1];
                 cState.LY = inputReport[2];
@@ -836,6 +905,8 @@ namespace DS4Windows
                 cState.L3 = (inputReport[6] & (1 << 6)) != 0;
                 cState.Options = (inputReport[6] & (1 << 5)) != 0;
                 cState.Share = (inputReport[6] & (1 << 4)) != 0;
+                cState.R2Btn = (inputReport[6] & (1 << 3)) != 0;
+                cState.L2Btn = (inputReport[6] & (1 << 2)) != 0;
                 cState.R1 = (inputReport[6] & (1 << 1)) != 0;
                 cState.L1 = (inputReport[6] & (1 << 0)) != 0;
 
@@ -854,6 +925,17 @@ namespace DS4Windows
                     priorInputReport30 = inputReport[30];
                     //Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "> power subsystem octet: 0x" + inputReport[30].ToString("x02"));
                 }
+
+                //Simpler touch storing
+                cState.TrackPadTouch0.Id = (byte)(inputReport[35] & 0x7f);
+                cState.TrackPadTouch0.IsActive = (inputReport[35] & 0x80) == 0;
+                cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[37] & 0x0f) << 8) | (ushort)(inputReport[36]));
+                cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[38]) << 4) | ((ushort)(inputReport[37] & 0xf0) >> 4));
+
+                cState.TrackPadTouch1.Id = (byte)(inputReport[39] & 0x7f);
+                cState.TrackPadTouch1.IsActive = (inputReport[39] & 0x80) == 0;
+                cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[41] & 0x0f) << 8) | (ushort)(inputReport[40]));
+                cState.TrackPadTouch1.Y = (short)(((ushort)(inputReport[42]) << 4) | ((ushort)(inputReport[41] & 0xf0) >> 4));
 
                 // XXX DS4State mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
                 try
@@ -897,6 +979,7 @@ namespace DS4Windows
                 }
 
                 cState.elapsedMicroSec = deltaTimeCurrent;
+                cState.totalMicroSec = pState.totalMicroSec + deltaTimeCurrent;
                 timeStampPrevious = tempStamp;
                 elapsedDeltaTime = 0.000001 * deltaTimeCurrent; // Convert from microseconds to seconds
 
@@ -1268,7 +1351,7 @@ namespace DS4Windows
             return pState;
         }
 
-        private bool isDS4Idle()
+        public bool isDS4Idle()
         {
             if (cState.Square || cState.Cross || cState.Circle || cState.Triangle)
                 return false;
@@ -1381,11 +1464,17 @@ namespace DS4Windows
 
         public bool isValidSerial()
         {
+            if (Mac == null)
+                return false;
+
             return !Mac.Equals(blankSerial);
         }
 
         public static bool isValidSerial(string test)
         {
+            if (test == null)
+                return false;
+
             return !test.Equals(blankSerial);
         }
     }
