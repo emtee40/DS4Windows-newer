@@ -473,36 +473,54 @@ namespace DS4Windows
 
         public static string ResolveShortcut(string filePath)
         {
-            // IWshRuntimeLibrary is in the COM library "Windows Script Host Object Model"
-            IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
+            string result = null;
 
+            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); //Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t);
             try
             {
-                IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(filePath);
-                return shortcut.TargetPath;
+                var lnk = shell.CreateShortcut(filePath);
+                try
+                {
+                    result = lnk.TargetPath;
+                }
+                finally
+                {
+                    Marshal.FinalReleaseComObject(lnk);
+                }
             }
-            catch (COMException)
+            finally
             {
-                // A COMException is thrown if the file is not a valid shortcut (.lnk) file 
-                return null;
+                Marshal.FinalReleaseComObject(shell);
             }
+
+            return result;
         }
 
         public static string ResolveShortcutAndArgument(string filePath)
         {
-            // IWshRuntimeLibrary is in the COM library "Windows Script Host Object Model"
-            IWshRuntimeLibrary.WshShell shell = new IWshRuntimeLibrary.WshShell();
+            string result = null;
 
+            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t);
             try
             {
-                IWshRuntimeLibrary.IWshShortcut shortcut = (IWshRuntimeLibrary.IWshShortcut)shell.CreateShortcut(filePath);
-                return shortcut.TargetPath + " " + shortcut.Arguments;
+                var lnk = shell.CreateShortcut(filePath);
+                try
+                {
+                    result = lnk.TargetPath + " " + lnk.Arguments;
+                }
+                finally
+                {
+                    Marshal.FinalReleaseComObject(lnk);
+                }
             }
-            catch (COMException)
+            finally
             {
-                // A COMException is thrown if the file is not a valid shortcut (.lnk) file 
-                return null;
+                Marshal.FinalReleaseComObject(shell);
             }
+
+            return result;
         }
 
         private void cBTurnOffDS4W_CheckedChanged(object sender, EventArgs e)
