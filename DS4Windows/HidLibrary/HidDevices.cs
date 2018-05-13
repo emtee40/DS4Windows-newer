@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -20,12 +19,27 @@ namespace DS4Windows
             return EnumerateDevices().Where(x => x.Path == devicePath).Select(x => new HidDevice(x.Path, x.Description)).FirstOrDefault();
         }
 
-        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo)
-        {
-            return EnumerateDevices().Select(x => new HidDevice(x.Path, x.Description)).Where(x => devInfo.Any(vidPid => vidPid.matchesHid(x)));
+        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo) {
+            List<HidDevice> foundDevs = new List<HidDevice>();
+            int devInfoLen = devInfo.Length;
+            IEnumerable<DeviceInfo> temp = EnumerateDevices();
+            for (int i = 0, len = temp.Count(); i < len; i++) {
+                DeviceInfo x = temp.ElementAt(i);
+                HidDevice tempDev = new HidDevice(x.Path, x.Description);
+                for (int j = 0; j < devInfoLen; j++) {
+                    if (devInfo[j].matchesHid(tempDev)) {
+                        foundDevs.Add(tempDev);
+                        break;
+                    }
+                }
+            }
+            return foundDevs;
         }
 
-        private class DeviceInfo { public string Path { get; set; } public string Description { get; set; } }
+        private class DeviceInfo {
+            public string Path { get; set; }
+            public string Description { get; set; }
+        }
 
         private static IEnumerable<DeviceInfo> EnumerateDevices()
         {

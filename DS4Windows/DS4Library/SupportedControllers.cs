@@ -34,11 +34,14 @@ namespace DS4Windows {
         private string _pid { get { return (string) this["pid"]; } }
 
         // Explictly convert the string values to a consistent value for hashing
-        public string ID { get { return VID.ToString("X") + "_" + PID.ToString("X");  } }
+        private string _ID = null;
+        public string ID { get { return (null == _ID ? _ID = VID.ToString("X") + "_" + PID.ToString("X") : _ID); } }
 
-        public int VID { get { return int.Parse(_vid, NumberStyles.AllowHexSpecifier); } }
+        private int _VID = -1;
+        public int VID { get { return (-1 == _VID ? _VID = int.Parse(_vid, NumberStyles.AllowHexSpecifier) : _VID); } }
 
-        public int PID { get { return int.Parse(_pid, NumberStyles.AllowHexSpecifier); } }
+        private int _PID = -1;
+        public int PID { get { return (-1 == _PID ? _PID = int.Parse(_pid, NumberStyles.AllowHexSpecifier) : _PID);  } }
 
         /** Returns true if the vidpid details match those of the specified HidDevice **/
         public bool matchesHid(HidDevice hidDevice) {
