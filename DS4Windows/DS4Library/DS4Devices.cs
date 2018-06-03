@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,17 +8,6 @@ using System.Security.Principal;
 
 namespace DS4Windows
 {
-    public class VidPidInfo
-    {
-        public readonly int vid;
-        public readonly int pid;
-        internal VidPidInfo(int vid, int pid)
-        {
-            this.vid = vid;
-            this.pid = pid;
-        }
-    }
-
     public class DS4Devices
     {
         // (HID device path, DS4Device)
@@ -28,20 +18,8 @@ namespace DS4Windows
         private static List<HidDevice> DisabledDevices = new List<HidDevice>();
         private static Stopwatch sw = new Stopwatch();
         public static bool isExclusiveMode = false;
-        internal const int SONY_VID = 0x054C;
-        internal const int RAZER_VID = 0x1532;
-        internal const int NACON_VID = 0x146B;
-        internal const int HORI_VID = 0x0F0D;
 
-        private static VidPidInfo[] knownDevices =
-        {
-            new VidPidInfo(SONY_VID, 0xBA0),
-            new VidPidInfo(SONY_VID, 0x5C4),
-            new VidPidInfo(SONY_VID, 0x09CC),
-            new VidPidInfo(RAZER_VID, 0x1000),
-            new VidPidInfo(NACON_VID, 0x0D01),
-            new VidPidInfo(HORI_VID, 0x00EE)    // Hori PS4 Mini Wired Gamepad
-        };
+        private static readonly VidPidInfo[] knownDevices = ((ConfigurationManager.GetSection("SupportedControllers") as SupportedControllers).Controllers).Cast<VidPidInfo>().Distinct().ToArray();
 
         private static string devicePathToInstanceId(string devicePath)
         {
