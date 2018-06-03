@@ -19,17 +19,7 @@ namespace DS4Windows
         private static Stopwatch sw = new Stopwatch();
         public static bool isExclusiveMode = false;
 
-        private static readonly VidPidInfo[] knownDevices;
-
-        static DS4Devices() {
-            // HashSet to ensure uniqueness
-            HashSet<VidPidInfo> devices = new HashSet<VidPidInfo>();
-            SupportedControllers controllers = ConfigurationManager.GetSection("SupportedControllers") as SupportedControllers;
-            foreach (VidPidInfo c in controllers.Controllers) {
-                devices.Add(c);
-            }
-            knownDevices = devices.ToArray();
-        }
+        private static readonly VidPidInfo[] knownDevices = ((ConfigurationManager.GetSection("SupportedControllers") as SupportedControllers).Controllers).Cast<VidPidInfo>().Distinct().ToArray();
 
         private static string devicePathToInstanceId(string devicePath)
         {
