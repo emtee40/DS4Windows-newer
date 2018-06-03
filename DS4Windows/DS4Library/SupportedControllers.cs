@@ -24,9 +24,6 @@ namespace DS4Windows {
 
     public class VidPidInfo : ConfigurationElement {
 
-        [ConfigurationProperty("name", IsRequired = true)]
-        public string Name { get { return (string) this["name"]; } }
-
         [ConfigurationProperty("vid", IsRequired = true)]
         private string _vid { get { return (string) this["vid"]; } }
 
