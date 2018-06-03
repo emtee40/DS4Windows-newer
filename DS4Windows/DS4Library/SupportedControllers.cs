@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using System;
+using System.ComponentModel;
+using System.Configuration;
 using System.Globalization;
 
 namespace DS4Windows {
@@ -22,24 +24,43 @@ namespace DS4Windows {
         }
     }
 
+    public class HexConverter : TypeConverter {
+        public override bool CanConvertFrom(ITypeDescriptorContext context,
+           Type sourceType) {
+
+            return (sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context,
+           CultureInfo culture, object value) {
+            if (value is string) {
+                return int.Parse((string) value, NumberStyles.AllowHexSpecifier);
+            }
+            return base.ConvertFrom(context, culture, value);
+        }
+        // Overrides the ConvertTo method of TypeConverter.
+        public override object ConvertTo(ITypeDescriptorContext context,
+           CultureInfo culture, object value, Type destinationType) {
+            if (destinationType == typeof(string)) {
+                return ((int) value).ToString("X");
+            }
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
     public class VidPidInfo : ConfigurationElement {
 
         [ConfigurationProperty("vid", IsRequired = true)]
-        private string _vid { get { return (string) this["vid"]; } }
+        [TypeConverter(typeof(HexConverter))]
+        public int VID { get { return (int) this["vid"]; } }
 
         [ConfigurationProperty("pid", IsRequired = true)]
-        private string _pid { get { return (string) this["pid"]; } }
+        [TypeConverter(typeof(HexConverter))]
+        public int PID { get { return (int) this["pid"]; } }
 
         // Explictly convert the string values to a consistent value for hashing
-        private string _ID = null;
-        public string ID { get { return (null == _ID ? _ID = VID.ToString("X") + "_" + PID.ToString("X") : _ID); } }
-
-        private int _VID = -1;
-        public int VID { get { return (-1 == _VID ? _VID = int.Parse(_vid, NumberStyles.AllowHexSpecifier) : _VID); } }
-
-        private int _PID = -1;
-        public int PID { get { return (-1 == _PID ? _PID = int.Parse(_pid, NumberStyles.AllowHexSpecifier) : _PID);  } }
-
+        public string ID { get { return (VID.ToString("X") + "_" + PID.ToString("X")); } }
+        
         /** Returns true if the vidpid details match those of the specified HidDevice **/
         public bool matchesHid(HidDevice hidDevice) {
             return (hidDevice != null && hidDevice.Attributes != null && hidDevice.Attributes.VendorId == VID && hidDevice.Attributes.ProductId == PID);
