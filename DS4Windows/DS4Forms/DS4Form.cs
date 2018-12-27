@@ -353,10 +353,9 @@ namespace DS4Windows
                 nUDUpdateTime.Value = checkwhen;
             }
 
-            Uri url = new Uri("http://23.239.26.40/ds4windows/files/builds/newest.txt"); // Sorry other devs, gonna have to find your own server
-
             if (checkwhen > 0 && DateTime.Now >= LastChecked + TimeSpan.FromHours(checkwhen))
             {
+                Uri url = new Uri("http://23.239.26.40/ds4windows/files/builds/newest.txt"); // Sorry other devs, gonna have to find your own server
                 wc.DownloadFileAsync(url, appdatapath + "\\version.txt");
                 wc.DownloadFileCompleted += Check_Version;
                 LastChecked = DateTime.Now;
