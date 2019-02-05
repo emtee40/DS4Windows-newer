@@ -789,6 +789,7 @@ namespace DS4Windows
 
             if (string.IsNullOrWhiteSpace(newversion))
             {
+                File.Delete(appdatapath + "\\version.txt");
                 return;
             }
 
@@ -2106,6 +2107,7 @@ Properties.Resources.DS4Update, MessageBoxButtons.YesNo, MessageBoxIcon.Question
 
             if (string.IsNullOrWhiteSpace(newversion2))
             {
+                File.Delete(appdatapath + "\\version.txt");
                 this.BeginInvoke((System.Action)(() => MessageBox.Show(Properties.Resources.CouldNotContactUpdateServer, "DS4Windows Updater")));
                 return;
             }
