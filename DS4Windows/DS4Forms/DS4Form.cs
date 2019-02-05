@@ -786,6 +786,12 @@ namespace DS4Windows
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             string version = fvi.FileVersion;
             string newversion = File.ReadAllText(appdatapath + "\\version.txt").Trim();
+
+            if (string.IsNullOrWhiteSpace(newversion))
+            {
+                return;
+            }
+
             if (version.Replace(',', '.').CompareTo(newversion) != 0)
             {
                 if ((DialogResult)this.Invoke(new Func<DialogResult>(() => {
@@ -2097,6 +2103,13 @@ Properties.Resources.DS4Update, MessageBoxButtons.YesNo, MessageBoxIcon.Question
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             string version2 = fvi.FileVersion;
             string newversion2 = File.ReadAllText(appdatapath + "\\version.txt").Trim();
+
+            if (string.IsNullOrWhiteSpace(newversion2))
+            {
+                this.BeginInvoke((System.Action)(() => MessageBox.Show(Properties.Resources.CouldNotContactUpdateServer, "DS4Windows Updater")));
+                return;
+            }
+
             if (version2.Replace(',', '.').CompareTo(newversion2) != 0)
             {
                 if ((DialogResult)this.Invoke(new Func<DialogResult>(() =>

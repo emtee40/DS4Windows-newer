@@ -393,6 +393,15 @@ namespace DS4Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not contact the update server. Please check your internet connection and try again..
+        /// </summary>
+        public static string CouldNotContactUpdateServer {
+            get {
+                return ResourceManager.GetString("CouldNotContactUpdateServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning: Could not open DS4 *Mac address* exclusively..
         /// </summary>
         public static string CouldNotOpenDS4 {
