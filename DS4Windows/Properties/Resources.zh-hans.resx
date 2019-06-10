@@ -139,13 +139,22 @@
     <value>电量：*number*%</value>
   </data>
   <data name="BestUsedRightSide" xml:space="preserve">
-    <value>作为鼠标右键最好用的方法</value>
+    <value>与右侧一起用作鼠标功能最合适</value>
   </data>
   <data name="Browse" xml:space="preserve">
-    <value>Søg…</value>
+    <value>浏览…</value>
+  </data>
+  <data name="BTPollRate" xml:space="preserve">
+    <value>通过蓝牙连接时确定DS4硬件所使用的回报率。（适用于配置文件保存）</value>
+  </data>
+  <data name="CannotMoveFiles" xml:space="preserve">
+    <value>无法将文件移动到新位置，请将DS4Tool文件夹重命名为“DS4Windows”</value>
   </data>
   <data name="CannotWriteHere" xml:space="preserve">
-    <value>Kan ikke skrives til nuværende placering. Kopier instillinger til appdata?</value>
+    <value>无法在当前位置写入。是否将设置复制到appdata？</value>
+  </data>
+  <data name="ChargeController" xml:space="preserve">
+    <value>给电池充电</value>
   </data>
   <data name="Charged" xml:space="preserve">
     <value>充电完毕</value>
@@ -156,29 +165,35 @@
   <data name="CheckBattery" xml:space="preserve">
     <value>检查电池</value>
   </data>
+  <data name="CloseConfirm" xml:space="preserve">
+    <value>这将断开所有连接的控制器。继续？</value>
+  </data>
   <data name="CloseDS4W" xml:space="preserve">
-    <value>关闭 DS4Windows 吗？</value>
+    <value>关闭DS4Windows吗？</value>
   </data>
   <data name="CloseMinimize" xml:space="preserve">
-    <value>通过消息栏图标关闭DS4Windows</value>
+    <value>关闭DS4Windows到通知图标</value>
   </data>
   <data name="Color" xml:space="preserve">
     <value>颜色</value>
   </data>
   <data name="ColorByBattery" xml:space="preserve">
-    <value>依电量颜色为</value>
+    <value>根据电量百分比上颜色</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确认…</value>
   </data>
   <data name="Connecting" xml:space="preserve">
-    <value>正在连接...</value>
+    <value>正在连接…</value>
   </data>
   <data name="ContextEdit" xml:space="preserve">
-    <value>编辑手柄*number*配置文件</value>
+    <value>编辑控制器*number*配置文件</value>
   </data>
   <data name="ContextNew" xml:space="preserve">
-    <value>新建手柄*number*配置文件</value>
+    <value>新建控制器*number*配置文件</value>
   </data>
   <data name="ControllerWasRemoved" xml:space="preserve">
-    <value>手柄*Mac address*已删除或失去连接</value>
+    <value>控制器*Mac address*已删除或失去连接</value>
   </data>
   <data name="CopyComplete" xml:space="preserve">
     <value>复制完成，请重新启动DS4Windows并从程序目录中删除设置文件</value>
@@ -187,7 +202,7 @@
     <value>单击以复制完整颜色</value>
   </data>
   <data name="CouldNotOpenDS4" xml:space="preserve">
-    <value>警告: 无法单独打开DS4*Mac address*</value>
+    <value>警告：无法以独占模式打开DS4*Mac address*</value>
   </data>
   <data name="Day" xml:space="preserve">
     <value>天</value>
@@ -196,13 +211,13 @@
     <value>天</value>
   </data>
   <data name="DeleteProfile" xml:space="preserve">
-    <value>是否删除档案？</value>
+    <value>是否删除配置文件？</value>
   </data>
   <data name="DimByBattery" xml:space="preserve">
-    <value>依电量调暗</value>
+    <value>根据电量百分比调暗</value>
   </data>
   <data name="DinputOnly" xml:space="preserve">
-    <value>关闭x360输入只使用DS4原生输入，必须关闭隐藏DS4选项(有线情况下)</value>
+    <value>关闭X360输入只使用DS4原生输入，必须关闭隐藏ds4选项(仅有线情况下)</value>
   </data>
   <data name="DisconnectBT" xml:space="preserve">
     <value>断开蓝牙</value>
@@ -220,16 +235,19 @@
     <value>下</value>
   </data>
   <data name="DS4Update" xml:space="preserve">
-    <value>DS4Windows 有可用更新！</value>
+    <value>DS4Windows有可用更新！</value>
   </data>
   <data name="DS4WindowsCannotEditHere" xml:space="preserve">
-    <value>DS4Windows 不能修改此处设定，即将关闭</value>
+    <value>DS4Windows不能修改此处设定，即将关闭</value>
   </data>
   <data name="EditProfile" xml:space="preserve">
     <value>编辑</value>
   </data>
   <data name="FallBack" xml:space="preserve">
     <value>恢复</value>
+  </data>
+  <data name="FallBackTo" xml:space="preserve">
+    <value>恢复到*button*</value>
   </data>
   <data name="FifthMouseDown" xml:space="preserve">
     <value>鼠标第5按键按下</value>
@@ -238,16 +256,16 @@
     <value>鼠标第5按键弹起</value>
   </data>
   <data name="FlashAtTip" xml:space="preserve">
-    <value>点击设置闪烁颜色。默认：黑</value>
+    <value>点击设置闪烁颜色。黑色=默认颜色</value>
   </data>
   <data name="FlushHID" xml:space="preserve">
-    <value>清空HID</value>
+    <value>刷新HID</value>
   </data>
   <data name="FlushHIDTip" xml:space="preserve">
     <value>每次读取后刷新HID队列</value>
   </data>
   <data name="FoundController" xml:space="preserve">
-    <value>找到控制器</value>
+    <value>找到控制器：</value>
   </data>
   <data name="FourthMouseDown" xml:space="preserve">
     <value>鼠标第4按键按下</value>
@@ -259,16 +277,19 @@
     <value>充满</value>
   </data>
   <data name="GyroReadout" xml:space="preserve">
-    <value>点击查看六轴传感器的读数</value>
+    <value>点击查看六轴陀螺仪的读数</value>
+  </data>
+  <data name="GyroTriggerBehavior" xml:space="preserve">
+    <value>当扳机激活时检查陀螺仪是否激活。取消选中可在扳机激活时禁用陀螺仪。</value>
   </data>
   <data name="GyroX" xml:space="preserve">
-    <value>X轴，左右倾斜</value>
+    <value>陀螺仪X轴，左右倾斜</value>
   </data>
   <data name="GyroY" xml:space="preserve">
-    <value>Y轴，前后倾斜</value>
+    <value>陀螺仪Y轴，前后倾斜</value>
   </data>
   <data name="GyroZ" xml:space="preserve">
-    <value>Z轴，上下倾斜</value>
+    <value>陀螺仪Z轴，上下倾斜</value>
   </data>
   <data name="Hour" xml:space="preserve">
     <value>小时</value>
@@ -277,10 +298,10 @@
     <value>小时</value>
   </data>
   <data name="HoverOverItems" xml:space="preserve">
-    <value>鼠标指针悬停查看说明</value>
+    <value>将鼠标悬停在项目上以查看说明或有关的详细信息</value>
   </data>
   <data name="IfRemovingDS4Windows" xml:space="preserve">
-    <value>如果删除DS4windows,你可以点配置文件夹链接删除设置文件</value>
+    <value>如果删除DS4Windows，则可以删除配置文件文件夹链接之后的设置。</value>
   </data>
   <data name="InputDelay" xml:space="preserve">
     <value>输入延迟：*number*毫秒</value>
@@ -291,29 +312,35 @@
   <data name="InstallDriver" xml:space="preserve">
     <value>此处安装驱动</value>
   </data>
+  <data name="InstallFailed" xml:space="preserve">
+    <value>安装失败，请重试</value>
+  </data>
   <data name="Installing" xml:space="preserve">
-    <value>安装中...</value>
+    <value>安装中…</value>
   </data>
   <data name="Jitter" xml:space="preserve">
-    <value>使用六轴传感器帮助计算触摸板运动</value>
+    <value>使用六轴传感器辅助计算触摸板运动</value>
   </data>
   <data name="KeepThisSize" xml:space="preserve">
-    <value>退出后保持窗口尺寸</value>
+    <value>退出后保持窗口大小</value>
+  </data>
+  <data name="LanguagePackApplyRestartRequired" xml:space="preserve">
+    <value>语言包更改将在重新启动DS4Windows应用程序后生效。</value>
   </data>
   <data name="LatencyNotOverTen" xml:space="preserve">
-    <value>手柄*number*的延迟在 10ms（毫秒）以内</value>
+    <value>控制器*number*的延迟在 10ms（毫秒）以内</value>
   </data>
   <data name="LatencyOverTen" xml:space="preserve">
-    <value>手柄*number*的延迟超过 10ms（毫秒）</value>
+    <value>控制器*number*的延迟超过 10ms（毫秒）</value>
   </data>
   <data name="LaunchProgram" xml:space="preserve">
     <value>运行*program*</value>
   </data>
   <data name="LightByBatteryTip" xml:space="preserve">
-    <value>空闲时灯条变暗</value>
+    <value>如果在DS4充满电时启用，则在空闲时灯条变暗。</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>加载中...</value>
+    <value>加载中…</value>
   </data>
   <data name="LoadProfile" xml:space="preserve">
     <value>载入*profile*</value>
@@ -321,8 +348,14 @@
   <data name="Macro" xml:space="preserve">
     <value>宏指令</value>
   </data>
+  <data name="MacroRecorded" xml:space="preserve">
+    <value>宏指令已录制</value>
+  </data>
   <data name="MakeNewProfile" xml:space="preserve">
     <value>新建配置文件</value>
+  </data>
+  <data name="MultiAction" xml:space="preserve">
+    <value>多功能操作按钮</value>
   </data>
   <data name="NA" xml:space="preserve">
     <value>不可用</value>
@@ -331,7 +364,7 @@
     <value>新建</value>
   </data>
   <data name="NoMacroRecorded" xml:space="preserve">
-    <value>没有宏文件被录制</value>
+    <value>没有已录制的宏指令</value>
   </data>
   <data name="noneProfile" xml:space="preserve">
     <value>(无)</value>
@@ -343,7 +376,7 @@
     <value>未加载配置文件</value>
   </data>
   <data name="NotUsingProfile" xml:space="preserve">
-    <value>手柄*number*尚未配置</value>
+    <value>控制器*number*尚未配置</value>
   </data>
   <data name="NotValid" xml:space="preserve">
     <value>无效</value>
@@ -358,7 +391,7 @@
     <value>，其他路径文件将被删除</value>
   </data>
   <data name="PleaseDownloadUpdater" xml:space="preserve">
-    <value>请立即下载更新程序，放在程序所在文件夹，然后检查更新</value>
+    <value>请立即下载更新程序，如果在x86电脑上，请将其放入程序文件夹中，并重命名为DS4Updater.exe，然后再次检查更新。</value>
   </data>
   <data name="PleaseImport" xml:space="preserve">
     <value>请导入或新建配置文件</value>
@@ -370,55 +403,82 @@
     <value>*Profile name*无法恢复</value>
   </data>
   <data name="ProfileFolderMoved" xml:space="preserve">
-    <value>配置文件夹移动到程序文件夹</value>
+    <value>配置文件夹已移动到程序文件夹</value>
   </data>
   <data name="Programs" xml:space="preserve">
     <value>程序</value>
   </data>
   <data name="QuickCharge" xml:space="preserve">
-    <value>【实验功能】接入USB时自动断开蓝牙</value>
+    <value>【实验功能】：接入USB时自动断开蓝牙</value>
   </data>
   <data name="QuitOtherPrograms" xml:space="preserve">
-    <value>在激活“隐藏DS4”选项前，你必须退出其他程序例如Steam,Uplay</value>
+    <value>在激活“隐藏DS4”选项前，你必须退出其他程序例如UWP应用程序（Netflix）、Steam、Uplay、NVIDIA IN-GAME。有关详细信息，请查看https://github.com/Ryochan7/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues</value>
   </data>
   <data name="RecordText" xml:space="preserve">
     <value>录制</value>
   </data>
   <data name="RightClickPresets" xml:space="preserve">
-    <value>右键为一系列操作设定预设</value>
+    <value>右键将一系列操作设定为预设</value>
+  </data>
+  <data name="RunAtStartup" xml:space="preserve">
+    <value>在登录Windows后启动DS4Windows</value>
   </data>
   <data name="SaveRecordedMacro" xml:space="preserve">
-    <value>保存已记录的宏指令吗？</value>
+    <value>保存已录制的宏指令吗？</value>
   </data>
   <data name="ScanCode" xml:space="preserve">
-    <value>扫描</value>
+    <value>扫码</value>
   </data>
   <data name="SearchingController" xml:space="preserve">
-    <value>搜索手柄</value>
+    <value>搜索手柄…</value>
   </data>
   <data name="SelectActionTitle" xml:space="preserve">
     <value>为*action*选择一个操作</value>
   </data>
+  <data name="SelectMacro" xml:space="preserve">
+    <value>选择一个宏指令</value>
+  </data>
   <data name="SetRegularTrigger" xml:space="preserve">
-    <value>设置正常按键</value>
+    <value>设置常规扳机</value>
   </data>
   <data name="SetUnloadTrigger" xml:space="preserve">
-    <value>设置处理按键</value>
+    <value>设置卸载扳机</value>
   </data>
   <data name="Shortcuts" xml:space="preserve">
     <value>快捷键</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrate" xml:space="preserve">
+    <value>校准六轴滚轮模拟</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateInstruction1" xml:space="preserve">
+    <value>（1）将控制器居中，保持稳定，然后按“X”</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateInstruction2" xml:space="preserve">
+    <value>（2）向左（或右）转动到90°的位置并按“X”</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateInstruction3" xml:space="preserve">
+    <value>（3）向右（或左）转动到90°位置并按“X”</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateInstruction" xml:space="preserve">
+    <value>当设置好所有校准点时，光带颜色将变为绿色。当控制器处于校准点时，转动控制器，光条颜色会闪烁。用“确定”按钮接受校准</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateNoControllerError" xml:space="preserve">
+    <value>没有控制器时无法校准陀螺仪（六轴）滚轮的模拟数值。请通过蓝牙或usb连接控制器</value>
+  </data>
+  <data name="SASteeringWheelEmulationCalibrateNoneAxisError" xml:space="preserve">
+    <value>陀螺仪滚轮模拟轴选项被设置为无（不使用模拟）。请在校准六轴陀螺仪滚轮模拟之前选择一个轴选项</value>
   </data>
   <data name="SixAxisReading" xml:space="preserve">
     <value>点击查看高级六轴参数</value>
   </data>
   <data name="Starting" xml:space="preserve">
-    <value>启动中...</value>
+    <value>启动中…</value>
   </data>
   <data name="StartText" xml:space="preserve">
     <value>开始</value>
   </data>
   <data name="Step1" xml:space="preserve">
-    <value>第一步：安装DS4驱动</value>
+    <value>第一步：安装ViGEmBus驱动</value>
   </data>
   <data name="StopHText" xml:space="preserve">
     <value>停止震动</value>
@@ -426,17 +486,14 @@
   <data name="StopLText" xml:space="preserve">
     <value>停止微震</value>
   </data>
-  <data name="StoppedDS4Tool" xml:space="preserve">
-    <value>DS4Windows已停止</value>
-  </data>
   <data name="StoppedDS4Windows" xml:space="preserve">
     <value>DS4Windows已停止</value>
   </data>
   <data name="StoppingDS4" xml:space="preserve">
-    <value>DS4手柄停止中</value>
+    <value>DS4控制器停止中</value>
   </data>
   <data name="StoppingX360" xml:space="preserve">
-    <value>XBOX 360手柄停止中</value>
+    <value>X360控制器停止中</value>
   </data>
   <data name="StopText" xml:space="preserve">
     <value>停止</value>
@@ -457,13 +514,19 @@
     <value>上滑</value>
   </data>
   <data name="TapAndHold" xml:space="preserve">
-    <value>轻触保持以拖动，单次轻触稍微延迟</value>
+    <value>轻触并按住可拖动，每次轻触有稍微延迟</value>
   </data>
   <data name="TestHText" xml:space="preserve">
     <value>测试震动</value>
   </data>
+  <data name="TestLText" xml:space="preserve">
+    <value>测试微震</value>
+  </data>
+  <data name="TestText" xml:space="preserve">
+    <value>测试</value>
+  </data>
   <data name="TextDocs" xml:space="preserve">
-    <value>下斜</value>
+    <value>文本文件（*.txt）</value>
   </data>
   <data name="TiltDown" xml:space="preserve">
     <value>下斜</value>
@@ -484,7 +547,7 @@
     <value>触摸板移动已经打开</value>
   </data>
   <data name="TouchpadOffTip" xml:space="preserve">
-    <value>PS键+触摸板 以重新启用</value>
+    <value>按PS键+触摸板以重新启用</value>
   </data>
   <data name="TwoFingerSwipe" xml:space="preserve">
     <value>触摸板双指左或右滑动</value>
@@ -495,20 +558,26 @@
   <data name="TypeProfileName" xml:space="preserve">
     <value>在此输入配置文件名字</value>
   </data>
+  <data name="UACTask" xml:space="preserve">
+    <value>你需要以管理员身份运行DS4Windows才能激活此模式。</value>
+  </data>
+  <data name="Unassigned" xml:space="preserve">
+    <value>未指定</value>
+  </data>
   <data name="UpText" xml:space="preserve">
-    <value>上斜</value>
+    <value>上</value>
   </data>
   <data name="UpToDate" xml:space="preserve">
     <value>程序已经是最新的</value>
   </data>
   <data name="UseControllerForMapping" xml:space="preserve">
-    <value>你也可以用手柄来改变操作</value>
+    <value>你也可以用控制器来改变操作</value>
   </data>
   <data name="UsingExclusive" xml:space="preserve">
-    <value>使用排它模式</value>
+    <value>使用独占模式</value>
   </data>
   <data name="UsingProfile" xml:space="preserve">
-    <value>手柄*number*正在使用配置文件*profile name*</value>
+    <value>控制器*number*正在使用配置文件*Profile name*</value>
   </data>
   <data name="UsingShared" xml:space="preserve">
     <value>使用共享模式</value>
@@ -525,10 +594,16 @@
   <data name="WillKeep" xml:space="preserve">
     <value>将保持</value>
   </data>
-  <data name="TestLText" xml:space="preserve">
-    <value>测试微震</value>
+  <data name="XMLFiles" xml:space="preserve">
+    <value>XML文件（*.xml）</value>
   </data>
-  <data name="XinputPorts" xml:space="preserve">
-    <value>如果你在其他XBOX 360模拟程序中有冲突，使用更高端口.例如SCP's工具</value>
+  <data name="OutContNotice" xml:space="preserve">
+    <value>选择输出虚拟控制器的类型（适用于配置文件保存）</value>
+  </data>
+  <data name="EnableTouchToggle" xml:space="preserve">
+    <value>通过点击PS键+触摸板开关触摸板控制鼠标的功能。/value>
+  </data>
+  <data name="UdpServer" xml:space="preserve">
+    <value>启用UDP服务器。服务器会侦听地址和端口。地址值选项有：127.0.0.1仅本地主机 | 0.0.0.0所有地址 | 特定主机名或IP地址。</value>
   </data>
 </root>
