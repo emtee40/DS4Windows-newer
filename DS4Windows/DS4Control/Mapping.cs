@@ -2251,16 +2251,13 @@ namespace DS4Windows
                                 actionFound = true;
 
                                 DS4Device d = ctrl.DS4Controllers[device];
-                                bool synced = /*tempBool =*/ d.isSynced();
-                                if (synced && !d.isCharging())
+                                if (d.Synced && !d.Charging)
                                 {
-                                    ConnectionType deviceConn = d.getConnectionType();
-                                    bool exclusive = /*tempBool =*/ d.isExclusive();
-                                    if (deviceConn == ConnectionType.BT)
+                                    if ( d.ConnectionType == ConnectionType.BT)
                                     {
                                         d.DisconnectBT();
                                     }
-                                    else if (deviceConn == ConnectionType.SONYWA && exclusive)
+                                    else if ( d.ConnectionType == ConnectionType.SONYWA)
                                     {
                                         d.DisconnectDongle();
                                     }

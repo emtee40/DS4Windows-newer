@@ -97,16 +97,16 @@ namespace DS4Windows
             }
             else
             {
-                if (d.isSynced() || d.IsAlive())
+                if (d.Synced || d.IsAlive())
                     meta.PadState = DsState.Connected;
                 else
                     meta.PadState = DsState.Reserved;
             }
 
-            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
+            meta.ConnectionType = (d.ConnectionType == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
             meta.IsActive = !d.isDS4Idle();
 
-            if (d.isCharging() && d.getBattery() >= 100)
+            if (d.Charging && d.getBattery() >= 100)
                 meta.BatteryStatus = DsBattery.Charged;
             else
             {
@@ -460,7 +460,7 @@ namespace DS4Windows
                         DS4Device device = devEnum.Current;
                         //DS4Device device = devices.ElementAt(i);
                         if (showlog)
-                            LogDebug(DS4WinWPF.Properties.Resources.FoundController + " " + device.getMacAddress() + " (" + device.getConnectionType() + ") (" +
+                            LogDebug(DS4WinWPF.Properties.Resources.FoundController + " " + device.getMacAddress() + " (" + device.ConnectionType + ") (" +
                                 device.DisplayName + ")");
 
                         Task task = new Task(() => { Thread.Sleep(5); WarnExclusiveModeFailure(device); });
@@ -495,7 +495,7 @@ namespace DS4Windows
 
                         device.LightBarColor = getMainColor(i);
 
-                        if (!getDInputOnly(i) && device.isSynced())
+                        if (!getDInputOnly(i) && device.Synced)
                         {
                             //useDInputOnly[i] = false;
                             PluginOutDev(i, device);
@@ -629,14 +629,14 @@ namespace DS4Windows
                     DS4Device tempDevice = DS4Controllers[i];
                     if (tempDevice != null)
                     {
-                        if ((DCBTatStop && !tempDevice.isCharging()) || suspending)
+                        if ((DCBTatStop && !tempDevice.Charging) || suspending)
                         {
-                            if (tempDevice.getConnectionType() == ConnectionType.BT)
+                            if (tempDevice.ConnectionType == ConnectionType.BT)
                             {
                                 tempDevice.StopUpdate();
                                 tempDevice.DisconnectBT(true);
                             }
-                            else if (tempDevice.getConnectionType() == ConnectionType.SONYWA)
+                            else if (tempDevice.ConnectionType == ConnectionType.SONYWA)
                             {
                                 tempDevice.StopUpdate();
                                 tempDevice.DisconnectDongle(true);
@@ -738,7 +738,7 @@ namespace DS4Windows
                         if (DS4Controllers[Index] == null)
                         {
                             //LogDebug(DS4WinWPF.Properties.Resources.FoundController + device.getMacAddress() + " (" + device.getConnectionType() + ")");
-                            LogDebug(DS4WinWPF.Properties.Resources.FoundController + " " + device.getMacAddress() + " (" + device.getConnectionType() + ") (" +
+                            LogDebug(DS4WinWPF.Properties.Resources.FoundController + " " + device.getMacAddress() + " (" + device.ConnectionType + ") (" +
                                 device.DisplayName + ")");
                             Task task = new Task(() => { Thread.Sleep(5); WarnExclusiveModeFailure(device); });
                             task.Start();
@@ -790,7 +790,7 @@ namespace DS4Windows
                                 device.Report += tempEvnt;
                             }
                             
-                            if (!getDInputOnly(Index) && device.isSynced())
+                            if (!getDInputOnly(Index) && device.Synced)
                             {
                                 //useDInputOnly[Index] = false;
                                 PluginOutDev(Index, device);
@@ -910,7 +910,7 @@ namespace DS4Windows
                 }
 
                 string battery;
-                if (d.isCharging())
+                if (d.Charging)
                 {
                     if (d.getBattery() >= 100)
                         battery = DS4WinWPF.Properties.Resources.Charged;
@@ -922,7 +922,7 @@ namespace DS4Windows
                     battery = DS4WinWPF.Properties.Resources.Battery.Replace("*number*", d.getBattery().ToString());
                 }
 
-                return d.getMacAddress() + " (" + d.getConnectionType() + "), " + battery;
+                return d.getMacAddress() + " (" + d.ConnectionType + "), " + battery;
                 //return d.MacAddress + " (" + d.ConnectionType + "), Battery is " + battery + ", Touchpad in " + modeSwitcher[index].ToString();
             }
             else
@@ -954,7 +954,7 @@ namespace DS4Windows
                 if (!d.IsAlive())
                     battery = "...";
 
-                if (d.isCharging())
+                if (d.Charging)
                 {
                     if (d.getBattery() >= 100)
                         battery = DS4WinWPF.Properties.Resources.Full;
@@ -966,7 +966,7 @@ namespace DS4Windows
                     battery = d.getBattery() + "%";
                 }
 
-                return (d.getConnectionType() + " " + battery);
+                return (d.ConnectionType + " " + battery);
             }
             else
                 return DS4WinWPF.Properties.Resources.NoneText;
@@ -981,7 +981,7 @@ namespace DS4Windows
                 if (!d.IsAlive())
                     battery = "...";
 
-                if (d.isCharging())
+                if (d.Charging)
                 {
                     if (d.getBattery() >= 100)
                         battery = DS4WinWPF.Properties.Resources.Full;
@@ -1004,7 +1004,7 @@ namespace DS4Windows
             DS4Device d = DS4Controllers[index];
             if (d != null)
             {
-                return d.getConnectionType() + "";
+                return d.ConnectionType + "";
             }
             else
                 return DS4WinWPF.Properties.Resources.NoneText;
@@ -1040,7 +1040,7 @@ namespace DS4Windows
 
             if (ind >= 0)
             {
-                bool synced = device.isSynced();
+                bool synced = device.Synced;
 
                 if (!synced)
                 {
@@ -1099,7 +1099,7 @@ namespace DS4Windows
 
                     string removed = DS4WinWPF.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
                     if (device.getBattery() <= 20 &&
-                        device.getConnectionType() == ConnectionType.BT && !device.isCharging())
+                        device.ConnectionType == ConnectionType.BT && !device.Charging)
                     {
                         removed += ". " + DS4WinWPF.Properties.Resources.ChargeController;
                     }

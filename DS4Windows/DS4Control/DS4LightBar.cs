@@ -65,7 +65,7 @@ namespace DS4Windows
                         if (now >= oldnow[deviceNum] + TimeSpan.FromMilliseconds(10)) //update by the millisecond that way it's a smooth transtion
                         {
                             oldnow[deviceNum] = now;
-                            if (device.isCharging())
+                            if (device.Charging )
                                 counters[deviceNum] -= 1.5 * 3 / rainbow;
                             else
                                 counters[deviceNum] += 1.5 * 3 / rainbow;
@@ -101,7 +101,7 @@ namespace DS4Windows
                     }
                 }
 
-                if (device.getBattery() <= getFlashAt(deviceNum) && !defaultLight && !device.isCharging())
+                if (device.getBattery() <= getFlashAt(deviceNum) && !defaultLight && !device.Charging )
                 {
                     ref DS4Color flashColor = ref getFlashColor(deviceNum);
                     if (!(flashColor.red == 0 &&
@@ -159,7 +159,7 @@ namespace DS4Windows
 
                 int idleDisconnectTimeout = getIdleDisconnectTimeout(deviceNum);
                 if (idleDisconnectTimeout > 0 && getLedAsBatteryIndicator(deviceNum) &&
-                    (!device.isCharging() || device.getBattery() >= 100))
+                    (!device.Charging || device.getBattery() >= 100))
                 {
                     //Fade lightbar by idle time
                     TimeSpan timeratio = new TimeSpan(DateTime.UtcNow.Ticks - device.lastActive.Ticks);
@@ -180,7 +180,7 @@ namespace DS4Windows
                         
                 }
 
-                if (device.isCharging() && device.getBattery() < 100)
+                if (device.Charging && device.getBattery() < 100)
                 {
                     switch (getChargingType(deviceNum))
                     {
@@ -258,7 +258,7 @@ namespace DS4Windows
                 color = new DS4Color(0, 0, 0);
             else
             {
-                if (device.getConnectionType() == ConnectionType.BT)
+                if (device.ConnectionType == ConnectionType.BT)
                     color = new DS4Color(32, 64, 64);
                 else
                     color = new DS4Color(0, 0, 0);
@@ -302,7 +302,7 @@ namespace DS4Windows
                     haptics.LightBarFlashDurationOff = haptics.LightBarFlashDurationOn = (byte)(25 - forcedFlash[deviceNum]);
                     haptics.LightBarExplicitlyOff = true;
                 }
-                else if (device.getBattery() <= getFlashAt(deviceNum) && getFlashType(deviceNum) == 0 && !defaultLight && !device.isCharging())
+                else if (device.getBattery() <= getFlashAt(deviceNum) && getFlashType(deviceNum) == 0 && !defaultLight && !device.Charging)
                 {
                     int level = device.getBattery() / 10;
                     if (level >= 10)

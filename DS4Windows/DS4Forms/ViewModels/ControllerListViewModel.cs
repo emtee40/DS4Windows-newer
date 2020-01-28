@@ -395,7 +395,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void SaveLinked(bool status)
         {
-            if (device != null && device.isSynced())
+            if (device != null && device.Synced)
             {
                 if (status)
                 {

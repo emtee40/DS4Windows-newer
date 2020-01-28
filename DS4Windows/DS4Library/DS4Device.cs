@@ -247,11 +247,7 @@ namespace DS4Windows
             return this.Mac;
         }
 
-        public ConnectionType ConnectionType => conType;
-        public ConnectionType getConnectionType()
-        {
-            return this.conType;
-        }
+        public ConnectionType ConnectionType => this.conType;
 
         // behavior only active when > 0
         private int idleTimeout = 0;
@@ -287,10 +283,6 @@ namespace DS4Windows
 
         public bool Charging => charging;
         public event EventHandler ChargingChanged;
-        public bool isCharging()
-        {
-            return charging;
-        }
 
         private long lastTimeElapsed = 0;
         public long getLastTimeElapsed()
@@ -733,11 +725,6 @@ namespace DS4Windows
                     synced = value;
                 }
             }
-        }
-
-        public bool isSynced()
-        {
-            return synced;
         }
 
         public double Latency = 0.0;

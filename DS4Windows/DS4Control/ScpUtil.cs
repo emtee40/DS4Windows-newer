@@ -986,7 +986,7 @@ namespace DS4Windows
             m_Config.rumbleAutostopTime[index] = value;
             
             DS4Device tempDev = Program.rootHub.DS4Controllers[index];
-            if (tempDev != null && tempDev.isSynced())
+            if (tempDev != null && tempDev.Synced)
                 tempDev.RumbleAutostopTime = value;
         }
 
@@ -4921,7 +4921,7 @@ namespace DS4Windows
                 bool oldUseDInputOnly = Global.useDInputOnly[device];
                 DS4Device tempDevice = control.DS4Controllers[device];
                 bool exists = tempBool = (tempDevice != null);
-                bool synced = tempBool = exists ? tempDevice.isSynced() : false;
+                bool synced = tempBool = exists ? tempDevice.Synced : false;
                 bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
                 if (dinputOnly[device] != oldUseDInputOnly)
                 {
@@ -4947,7 +4947,7 @@ namespace DS4Windows
         private void PostLoadSnippet(int device, ControlService control, bool xinputStatus, bool xinputPlug)
         {
             DS4Device tempDev = control.DS4Controllers[device];
-            if (tempDev != null && tempDev.isSynced())
+            if (tempDev != null && tempDev.Synced)
             {
                 tempDev.queueEvent(() =>
                 {
