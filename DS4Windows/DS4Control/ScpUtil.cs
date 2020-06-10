@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Diagnostics;
 
+
 namespace DS4Windows
 {
     [Flags]
@@ -21,7 +22,7 @@ namespace DS4Windows
     public enum DS4Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, L1, L2, L3, R1, R2, R3, Square, Triangle, Circle, Cross, DpadUp, DpadRight, DpadDown, DpadLeft, PS, TouchLeft, TouchUpper, TouchMulti, TouchRight, Share, Options, GyroXPos, GyroXNeg, GyroZPos, GyroZNeg, SwipeLeft, SwipeRight, SwipeUp, SwipeDown };
     public enum X360Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, LB, LT, LS, RB, RT, RS, X, Y, B, A, DpadUp, DpadRight, DpadDown, DpadLeft, Guide, Back, Start, LeftMouse, RightMouse, MiddleMouse, FourthMouse, FifthMouse, WUP, WDOWN, MouseUp, MouseDown, MouseLeft, MouseRight, Unbound };
 
-    public enum SASteeringWheelEmulationAxisType: byte { None = 0, LX, LY, RX, RY, L2R2, VJoy1X, VJoy1Y, VJoy1Z, VJoy2X, VJoy2Y, VJoy2Z };
+    public enum SASteeringWheelEmulationAxisType : byte { None = 0, LX, LY, RX, RY, L2R2, VJoy1X, VJoy1Y, VJoy1Z, VJoy2X, VJoy2Y, VJoy2Z };
     public enum OutContType : uint { None = 0, X360, DS4 }
 
     public enum GyroOutMode : uint
@@ -237,6 +238,8 @@ namespace DS4Windows
 
     public class Global
     {
+        public const int DS4_CONTROLLER_COUNT = 8;
+
         protected static BackingStore m_Config = new BackingStore();
         protected static Int32 m_IdleTimeout = 600000;
         public static string exelocation = Assembly.GetExecutingAssembly().Location;
@@ -251,19 +254,21 @@ namespace DS4Windows
         public static bool multisavespots = false;
         public static string appDataPpath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows";
         public static bool runHotPlug = false;
-        public static string[] tempprofilename = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public static bool[] useTempProfile = new bool[5] { false, false, false, false, false };
-        public static bool[] tempprofileDistance = new bool[5] { false, false, false, false, false };
-        public static bool[] useDInputOnly = new bool[5] { true, true, true, true, true };
-        public static bool[] linkedProfileCheck = new bool[4] { false, false, false, false };
-        public static bool[] touchpadActive = new bool[5] { true, true, true, true, true };
+        public static string[] tempprofilename = new string[DS4_CONTROLLER_COUNT + 1] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public static bool[] useTempProfile = new bool[DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public static bool[] tempprofileDistance = new bool[DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public static bool[] useDInputOnly = new bool[DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public static bool[] linkedProfileCheck = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
+        public static bool[] touchpadActive = new bool[DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
         // Used to hold device type desired from Profile Editor
-        public static OutContType[] outDevTypeTemp = new OutContType[5] { DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
-            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
+        public static OutContType[] outDevTypeTemp = new OutContType[DS4_CONTROLLER_COUNT + 1] { 
+            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360, DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
+            DS4Windows.OutContType.X360, DS4Windows.OutContType.X360, DS4Windows.OutContType.X360, DS4Windows.OutContType.X360,
             DS4Windows.OutContType.X360 };
         // Used to hold the currently active controller output type in use for a slot
-        public static OutContType[] activeOutDevType = new OutContType[5] { DS4Windows.OutContType.None, DS4Windows.OutContType.None,
-            DS4Windows.OutContType.None, DS4Windows.OutContType.None,
+        public static OutContType[] activeOutDevType = new OutContType[DS4_CONTROLLER_COUNT + 1] { 
+            DS4Windows.OutContType.None, DS4Windows.OutContType.None, DS4Windows.OutContType.None, DS4Windows.OutContType.None,
+            DS4Windows.OutContType.None, DS4Windows.OutContType.None, DS4Windows.OutContType.None, DS4Windows.OutContType.None,
             DS4Windows.OutContType.None };
         public static bool vigemInstalled = IsViGEmBusInstalled();
         public static bool hidguardInstalled = IsHidGuardianInstalled();
@@ -434,18 +439,30 @@ namespace DS4Windows
 
         public static Dictionary<DS4Controls, int> macroDS4Values = new Dictionary<DS4Controls, int>()
         {
-            [DS4Controls.Cross] = 261, [DS4Controls.Circle] = 262,
-            [DS4Controls.Square] = 263, [DS4Controls.Triangle] = 264,
-            [DS4Controls.Options] = 265, [DS4Controls.Share] = 266,
-            [DS4Controls.DpadUp] = 267, [DS4Controls.DpadDown] = 268,
-            [DS4Controls.DpadLeft] = 269, [DS4Controls.DpadRight] = 270,
-            [DS4Controls.PS] = 271, [DS4Controls.L1] = 272,
-            [DS4Controls.R1] = 273, [DS4Controls.L2] = 274,
-            [DS4Controls.R2] = 275, [DS4Controls.L3] = 276,
-            [DS4Controls.R3] = 277, [DS4Controls.LXPos] = 278,
-            [DS4Controls.LXNeg] = 279, [DS4Controls.LYPos] = 280,
-            [DS4Controls.LYNeg] = 281, [DS4Controls.RXPos] = 282,
-            [DS4Controls.RXNeg] = 283, [DS4Controls.RYPos] = 284,
+            [DS4Controls.Cross] = 261,
+            [DS4Controls.Circle] = 262,
+            [DS4Controls.Square] = 263,
+            [DS4Controls.Triangle] = 264,
+            [DS4Controls.Options] = 265,
+            [DS4Controls.Share] = 266,
+            [DS4Controls.DpadUp] = 267,
+            [DS4Controls.DpadDown] = 268,
+            [DS4Controls.DpadLeft] = 269,
+            [DS4Controls.DpadRight] = 270,
+            [DS4Controls.PS] = 271,
+            [DS4Controls.L1] = 272,
+            [DS4Controls.R1] = 273,
+            [DS4Controls.L2] = 274,
+            [DS4Controls.R2] = 275,
+            [DS4Controls.L3] = 276,
+            [DS4Controls.R3] = 277,
+            [DS4Controls.LXPos] = 278,
+            [DS4Controls.LXNeg] = 279,
+            [DS4Controls.LYPos] = 280,
+            [DS4Controls.LYNeg] = 281,
+            [DS4Controls.RXPos] = 282,
+            [DS4Controls.RXNeg] = 283,
+            [DS4Controls.RYPos] = 284,
             [DS4Controls.RYNeg] = 285,
         };
 
@@ -987,7 +1004,7 @@ namespace DS4Windows
         public static void setRumbleAutostopTime(int index, int value)
         {
             m_Config.rumbleAutostopTime[index] = value;
-            
+
             DS4Device tempDev = Program.rootHub.DS4Controllers[index];
             if (tempDev != null && tempDev.isSynced())
                 tempDev.RumbleAutostopTime = value;
@@ -1199,7 +1216,7 @@ namespace DS4Windows
         }
 
         public static bool[] GyroMouseToggle => m_Config.gyroMouseToggle;
-        public static void SetGyroMouseToggle(int index, bool value, ControlService control) 
+        public static void SetGyroMouseToggle(int index, bool value, ControlService control)
             => m_Config.SetGyroMouseToggle(index, value, control);
 
         //public static DS4Color[] MainColor => m_Config.m_Leds;
@@ -1588,8 +1605,8 @@ namespace DS4Windows
         {
             return m_Config.profileActions[index];
         }
-        
-        public static void UpdateDS4CSetting (int deviceNum, string buttonName, bool shift, object action, string exts, DS4KeyType kt, int trigger = 0)
+
+        public static void UpdateDS4CSetting(int deviceNum, string buttonName, bool shift, object action, string exts, DS4KeyType kt, int trigger = 0)
         {
             m_Config.UpdateDS4CSetting(deviceNum, buttonName, shift, action, exts, kt, trigger);
             m_Config.containsCustomAction[deviceNum] = m_Config.HasCustomActions(deviceNum);
@@ -1662,7 +1679,7 @@ namespace DS4Windows
         public static SpecialAction GetAction(string name)
         {
             //foreach (SpecialAction sA in m_Config.actions)
-            for (int i=0, actionCount = m_Config.actions.Count; i < actionCount; i++)
+            for (int i = 0, actionCount = m_Config.actions.Count; i < actionCount; i++)
             {
                 SpecialAction sA = m_Config.actions[i];
                 if (sA.name == name)
@@ -1766,7 +1783,7 @@ namespace DS4Windows
         }
 
         public static bool Load() => m_Config.Load();
-        
+
         public static void LoadProfile(int device, bool launchprogram, ControlService control,
             bool xinputChange = true, bool postLoad = true)
         {
@@ -1880,7 +1897,7 @@ namespace DS4Windows
             float sr = sat2 - sat1;
             Color csR;
             if (bri1 == 0)
-                csR = HuetoRGB(hue2,sat2,bri2 - br*ratio);
+                csR = HuetoRGB(hue2, sat2, bri2 - br * ratio);
             else
                 csR = HuetoRGB(hue2 - hr * ratio, sat2 - sr * ratio, bri2 - br * ratio);
 
@@ -1889,7 +1906,7 @@ namespace DS4Windows
 
         public static Color HuetoRGB(float hue, float sat, float bri)
         {
-            float C = (1-Math.Abs(2*bri)-1)* sat;
+            float C = (1 - Math.Abs(2 * bri) - 1) * sat;
             float X = C * (1 - Math.Abs((hue / 60) % 2 - 1));
             float m = bri - C / 2;
             float R, G, B;
@@ -1948,75 +1965,75 @@ namespace DS4Windows
 
         protected XmlDocument m_Xdoc = new XmlDocument();
         // fifth value used for options, not fifth controller
-        public ButtonMouseInfo[] buttonMouseInfos = new ButtonMouseInfo[5]
+        public ButtonMouseInfo[] buttonMouseInfos = new ButtonMouseInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(),
-            new ButtonMouseInfo(), new ButtonMouseInfo(),
+            new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(),
+            new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(),
+            new ButtonMouseInfo(),
         };
 
-        public bool[] flushHIDQueue = new bool[5] { false, false, false, false, false };
-        public bool[] enableTouchToggle = new bool[5] { true, true, true, true, true };
-        public int[] idleDisconnectTimeout = new int[5] { 0, 0, 0, 0, 0 };
-        public bool[] enableOutputDataToDS4 = new bool[5] { true, true, true, true, true };
-        public bool[] touchpadJitterCompensation = new bool[5] { true, true, true, true, true };
-        public bool[] lowerRCOn = new bool[5] { false, false, false, false, false };
-        public string[] profilePath = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public string[] olderProfilePath = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public bool[] flushHIDQueue = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public bool[] enableTouchToggle = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public int[] idleDisconnectTimeout = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public bool[] enableOutputDataToDS4 = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public bool[] touchpadJitterCompensation = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public bool[] lowerRCOn = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public string[] profilePath = new string[Global.DS4_CONTROLLER_COUNT + 1] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public string[] olderProfilePath = new string[Global.DS4_CONTROLLER_COUNT + 1] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         public Dictionary<string, string> linkedProfiles = new Dictionary<string, string>();
         // Cache properties instead of performing a string comparison every frame
-        public bool[] distanceProfiles = new bool[5] { false, false, false, false, false };
-        public Byte[] rumble = new Byte[5] { 100, 100, 100, 100, 100 };
-        public int[] rumbleAutostopTime = new int[5] { 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
-        public Byte[] touchSensitivity = new Byte[5] { 100, 100, 100, 100, 100 };
-        public StickDeadZoneInfo[] lsModInfo = new StickDeadZoneInfo[5]
+        public bool[] distanceProfiles = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public Byte[] rumble = new Byte[Global.DS4_CONTROLLER_COUNT + 1] { 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+        public int[] rumbleAutostopTime = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
+        public Byte[] touchSensitivity = new Byte[Global.DS4_CONTROLLER_COUNT + 1] { 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+        public StickDeadZoneInfo[] lsModInfo = new StickDeadZoneInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
+            new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(),
+            new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(),
             new StickDeadZoneInfo()
         };
-        public StickDeadZoneInfo[] rsModInfo = new StickDeadZoneInfo[5]
+        public StickDeadZoneInfo[] rsModInfo = new StickDeadZoneInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
+            new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(),
+            new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(), new StickDeadZoneInfo(),
             new StickDeadZoneInfo()
         };
-        public TriggerDeadZoneZInfo[] l2ModInfo = new TriggerDeadZoneZInfo[5]
+        public TriggerDeadZoneZInfo[] l2ModInfo = new TriggerDeadZoneZInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
+            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
+            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
             new TriggerDeadZoneZInfo()
         };
-        public TriggerDeadZoneZInfo[] r2ModInfo = new TriggerDeadZoneZInfo[5]
+        public TriggerDeadZoneZInfo[] r2ModInfo = new TriggerDeadZoneZInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
+            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
+            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
             new TriggerDeadZoneZInfo()
         };
 
-        public double[] LSRotation = new double[5] { 0.0, 0.0, 0.0, 0.0, 0.0 }, RSRotation = new double[5] { 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] SXDeadzone = new double[5] { 0.25, 0.25, 0.25, 0.25, 0.25 }, SZDeadzone = new double[5] { 0.25, 0.25, 0.25, 0.25, 0.25 };
-        public double[] SXMaxzone = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 },
-            SZMaxzone = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 };
-        public double[] SXAntiDeadzone = new double[5] { 0.0, 0.0, 0.0, 0.0, 0.0 },
-            SZAntiDeadzone = new double[5] { 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] l2Sens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 }, r2Sens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 };
-        public double[] LSSens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 }, RSSens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 };
-        public double[] SXSens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 }, SZSens = new double[5] { 1.0, 1.0, 1.0, 1.0, 1.0 };
-        public Byte[] tapSensitivity = new Byte[5] { 0, 0, 0, 0, 0 };
-        public bool[] doubleTap = new bool[5] { false, false, false, false, false };
-        public int[] scrollSensitivity = new int[5] { 0, 0, 0, 0, 0 };
-        public int[] touchpadInvert = new int[5] { 0, 0, 0, 0, 0 };
-        public int[] btPollRate = new int[5] { 4, 4, 4, 4, 4 };
-        public int[] gyroMouseDZ = new int[5] { MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
+        public double[] LSRotation = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, RSRotation = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+        public double[] SXDeadzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25 }, SZDeadzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25 };
+        public double[] SXMaxzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
+            SZMaxzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+        public double[] SXAntiDeadzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+            SZAntiDeadzone = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+        public double[] l2Sens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }, r2Sens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+        public double[] LSSens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }, RSSens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+        public double[] SXSens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }, SZSens = new double[Global.DS4_CONTROLLER_COUNT + 1] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+        public Byte[] tapSensitivity = new Byte[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public bool[] doubleTap = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public int[] scrollSensitivity = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int[] touchpadInvert = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int[] btPollRate = new int[Global.DS4_CONTROLLER_COUNT + 1] { 4, 4, 4, 4, 4, 4, 4, 4, 4 };
+        public int[] gyroMouseDZ = new int[Global.DS4_CONTROLLER_COUNT + 1] { MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
+            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
             MouseCursor.GYRO_MOUSE_DEADZONE };
-        public bool[] gyroMouseToggle = new bool[5] { false, false, false,
-            false, false };
+        public bool[] gyroMouseToggle = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
 
-        public SquareStickInfo[] squStickInfo = new SquareStickInfo[5]
+        public SquareStickInfo[] squStickInfo = new SquareStickInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
+            new SquareStickInfo(), new SquareStickInfo(), new SquareStickInfo(), new SquareStickInfo(),
+            new SquareStickInfo(), new SquareStickInfo(), new SquareStickInfo(), new SquareStickInfo(),
             new SquareStickInfo(),
         };
 
@@ -2036,22 +2053,22 @@ namespace DS4Windows
             }
         }
 
-        public BezierCurve[] lsOutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] rsOutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] l2OutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] r2OutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] szOutBezierCurveObj = new BezierCurve[5] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] lsOutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] rsOutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] l2OutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] r2OutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
+        public BezierCurve[] szOutBezierCurveObj = new BezierCurve[Global.DS4_CONTROLLER_COUNT + 1] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
 
-        private int[] _lsOutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
-        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index];  }
+        private int[] _lsOutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index]; }
         public void setLsOutCurveMode(int index, int value)
         {
             if (value >= 1) setOutBezierCurveObjArrayItem(lsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
             _lsOutCurveMode[index] = value;
         }
 
-        private int[] _rsOutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
+        private int[] _rsOutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getRsOutCurveMode(int index) { return _rsOutCurveMode[index]; }
         public void setRsOutCurveMode(int index, int value)
         {
@@ -2059,7 +2076,7 @@ namespace DS4Windows
             _rsOutCurveMode[index] = value;
         }
 
-        private int[] _l2OutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
+        private int[] _l2OutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getL2OutCurveMode(int index) { return _l2OutCurveMode[index]; }
         public void setL2OutCurveMode(int index, int value)
         {
@@ -2067,7 +2084,7 @@ namespace DS4Windows
             _l2OutCurveMode[index] = value;
         }
 
-        private int[] _r2OutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
+        private int[] _r2OutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getR2OutCurveMode(int index) { return _r2OutCurveMode[index]; }
         public void setR2OutCurveMode(int index, int value)
         {
@@ -2075,7 +2092,7 @@ namespace DS4Windows
             _r2OutCurveMode[index] = value;
         }
 
-        private int[] _sxOutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
+        private int[] _sxOutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getSXOutCurveMode(int index) { return _sxOutCurveMode[index]; }
         public void setSXOutCurveMode(int index, int value)
         {
@@ -2083,7 +2100,7 @@ namespace DS4Windows
             _sxOutCurveMode[index] = value;
         }
 
-        private int[] _szOutCurveMode = new int[5] { 0, 0, 0, 0, 0 };
+        private int[] _szOutCurveMode = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getSZOutCurveMode(int index) { return _szOutCurveMode[index]; }
         public void setSZOutCurveMode(int index, int value)
         {
@@ -2091,42 +2108,42 @@ namespace DS4Windows
             _szOutCurveMode[index] = value;
         }
 
-        public LightbarSettingInfo[] lightbarSettingInfo = new LightbarSettingInfo[5]
+        public LightbarSettingInfo[] lightbarSettingInfo = new LightbarSettingInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
+            new LightbarSettingInfo(), new LightbarSettingInfo(), new LightbarSettingInfo(), new LightbarSettingInfo(),
+            new LightbarSettingInfo(), new LightbarSettingInfo(), new LightbarSettingInfo(), new LightbarSettingInfo(),
             new LightbarSettingInfo()
         };
 
-        public string[] launchProgram = new string[5] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public bool[] dinputOnly = new bool[5] { false, false, false, false, false };
-        public bool[] startTouchpadOff = new bool[5] { false, false, false, false, false };
-        public bool[] useTPforControls = new bool[5] { false, false, false, false, false };
-        public bool[] useSAforMouse = new bool[5] { false, false, false, false, false };
-        public GyroOutMode[] gyroOutMode = new GyroOutMode[5] { GyroOutMode.Controls, GyroOutMode.Controls,
-            GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls };
-        public string[] sATriggers = new string[5] { "-1", "-1", "-1", "-1", "-1" };
-        public string[] sAMouseStickTriggers = new string[5] { "-1", "-1", "-1", "-1", "-1" };
-        public bool[] sATriggerCond = new bool[5] { true, true, true, true, true };
-        public bool[] sAMouseStickTriggerCond = new bool[5] { true, true, true, true, true };
-        public bool[] gyroMouseStickTriggerTurns = new bool[5] { true, true, true, true, true };
-        public GyroMouseStickInfo[] gyroMStickInfo = new GyroMouseStickInfo[5]
+        public string[] launchProgram = new string[Global.DS4_CONTROLLER_COUNT + 1] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public bool[] dinputOnly = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public bool[] startTouchpadOff = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public bool[] useTPforControls = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public bool[] useSAforMouse = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public GyroOutMode[] gyroOutMode = new GyroOutMode[Global.DS4_CONTROLLER_COUNT + 1] { GyroOutMode.Controls, GyroOutMode.Controls,
+            GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls, GyroOutMode.Controls };
+        public string[] sATriggers = new string[Global.DS4_CONTROLLER_COUNT + 1] { "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1" };
+        public string[] sAMouseStickTriggers = new string[Global.DS4_CONTROLLER_COUNT + 1] { "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1" };
+        public bool[] sATriggerCond = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public bool[] sAMouseStickTriggerCond = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public bool[] gyroMouseStickTriggerTurns = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public GyroMouseStickInfo[] gyroMStickInfo = new GyroMouseStickInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
+            new GyroMouseStickInfo(), new GyroMouseStickInfo(), new GyroMouseStickInfo(), new GyroMouseStickInfo(),
+            new GyroMouseStickInfo(), new GyroMouseStickInfo(), new GyroMouseStickInfo(), new GyroMouseStickInfo(),
             new GyroMouseStickInfo()
         };
-        
-        public bool[] gyroMouseStickToggle = new bool[5] { false, false, false,
-            false, false };
 
-        public SASteeringWheelEmulationAxisType[] sASteeringWheelEmulationAxis = new SASteeringWheelEmulationAxisType[5] { SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None };
-        public int[] sASteeringWheelEmulationRange = new int[5] { 360, 360, 360, 360, 360 };
-        public int[][] touchDisInvertTriggers = new int[5][] { new int[1] { -1 }, new int[1] { -1 }, new int[1] { -1 },
-            new int[1] { -1 }, new int[1] { -1 } };
-        public int[] lsCurve = new int[5] { 0, 0, 0, 0, 0 };
-        public int[] rsCurve = new int[5] { 0, 0, 0, 0, 0 };
+        public bool[] gyroMouseStickToggle = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+
+        public SASteeringWheelEmulationAxisType[] sASteeringWheelEmulationAxis = new SASteeringWheelEmulationAxisType[Global.DS4_CONTROLLER_COUNT + 1] { SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None, SASteeringWheelEmulationAxisType.None };
+        public int[] sASteeringWheelEmulationRange = new int[Global.DS4_CONTROLLER_COUNT + 1] { 360, 360, 360, 360, 360, 360, 360, 360, 360 };
+        public int[][] touchDisInvertTriggers = new int[Global.DS4_CONTROLLER_COUNT + 1][] {
+            new int[1] { -1 }, new int[1] { -1 }, new int[1] { -1 }, new int[1] { -1 },
+            new int[1] { -1 }, new int[1] { -1 }, new int[1] { -1 }, new int[1] { -1 },
+            new int[1] { -1 } };
+        public int[] lsCurve = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public int[] rsCurve = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public Boolean useExclusiveMode = false;
         public Int32 formWidth = 782;
         public Int32 formHeight = 550;
@@ -2143,19 +2160,22 @@ namespace DS4Windows
         public bool quickCharge = false;
         public bool closeMini = false;
         public List<SpecialAction> actions = new List<SpecialAction>();
-        public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[5]
-            { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
-              new List<DS4ControlSettings>(), new List<DS4ControlSettings>() };
+        public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[Global.DS4_CONTROLLER_COUNT + 1]
+            { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
+                new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
+                new List<DS4ControlSettings>() };
 
-        public List<string>[] profileActions = new List<string>[5] { null, null, null, null, null };
-        public int[] profileActionCount = new int[5] { 0, 0, 0, 0, 0 };
-        public Dictionary<string, SpecialAction>[] profileActionDict = new Dictionary<string, SpecialAction>[5]
-            { new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(),
-              new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>() };
+        public List<string>[] profileActions = new List<string>[Global.DS4_CONTROLLER_COUNT + 1] { null, null, null, null, null, null, null, null, null };
+        public int[] profileActionCount = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public Dictionary<string, SpecialAction>[] profileActionDict = new Dictionary<string, SpecialAction>[Global.DS4_CONTROLLER_COUNT + 1]
+            { new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(),
+                new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(),
+                new Dictionary<string, SpecialAction>() };
 
-        public Dictionary<string, int>[] profileActionIndexDict = new Dictionary<string, int>[5]
-            { new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(),
-              new Dictionary<string, int>(), new Dictionary<string, int>() };
+        public Dictionary<string, int>[] profileActionIndexDict = new Dictionary<string, int>[Global.DS4_CONTROLLER_COUNT + 1]
+            { new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(),
+                new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(),
+                new Dictionary<string, int>() };
 
         public string useLang = "";
         public bool downloadLang = true;
@@ -2168,27 +2188,27 @@ namespace DS4Windows
         public bool useCustomSteamFolder;
         public string customSteamFolder;
         // Cache whether profile has custom action
-        public bool[] containsCustomAction = new bool[5] { false, false, false, false, false };
+        public bool[] containsCustomAction = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
 
         // Cache whether profile has custom extras
-        public bool[] containsCustomExtras = new bool[5] { false, false, false, false, false };
+        public bool[] containsCustomExtras = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
 
-        public int[] gyroSensitivity = new int[5] { 100, 100, 100, 100, 100 };
-        public int[] gyroSensVerticalScale = new int[5] { 100, 100, 100, 100, 100 };
-        public int[] gyroInvert = new int[5] { 0, 0, 0, 0, 0 };
-        public bool[] gyroTriggerTurns = new bool[5] { true, true, true, true, true };
-        public bool[] gyroSmoothing = new bool[5] { false, false, false, false, false };
-        public double[] gyroSmoothWeight = new double[5] { 0.5, 0.5, 0.5, 0.5, 0.5 };
-        public int[] gyroMouseHorizontalAxis = new int[5] { 0, 0, 0, 0, 0 };
+        public int[] gyroSensitivity = new int[Global.DS4_CONTROLLER_COUNT + 1] { 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+        public int[] gyroSensVerticalScale = new int[Global.DS4_CONTROLLER_COUNT + 1] { 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+        public int[] gyroInvert = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public bool[] gyroTriggerTurns = new bool[Global.DS4_CONTROLLER_COUNT + 1] { true, true, true, true, true, true, true, true, true };
+        public bool[] gyroSmoothing = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public double[] gyroSmoothWeight = new double[Global.DS4_CONTROLLER_COUNT + 1] { 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
+        public int[] gyroMouseHorizontalAxis = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public int[] gyroMouseStickHorizontalAxis = new int[5] { 0, 0, 0, 0, 0 };
+        public int[] gyroMouseStickHorizontalAxis = new int[Global.DS4_CONTROLLER_COUNT + 1] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public bool[] trackballMode = new bool[5] { false, false, false, false, false };
-        public double[] trackballFriction = new double[5] { 10.0, 10.0, 10.0, 10.0, 10.0 };
+        public bool[] trackballMode = new bool[Global.DS4_CONTROLLER_COUNT + 1] { false, false, false, false, false, false, false, false, false };
+        public double[] trackballFriction = new double[Global.DS4_CONTROLLER_COUNT + 1] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };
         // Used to hold the controller type desired in a profile
-        public OutContType[] outputDevType = new OutContType[5] { OutContType.X360,
-            OutContType.X360, OutContType.X360,
-            OutContType.X360, OutContType.X360 };
+        public OutContType[] outputDevType = new OutContType[Global.DS4_CONTROLLER_COUNT + 1] { OutContType.X360,
+            OutContType.X360, OutContType.X360, OutContType.X360, OutContType.X360,
+            OutContType.X360, OutContType.X360, OutContType.X360, OutContType.X360};
 
         // TRUE=AutoProfile reverts to default profile if current foreground process is unknown, FALSE=Leave existing profile active when a foreground proces is unknown (ie. no matching auto-profile rule)
         public bool autoProfileRevertDefaultProfile = true;
@@ -2197,7 +2217,7 @@ namespace DS4Windows
 
         public BackingStore()
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < Global.DS4_CONTROLLER_COUNT + 1; i++)
             {
                 foreach (DS4Controls dc in Enum.GetValues(typeof(DS4Controls)))
                 {
@@ -2220,6 +2240,10 @@ namespace DS4Windows
             lightbarSettingInfo[2].ds4winSettings.m_Led = new DS4Color(Color.Green);
             lightbarSettingInfo[3].ds4winSettings.m_Led = new DS4Color(Color.Pink);
             lightbarSettingInfo[4].ds4winSettings.m_Led = new DS4Color(Color.White);
+            lightbarSettingInfo[5].ds4winSettings.m_Led = new DS4Color(Color.Yellow);
+            lightbarSettingInfo[6].ds4winSettings.m_Led = new DS4Color(Color.Magenta);
+            lightbarSettingInfo[7].ds4winSettings.m_Led = new DS4Color(Color.Cyan);
+            lightbarSettingInfo[8].ds4winSettings.m_Led = new DS4Color(Color.Orange);
         }
 
         private string stickOutputCurveString(int id)
@@ -2300,21 +2324,21 @@ namespace DS4Windows
         public void SetGyroMouseDZ(int index, int value, ControlService control)
         {
             gyroMouseDZ[index] = value;
-            if (index < 4 && control.touchPad[index] != null)
+            if (index < Global.DS4_CONTROLLER_COUNT && control.touchPad[index] != null)
                 control.touchPad[index].CursorGyroDead = value;
         }
 
         public void SetGyroMouseToggle(int index, bool value, ControlService control)
         {
             gyroMouseToggle[index] = value;
-            if (index < 4 && control.touchPad[index] != null)
+            if (index < Global.DS4_CONTROLLER_COUNT && control.touchPad[index] != null)
                 control.touchPad[index].ToggleGyroMouse = value;
         }
 
         public void SetGyroMouseStickToggle(int index, bool value, ControlService control)
         {
             gyroMouseStickToggle[index] = value;
-            if (index < 4 && control.touchPad[index] != null)
+            if (index < Global.DS4_CONTROLLER_COUNT && control.touchPad[index] != null)
                 control.touchPad[index].ToggleGyroMouse = value;
         }
 
@@ -2357,7 +2381,7 @@ namespace DS4Windows
         private string GetGyroOutModeString(GyroOutMode mode)
         {
             string result = "None";
-            switch(mode)
+            switch (mode)
             {
                 case GyroOutMode.Controls:
                     result = "Controls";
@@ -2378,7 +2402,7 @@ namespace DS4Windows
         private GyroOutMode GetGyroOutModeType(string modeString)
         {
             GyroOutMode result = GyroOutMode.None;
-            switch(modeString)
+            switch (modeString)
             {
                 case "Controls":
                     result = GyroOutMode.Controls;
@@ -2583,7 +2607,7 @@ namespace DS4Windows
                 XmlNode xmlBTPollRate = m_Xdoc.CreateNode(XmlNodeType.Element, "BTPollRate", null); xmlBTPollRate.InnerText = btPollRate[device].ToString(); Node.AppendChild(xmlBTPollRate);
 
                 XmlNode xmlLsOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveMode", null); xmlLsOutputCurveMode.InnerText = stickOutputCurveString(getLsOutCurveMode(device)); Node.AppendChild(xmlLsOutputCurveMode);
-                XmlNode xmlLsOutputCurveCustom  = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveCustom", null); xmlLsOutputCurveCustom.InnerText = lsOutBezierCurveObj[device].ToString(); Node.AppendChild(xmlLsOutputCurveCustom);
+                XmlNode xmlLsOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveCustom", null); xmlLsOutputCurveCustom.InnerText = lsOutBezierCurveObj[device].ToString(); Node.AppendChild(xmlLsOutputCurveCustom);
 
                 XmlNode xmlRsOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "RSOutputCurveMode", null); xmlRsOutputCurveMode.InnerText = stickOutputCurveString(getRsOutCurveMode(device)); Node.AppendChild(xmlRsOutputCurveMode);
                 XmlNode xmlRsOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "RSOutputCurveCustom", null); xmlRsOutputCurveCustom.InnerText = rsOutBezierCurveObj[device].ToString(); Node.AppendChild(xmlRsOutputCurveCustom);
@@ -2793,7 +2817,7 @@ namespace DS4Windows
                     NodeShiftControl.AppendChild(ShiftKeyType);
                 if (ShiftExtras.HasChildNodes)
                     NodeShiftControl.AppendChild(ShiftExtras);
-                
+
                 m_Xdoc.AppendChild(Node);
                 m_Xdoc.Save(path);
             }
@@ -3078,7 +3102,7 @@ namespace DS4Windows
                     missingSetting = true;
                 }
 
-                if (device < 4)
+                if (device < Global.DS4_CONTROLLER_COUNT)
                 {
                     DS4LightBar.forcelight[device] = false;
                     DS4LightBar.forcedFlash[device] = 0;
@@ -3249,14 +3273,16 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2AntiDeadZone"); int.TryParse(Item.InnerText, out r2ModInfo[device].antiDeadZone); }
                 catch { r2ModInfo[device].antiDeadZone = 0; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2MaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     l2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { l2ModInfo[device].maxZone = 100; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     r2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
@@ -3274,7 +3300,7 @@ namespace DS4Windows
                 try
                 {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxOutput"); double temp = 100.0;
-                    temp =  double.Parse(Item.InnerText);
+                    temp = double.Parse(Item.InnerText);
                     r2ModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { r2ModInfo[device].maxOutput = 100.0; missingSetting = true; }
@@ -3305,7 +3331,9 @@ namespace DS4Windows
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Rainbow"); double.TryParse(Item.InnerText, out lightInfo.rainbow); }
                 catch { lightInfo.rainbow = 0; missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MaxSatRainbow");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MaxSatRainbow");
                     int.TryParse(Item.InnerText, out int temp);
                     lightInfo.maxRainbowSat = Math.Max(0, Math.Min(100, temp)) / 100.0;
                 }
@@ -3319,14 +3347,16 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiDeadZone"); int.TryParse(Item.InnerText, out rsModInfo[device].antiDeadZone); }
                 catch { rsModInfo[device].antiDeadZone = 25; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSMaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     lsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { lsModInfo[device].maxZone = 100; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSMaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     rsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
@@ -3354,28 +3384,36 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZDeadZone"); double.TryParse(Item.InnerText, out SZDeadzone[device]); }
                 catch { SZDeadzone[device] = 0.02; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SXMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SXMaxzone[device] = 1.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SZMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SZMaxzone[device] = 1.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SXAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SXAntiDeadzone[device] = 0.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SZAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
@@ -3497,7 +3535,9 @@ namespace DS4Windows
                 catch { sASteeringWheelEmulationRange[device] = 360; missingSetting = true; }
 
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
                     string tempMode = Item.InnerText;
                     gyroOutMode[device] = GetGyroOutModeType(tempMode);
                 }
@@ -3515,9 +3555,12 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); gyroMouseStickHorizontalAxis[device] = Math.Min(Math.Max(0, temp), 1); }
                 catch { gyroMouseStickHorizontalAxis[device] = 0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.InnerText, out int temp);
-                    gyroMStickInfo[device].deadZone = temp; }
-                catch { gyroMStickInfo[device].deadZone = 30;  missingSetting = true; }
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                    gyroMStickInfo[device].deadZone = temp;
+                }
+                catch { gyroMStickInfo[device].deadZone = 30; missingSetting = true; }
 
                 try
                 {
@@ -3556,7 +3599,8 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickSmoothing"); bool.TryParse(Item.InnerText, out gyroMStickInfo[device].useSmoothing); }
                 catch { gyroMStickInfo[device].useSmoothing = false; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickSmoothingWeight");
                     int temp = 0; int.TryParse(Item.InnerText, out temp);
                     gyroMStickInfo[device].smoothWeight = Math.Min(Math.Max(0.0, Convert.ToDouble(temp * 0.01)), 1.0);
@@ -3600,9 +3644,12 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); gyroMouseHorizontalAxis[device] = Math.Min(Math.Max(0, temp), 1); }
                 catch { gyroMouseHorizontalAxis[device] = 0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.InnerText, out int temp);
-                    SetGyroMouseDZ(device, temp, control); }
-                catch { SetGyroMouseDZ(device, MouseCursor.GYRO_MOUSE_DEADZONE, control);  missingSetting = true; }
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                    SetGyroMouseDZ(device, temp, control);
+                }
+                catch { SetGyroMouseDZ(device, MouseCursor.GYRO_MOUSE_DEADZONE, control); missingSetting = true; }
 
                 try
                 {
@@ -3617,7 +3664,8 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSCurve"); int.TryParse(Item.InnerText, out rsCurve[device]); }
                 catch { rsCurve[device] = 0; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/BTPollRate");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
@@ -3922,7 +3970,7 @@ namespace DS4Windows
             buttonMouseInfos[device].activeButtonSensitivity =
                 buttonMouseInfos[device].buttonSensitivity;
 
-            if (device < 4 && control.touchPad[device] != null)
+            if (device < Global.DS4_CONTROLLER_COUNT && control.touchPad[device] != null)
             {
                 control.touchPad[device]?.ResetToggleGyroM();
                 GyroOutMode currentGyro = gyroOutMode[device];
@@ -3940,7 +3988,7 @@ namespace DS4Windows
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
-            if (postLoad && device < 4)
+            if (postLoad && device < Global.DS4_CONTROLLER_COUNT)
             {
                 PostLoadSnippet(device, control, xinputStatus, xinputPlug);
             }
@@ -3971,21 +4019,24 @@ namespace DS4Windows
                     catch { missingSetting = true; }
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/formHeight"); Int32.TryParse(Item.InnerText, out formHeight); }
                     catch { missingSetting = true; }
-                    try {
+                    try
+                    {
                         int temp = 0;
                         Item = m_Xdoc.SelectSingleNode("/Profile/formLocationX"); Int32.TryParse(Item.InnerText, out temp);
                         formLocationX = Math.Max(temp, 0);
                     }
                     catch { missingSetting = true; }
 
-                    try {
+                    try
+                    {
                         int temp = 0;
                         Item = m_Xdoc.SelectSingleNode("/Profile/formLocationY"); Int32.TryParse(Item.InnerText, out temp);
                         formLocationY = Math.Max(temp, 0);
                     }
                     catch { missingSetting = true; }
 
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller1"); profilePath[0] = Item.InnerText;
                         if (profilePath[0].ToLower().Contains("distance"))
                         {
@@ -3995,7 +4046,8 @@ namespace DS4Windows
                         olderProfilePath[0] = profilePath[0];
                     }
                     catch { profilePath[0] = olderProfilePath[0] = string.Empty; distanceProfiles[0] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller2"); profilePath[1] = Item.InnerText;
                         if (profilePath[1].ToLower().Contains("distance"))
                         {
@@ -4005,7 +4057,8 @@ namespace DS4Windows
                         olderProfilePath[1] = profilePath[1];
                     }
                     catch { profilePath[1] = olderProfilePath[1] = string.Empty; distanceProfiles[1] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller3"); profilePath[2] = Item.InnerText;
                         if (profilePath[2].ToLower().Contains("distance"))
                         {
@@ -4015,7 +4068,8 @@ namespace DS4Windows
                         olderProfilePath[2] = profilePath[2];
                     }
                     catch { profilePath[2] = olderProfilePath[2] = string.Empty; distanceProfiles[2] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller4"); profilePath[3] = Item.InnerText;
                         if (profilePath[3].ToLower().Contains("distance"))
                         {
@@ -4072,7 +4126,7 @@ namespace DS4Windows
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/AutoProfileRevertDefaultProfile"); Boolean.TryParse(Item.InnerText, out autoProfileRevertDefaultProfile); }
                     catch { missingSetting = true; }
 
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; i++)
                     {
                         try
                         {
@@ -4148,7 +4202,7 @@ namespace DS4Windows
             XmlNode xmlCustomSteamFolder = m_Xdoc.CreateNode(XmlNodeType.Element, "CustomSteamFolder", null); xmlCustomSteamFolder.InnerText = customSteamFolder; Node.AppendChild(xmlCustomSteamFolder);
             XmlNode xmlAutoProfileRevertDefaultProfile = m_Xdoc.CreateNode(XmlNodeType.Element, "AutoProfileRevertDefaultProfile", null); xmlAutoProfileRevertDefaultProfile.InnerText = autoProfileRevertDefaultProfile.ToString(); Node.AppendChild(xmlAutoProfileRevertDefaultProfile);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; i++)
             {
                 XmlNode xmlCustomLed = m_Xdoc.CreateNode(XmlNodeType.Element, "CustomLed" + (1 + i), null);
                 xmlCustomLed.InnerText = lightbarSettingInfo[i].ds4winSettings.useCustomLed + ":" + lightbarSettingInfo[i].ds4winSettings.m_CustomLed.red + "," + lightbarSettingInfo[i].ds4winSettings.m_CustomLed.green + "," + lightbarSettingInfo[i].ds4winSettings.m_CustomLed.blue;
@@ -4826,7 +4880,7 @@ namespace DS4Windows
             enableOutputDataToDS4[device] = true;
             touchpadJitterCompensation[device] = true;
             lowerRCOn[device] = false;
-            
+
             rumble[device] = 100;
             rumbleAutostopTime[device] = 0;
             touchSensitivity[device] = 100;
@@ -4860,7 +4914,7 @@ namespace DS4Windows
             //m_LowLeds[device] = new DS4Color(Color.Black);
 
             Color tempColor = Color.Blue;
-            switch(device)
+            switch (device)
             {
                 case 0: tempColor = Color.Blue; break;
                 case 1: tempColor = Color.Red; break;
@@ -4965,7 +5019,7 @@ namespace DS4Windows
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
-            if (postLoad && device < 4)
+            if (postLoad && device < Global.DS4_CONTROLLER_COUNT)
             {
                 PostLoadSnippet(device, control, xinputStatus, xinputPlug);
             }
@@ -4977,7 +5031,7 @@ namespace DS4Windows
             xinputPlug = false;
             xinputStatus = false;
 
-            if (device < 4)
+            if (device < Global.DS4_CONTROLLER_COUNT)
             {
                 bool oldUseDInputOnly = Global.useDInputOnly[device];
                 DS4Device tempDevice = control.DS4Controllers[device];

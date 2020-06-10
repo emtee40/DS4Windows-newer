@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS4Windows;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -124,14 +125,13 @@ namespace DS4WinWPF
         private string path_lowercase;
         private string title_lowercase;
         private bool turnoff;
-        private string[] profileNames = new string[4] { string.Empty, string.Empty,
-            string.Empty, string.Empty };
         public const string NONE_STRING = "(none)";
 
         public string Path { get => path; set => SetSearchPath(value); }
         public string Title { get => title; set => SetSearchTitle(value); }
         public bool Turnoff { get => turnoff; set => turnoff = value; }
-        public string[] ProfileNames { get => profileNames; set => profileNames = value; }
+        public string[] ProfileNames { get; set; } = new string[Global.DS4_CONTROLLER_COUNT] { string.Empty, string.Empty,
+            string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
 
         public AutoProfileEntity(string pathStr, string titleStr)
         {
