@@ -180,6 +180,18 @@
   <data name="Controller4Text" xml:space="preserve">
     <value>Controller 4</value>
   </data>
+  <data name="Controller5Text" xml:space="preserve">
+    <value>Controller 5</value>
+  </data>
+  <data name="Controller6Text" xml:space="preserve">
+    <value>Controller 6</value>
+  </data>
+  <data name="Controller7Text" xml:space="preserve">
+    <value>Controller 7</value>
+  </data>
+  <data name="Controller8Text" xml:space="preserve">
+    <value>Controller 8</value>
+  </data>
   <data name="Controllers" xml:space="preserve">
     <value>Controllers</value>
   </data>
