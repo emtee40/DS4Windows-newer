@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -13,20 +11,15 @@ namespace DS4Windows
     public class OutputSlotManager
     {
         public const int DELAY_TIME = 500; // measured in ms
-        private OutSlotDevice[] outputSlots = new OutSlotDevice[4]
-        {
-            new OutSlotDevice(), new OutSlotDevice(),
-            new OutSlotDevice(), new OutSlotDevice()
-        };
 
         public int NumAttachedDevices
         {
             get
             {
                 int result = 0;
-                for (int i = 0; i < outputSlots.Length; i++)
+                for (int i = 0; i < OutputSlots.Length; i++)
                 {
-                    OutSlotDevice tmp = outputSlots[i];
+                    OutSlotDevice tmp = OutputSlots[i];
                     if (tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached)
                     {
                         result++;
@@ -48,7 +41,7 @@ namespace DS4Windows
 
         public bool RunningQueue { get => queuedTasks > 0; }
         public Dispatcher EventDispatcher { get => eventDispatcher; }
-        public OutSlotDevice[] OutputSlots { get => outputSlots; }
+        public OutSlotDevice[] OutputSlots { get; }
 
         public delegate void SlotAssignedDelegate(OutputSlotManager sender,
             int slotNum, OutSlotDevice outSlotDev);
@@ -60,6 +53,12 @@ namespace DS4Windows
 
         public OutputSlotManager()
         {
+            OutputSlots = new OutSlotDevice[Global.DS4_CONTROLLER_COUNT];
+            for(int i = 0; i < OutputSlots.Length; ++i)
+            {
+                OutputSlots[i] = new OutSlotDevice();
+            }
+
             queueLocker = new ReaderWriterLockSlim();
 
             eventDispatchThread = new Thread(() =>
@@ -129,9 +128,9 @@ namespace DS4Windows
                     outputDevices[slot] = outputDevice;
                     deviceDict.Add(slot, outputDevice);
                     revDeviceDict.Add(outputDevice, slot);
-                    outputSlots[slot].AttachedDevice(outputDevice, contType);
+                    OutputSlots[slot].AttachedDevice(outputDevice, contType);
                     if (inIdx != -1) outdevs[inIdx] = outputDevice;
-                    SlotAssigned?.Invoke(this, slot, outputSlots[slot]);
+                    SlotAssigned?.Invoke(this, slot, OutputSlots[slot]);
 
                     Task.Delay(DELAY_TIME).Wait();
                 }
@@ -162,8 +161,8 @@ namespace DS4Windows
                     revDeviceDict.Remove(outputDevice);
                     outputDevice.Disconnect();
                     if (inIdx != -1) outdevs[inIdx] = null;
-                    outputSlots[slot].DetachDevice();
-                    SlotUnassigned?.Invoke(this, slot, outputSlots[slot]);
+                    OutputSlots[slot].DetachDevice();
+                    SlotUnassigned?.Invoke(this, slot, OutputSlots[slot]);
 
                     if (!immediate)
                     {
@@ -188,9 +187,9 @@ namespace DS4Windows
         public OutSlotDevice FindOpenSlot()
         {
             OutSlotDevice temp = null;
-            for (int i = 0; i < outputSlots.Length; i++)
+            for (int i = 0; i < OutputSlots.Length; i++)
             {
-                OutSlotDevice tmp = outputSlots[i];
+                OutSlotDevice tmp = OutputSlots[i];
                 if (tmp.CurrentInputBound == OutSlotDevice.InputBound.Unbound &&
                     tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached)
                 {
@@ -211,7 +210,7 @@ namespace DS4Windows
             }
 
             //slotNum -= 1;
-            result = outputSlots[slotNum].CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached;
+            result = OutputSlots[slotNum].CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached;
             return result;
         }
 
@@ -224,7 +223,7 @@ namespace DS4Windows
             }
 
             //slotNum -= 1;
-            temp = outputSlots[slotNum];
+            temp = OutputSlots[slotNum];
             return temp;
         }
 
@@ -233,7 +232,7 @@ namespace DS4Windows
             OutSlotDevice temp = null;
             if (revDeviceDict.TryGetValue(outputDevice, out int slotNum))
             {
-                temp = outputSlots[slotNum];
+                temp = OutputSlots[slotNum];
             }
 
             return temp;
@@ -243,9 +242,9 @@ namespace DS4Windows
         {
             OutSlotDevice temp = null;
             string devtype = contType.ToString();
-            for (int i = 0; i < outputSlots.Length; i++)
+            for (int i = 0; i < OutputSlots.Length; i++)
             {
-                OutSlotDevice tmp = outputSlots[i];
+                OutSlotDevice tmp = OutputSlots[i];
                 if (tmp.CurrentInputBound == OutSlotDevice.InputBound.Unbound &&
                     (tmp.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.Attached &&
                     (tmp.OutputDevice != null && tmp.OutputDevice.GetDeviceType() == devtype)))

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DS4Windows;
 
 namespace DS4WinWPF.DS4Control
@@ -27,15 +23,12 @@ namespace DS4WinWPF.DS4Control
             Bound = 1,
         }
 
-        private AttachedStatus attachedStatus;
-        private OutputDevice outputDevice;
         private ReserveStatus reserveStatus;
         private InputBound inputBound;
         private OutContType permanentType;
-        private OutContType currentType;
 
-        public AttachedStatus CurrentAttachedStatus { get => attachedStatus; }
-        public OutputDevice OutputDevice { get => outputDevice; }
+        public AttachedStatus CurrentAttachedStatus { get; private set; }
+        public OutputDevice OutputDevice { get; private set; }
         public ReserveStatus CurrentReserveStatus
         {
             get => reserveStatus;
@@ -72,7 +65,7 @@ namespace DS4WinWPF.DS4Control
         }
         public event EventHandler PermanentTypeChanged;
 
-        public OutContType CurrentType { get => currentType; set => currentType = value; }
+        public OutContType CurrentType { get; set; }
 
         public OutSlotDevice()
         {
@@ -85,27 +78,27 @@ namespace DS4WinWPF.DS4Control
             {
                 PermanentType = OutContType.None;
             }
-            else if (currentType != OutContType.None)
+            else if (CurrentType != OutContType.None)
             {
-                PermanentType = currentType;
+                PermanentType = CurrentType;
             }
         }
 
         public void AttachedDevice(OutputDevice outputDevice, OutContType contType)
         {
-            this.outputDevice = outputDevice;
-            attachedStatus = AttachedStatus.Attached;
-            currentType = contType;
+            this.OutputDevice = outputDevice;
+            CurrentAttachedStatus = AttachedStatus.Attached;
+            CurrentType = contType;
             //desiredType = contType;
         }
 
         public void DetachDevice()
         {
-            if (outputDevice != null)
+            if (OutputDevice != null)
             {
-                outputDevice = null;
-                attachedStatus = AttachedStatus.UnAttached;
-                currentType = OutContType.None;
+                OutputDevice = null;
+                CurrentAttachedStatus = AttachedStatus.UnAttached;
+                CurrentType = OutContType.None;
                 if (reserveStatus == ReserveStatus.Dynamic)
                 {
                     PermanentType = OutContType.None;
