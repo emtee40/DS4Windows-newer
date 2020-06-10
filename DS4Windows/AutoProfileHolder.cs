@@ -96,14 +96,11 @@ namespace DS4WinWPF
                         el.SetAttribute("title", entity.Title);
                     }
 
-                    el.AppendChild(doc.CreateElement("Controller1")).InnerText = entity.ProfileNames[0];
-                    el.AppendChild(doc.CreateElement("Controller2")).InnerText = entity.ProfileNames[1];
-                    el.AppendChild(doc.CreateElement("Controller3")).InnerText = entity.ProfileNames[2];
-                    el.AppendChild(doc.CreateElement("Controller4")).InnerText = entity.ProfileNames[3];
-                    el.AppendChild(doc.CreateElement("Controller5")).InnerText = entity.ProfileNames[4];
-                    el.AppendChild(doc.CreateElement("Controller6")).InnerText = entity.ProfileNames[5];
-                    el.AppendChild(doc.CreateElement("Controller7")).InnerText = entity.ProfileNames[6];
-                    el.AppendChild(doc.CreateElement("Controller8")).InnerText = entity.ProfileNames[7];
+                    for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
+                    {
+                        el.AppendChild(doc.CreateElement("Controller" + (i + 1).ToString())).InnerText = entity.ProfileNames[i];
+                    }
+
                     el.AppendChild(doc.CreateElement("TurnOff")).InnerText = entity.Turnoff.ToString();
 
                     Node.AppendChild(el);
