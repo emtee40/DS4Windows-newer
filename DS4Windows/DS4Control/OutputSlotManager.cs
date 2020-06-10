@@ -32,7 +32,7 @@ namespace DS4Windows
 
         private Dictionary<int, OutputDevice> deviceDict = new Dictionary<int, OutputDevice>();
         private Dictionary<OutputDevice, int> revDeviceDict = new Dictionary<OutputDevice, int>();
-        private OutputDevice[] outputDevices = new OutputDevice[4];
+        private OutputDevice[] outputDevices = new OutputDevice[Global.DS4_CONTROLLER_COUNT];
 
         private int queuedTasks = 0;
         private ReaderWriterLockSlim queueLocker;
@@ -204,7 +204,7 @@ namespace DS4Windows
         public bool SlotAvailable(int slotNum)
         {
             bool result;
-            if (slotNum < 0 && slotNum > 3)
+            if (slotNum < 0 && slotNum >= OutputSlots.Length)
             {
                 throw new ArgumentOutOfRangeException("Invalid slot number");
             }
@@ -217,7 +217,7 @@ namespace DS4Windows
         public OutSlotDevice GetOutSlotDevice(int slotNum)
         {
             OutSlotDevice temp;
-            if (slotNum < 0 && slotNum > 3)
+            if (slotNum < 0 && slotNum >= OutputSlots.Length)
             {
                 throw new ArgumentOutOfRangeException("Invalid slot number");
             }

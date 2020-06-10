@@ -521,9 +521,9 @@ namespace DS4WinWPF.DS4Forms
             if (profile != null)
             {
                 currentProfile = profile;
-                if (device == 4)
+                if (device == Global.DS4_CONTROLLER_COUNT)
                 {
-                    Global.ProfilePath[4] = profile.Name;
+                    Global.ProfilePath[Global.DS4_CONTROLLER_COUNT] = profile.Name;
                 }
 
                 Global.LoadProfile(device, false, App.rootHub);
@@ -535,7 +535,7 @@ namespace DS4WinWPF.DS4Forms
                 Global.LoadBlankDevProfile(device, false, App.rootHub, false);
             }
 
-            if (device < 4)
+            if (device < Global.DS4_CONTROLLER_COUNT)
             {
                 useControllerUD.Value = device + 1;
                 conReadingsUserCon.UseDevice(device);
@@ -579,7 +579,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profileSettingsVM.FuncDevNum < 4)
+            if (profileSettingsVM.FuncDevNum < Global.DS4_CONTROLLER_COUNT)
             {
                 App.rootHub.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -696,7 +696,7 @@ namespace DS4WinWPF.DS4Forms
 
                 activeGyroModePanel.Visibility = Visibility.Visible;
 
-                if (deviceNum < 4)
+                if (deviceNum < Global.DS4_CONTROLLER_COUNT)
                 {
                     App.rootHub.touchPad[deviceNum]?.ResetToggleGyroM();
                 }
@@ -712,7 +712,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profileSettingsVM.FuncDevNum < 4)
+            if (profileSettingsVM.FuncDevNum < Global.DS4_CONTROLLER_COUNT)
             {
                 App.rootHub.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -773,7 +773,7 @@ namespace DS4WinWPF.DS4Forms
 
         public void Close()
         {
-            if (profileSettingsVM.FuncDevNum < 4)
+            if (profileSettingsVM.FuncDevNum < Global.DS4_CONTROLLER_COUNT)
             {
                 App.rootHub.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -836,7 +836,7 @@ namespace DS4WinWPF.DS4Forms
         private void HeavyRumbleTestBtn_Click(object sender, RoutedEventArgs e)
         {
             int deviceNum = profileSettingsVM.FuncDevNum;
-            if (deviceNum < 4)
+            if (deviceNum < Global.DS4_CONTROLLER_COUNT)
             {
                 DS4Device d = App.rootHub.DS4Controllers[deviceNum];
                 if (d != null)
@@ -862,7 +862,7 @@ namespace DS4WinWPF.DS4Forms
         private void LightRumbleTestBtn_Click(object sender, RoutedEventArgs e)
         {
             int deviceNum = profileSettingsVM.FuncDevNum;
-            if (deviceNum < 4)
+            if (deviceNum < Global.DS4_CONTROLLER_COUNT)
             {
                 DS4Device d = App.rootHub.DS4Controllers[deviceNum];
                 if (d != null)
@@ -920,7 +920,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void FrictionUD_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (deviceNum < 4)
+            if (deviceNum < Global.DS4_CONTROLLER_COUNT)
             {
                 App.rootHub.touchPad[deviceNum]?.ResetTrackAccel(frictionUD.Value.GetValueOrDefault());
             }
@@ -1223,7 +1223,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void UseControllerReadoutCk_Click(object sender, RoutedEventArgs e)
         {
-            if (profileSettingsVM.UseControllerReadout && profileSettingsVM.Device < 4)
+            if (profileSettingsVM.UseControllerReadout && profileSettingsVM.Device < Global.DS4_CONTROLLER_COUNT)
             {
                 inputTimer.Start();
             }

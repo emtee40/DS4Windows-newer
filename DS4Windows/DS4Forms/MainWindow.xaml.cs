@@ -1383,7 +1383,7 @@ Suspend support not enabled.", true);
             if (profilesListBox.SelectedIndex >= 0)
             {
                 ProfileEntity entity = profileListHolder.ProfileListCol[profilesListBox.SelectedIndex];
-                ShowProfileEditor(4, entity);
+                ShowProfileEditor(Global.DS4_CONTROLLER_COUNT, entity);
             }
         }
 
@@ -1411,7 +1411,7 @@ Suspend support not enabled.", true);
 
         private void NewProfListBtn_Click(object sender, RoutedEventArgs e)
         {
-            ShowProfileEditor(4, null);
+            ShowProfileEditor(Global.DS4_CONTROLLER_COUNT, null);
         }
 
         private void ShowProfileEditor(int device, ProfileEntity entity = null)
@@ -1461,7 +1461,7 @@ Suspend support not enabled.", true);
             if (profilesListBox.SelectedIndex >= 0)
             {
                 ProfileEntity entity = profileListHolder.ProfileListCol[profilesListBox.SelectedIndex];
-                ShowProfileEditor(4, entity);
+                ShowProfileEditor(Global.DS4_CONTROLLER_COUNT, entity);
             }
         }
 

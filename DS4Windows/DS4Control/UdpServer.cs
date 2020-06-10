@@ -124,7 +124,7 @@ namespace DS4Windows
             public ClientRequestTimes()
             {
                 allPads = DateTime.MinValue;
-                padIds = new DateTime[4];
+                padIds = new DateTime[Global.DS4_CONTROLLER_COUNT];
 
                 for (int i = 0; i < padIds.Length; i++)
                     padIds[i] = DateTime.MinValue;

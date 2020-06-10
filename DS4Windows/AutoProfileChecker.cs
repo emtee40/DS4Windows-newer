@@ -75,7 +75,7 @@ namespace DS4WinWPF
                     }
 
                     // Program match found. Check if the new profile is different than current profile of the controller. Load the new profile only if it is not already loaded.
-                    for (int j = 0; j < 4; j++)
+                    for (int j = 0; j < Global.DS4_CONTROLLER_COUNT; j++)
                     {
                         string tempname = matchedProfileEntity.ProfileNames[j];
                         if (tempname != string.Empty && tempname != "(none)")
@@ -127,7 +127,7 @@ namespace DS4WinWPF
                     }
 
                     tempAutoProfile = null;
-                    for (int j = 0; j < 4; j++)
+                    for (int j = 0; j < Global.DS4_CONTROLLER_COUNT; j++)
                     {
                         if (Global.useTempProfile[j])
                         {

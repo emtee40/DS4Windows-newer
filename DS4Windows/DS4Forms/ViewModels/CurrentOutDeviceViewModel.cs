@@ -95,7 +95,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             OutputSlotManager outputMan)
         {
             outSlotManager = outputMan;
-            slotDeviceEntries = new List<SlotDeviceEntry>(4);
+            slotDeviceEntries = new List<SlotDeviceEntry>(Global.DS4_CONTROLLER_COUNT);
             foreach(OutSlotDevice tempDev in outputMan.OutputSlots)
             {
                 SlotDeviceEntry tempEntry = new SlotDeviceEntry(tempDev);

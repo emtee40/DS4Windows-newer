@@ -1555,7 +1555,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public ProfileSettingsViewModel(int device)
         {
             this.device = device;
-            funcDevNum = device < 4 ? device : 0;
+            funcDevNum = device < Global.DS4_CONTROLLER_COUNT ? device : 0;
             tempControllerIndex = ControllerTypeIndex;
             Global.outDevTypeTemp[device] = OutContType.X360;
             tempBtPollRate = Global.BTPollRate[device];
@@ -1666,7 +1666,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void UpdateForcedColor(System.Windows.Media.Color color)
         {
-            if (device < 4)
+            if (device < Global.DS4_CONTROLLER_COUNT)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
                 DS4LightBar.forcedColor[device] = dcolor;
@@ -1677,7 +1677,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void StartForcedColor(System.Windows.Media.Color color)
         {
-            if (device < 4)
+            if (device < Global.DS4_CONTROLLER_COUNT)
             {
                 DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
                 DS4LightBar.forcedColor[device] = dcolor;
@@ -1688,7 +1688,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public void EndForcedColor()
         {
-            if (device < 4)
+            if (device < Global.DS4_CONTROLLER_COUNT)
             {
                 DS4LightBar.forcedColor[device] = new DS4Color(0, 0, 0);
                 DS4LightBar.forcedFlash[device] = 0;

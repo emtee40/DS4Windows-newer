@@ -1015,7 +1015,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                         <Label Content="Use Controller" ToolTip="{lex:Loc Resources:UseControllerForMapping}" />
                         <xctk:IntegerUpDown x:Name="useControllerUD" d:IsHidden="True" Width="40" Margin="8,0,0,0"
-                                            Value="0" Minimum="0" Maximum="4" IsEnabled="False"
+                                            Value="0" Minimum="0" Maximum="8" IsEnabled="False"
                                             ToolTip="{lex:Loc Resources:UseControllerForMapping}" />
                         <CheckBox x:Name="useControllerReadoutCk" FlowDirection="RightToLeft" Content="for readout" VerticalAlignment="Center"
                                   Margin="8,0,0,0" IsChecked="{Binding UseControllerReadout}"
