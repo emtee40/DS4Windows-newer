@@ -617,8 +617,10 @@ namespace DS4Windows
             }
             else
             {
-                hDevice.readFeatureData(calibration);
-                sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
+                if (hDevice.readFeatureData(calibration))
+                {
+                    sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
+                }
             }
         }
 
@@ -1002,10 +1004,10 @@ namespace DS4Windows
 
                     cState.PacketCounter = pState.PacketCounter + 1;
                     cState.ReportTimeStamp = utcNow;
-                    cState.LX = inputReport[1];
-                    cState.LY = inputReport[2];
-                    cState.RX = inputReport[3];
-                    cState.RY = inputReport[4];
+                    cState.L.X = inputReport[1];
+                    cState.L.Y = inputReport[2];
+                    cState.R.X = inputReport[3];
+                    cState.R.Y = inputReport[4];
                     cState.L2 = inputReport[8];
                     cState.R2 = inputReport[9];
 
@@ -1641,9 +1643,9 @@ namespace DS4Windows
                 return false;
             // TODO calibrate to get an accurate jitter and center-play range and centered position
             const int slop = 64;
-            if (cState.LX <= 127 - slop || cState.LX >= 128 + slop || cState.LY <= 127 - slop || cState.LY >= 128 + slop)
+            if (cState.L.X <= 127 - slop || cState.L.X >= 128 + slop || cState.L.Y <= 127 - slop || cState.L.Y >= 128 + slop)
                 return false;
-            if (cState.RX <= 127 - slop || cState.RX >= 128 + slop || cState.RY <= 127 - slop || cState.RY >= 128 + slop)
+            if (cState.R.X <= 127 - slop || cState.R.X >= 128 + slop || cState.R.Y <= 127 - slop || cState.R.Y >= 128 + slop)
                 return false;
             if (cState.Touch1 || cState.Touch2 || cState.TouchButton)
                 return false;

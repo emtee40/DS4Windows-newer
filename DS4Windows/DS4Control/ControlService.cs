@@ -1772,21 +1772,21 @@ namespace DS4Windows
                     result = DS4Controls.Options;
                 else if (Mapping.getBoolButtonMapping(cState.PS))
                     result = DS4Controls.PS;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, true))
+                else if (Mapping.getBoolAxisDirMapping(cState.L.X, true))
                     result = DS4Controls.LXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, false))
+                else if (Mapping.getBoolAxisDirMapping(cState.L.X, false))
                     result = DS4Controls.LXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, true))
+                else if (Mapping.getBoolAxisDirMapping(cState.L.Y, true))
                     result = DS4Controls.LYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, false))
+                else if (Mapping.getBoolAxisDirMapping(cState.L.Y, false))
                     result = DS4Controls.LYNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, true))
+                else if (Mapping.getBoolAxisDirMapping(cState.R.X, true))
                     result = DS4Controls.RXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, false))
+                else if (Mapping.getBoolAxisDirMapping(cState.R.X, false))
                     result = DS4Controls.RXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, true))
+                else if (Mapping.getBoolAxisDirMapping(cState.R.Y, true))
                     result = DS4Controls.RYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, false))
+                else if (Mapping.getBoolAxisDirMapping(cState.R.Y, false))
                     result = DS4Controls.RYNeg;
                 else if (Mapping.getBoolTouchMapping(tp.leftDown))
                     result = DS4Controls.TouchLeft;

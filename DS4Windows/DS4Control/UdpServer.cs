@@ -506,13 +506,13 @@ namespace DS4Windows
                 outputData[++outIdx] = (hidReport.TouchButton) ? (byte)1 : (byte)0;
 
                 //Left stick
-                outputData[++outIdx] = hidReport.LX;
-                outputData[++outIdx] = hidReport.LY;
+                outputData[++outIdx] = hidReport.L.X;
+                outputData[++outIdx] = hidReport.L.Y;
                 outputData[outIdx] = (byte)(255 - outputData[outIdx]); //invert Y by convention
 
                 //Right stick
-                outputData[++outIdx] = hidReport.RX;
-                outputData[++outIdx] = hidReport.RY;
+                outputData[++outIdx] = hidReport.R.X;
+                outputData[++outIdx] = hidReport.R.Y;
                 outputData[outIdx] = (byte)(255 - outputData[outIdx]); //invert Y by convention
 
                 //we don't have analog buttons on DS4 :(

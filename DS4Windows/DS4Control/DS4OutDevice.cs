@@ -79,37 +79,37 @@ namespace DS4Windows
             switch (steeringWheelMappedAxis)
             {
                 case SASteeringWheelEmulationAxisType.None:
-                    cont.LeftThumbX = state.LX;
-                    cont.LeftThumbY = state.LY;
-                    cont.RightThumbX = state.RX;
-                    cont.RightThumbY = state.RY;
+                    cont.LeftThumbX = state.L.X;
+                    cont.LeftThumbY = state.L.Y;
+                    cont.RightThumbX = state.R.X;
+                    cont.RightThumbY = state.R.Y;
                     break;
 
                 case SASteeringWheelEmulationAxisType.LX:
                     cont.LeftThumbX = (byte)state.SASteeringWheelEmulationUnit;
-                    cont.LeftThumbY = state.LY;
-                    cont.RightThumbX = state.RX;
-                    cont.RightThumbY = state.RY;
+                    cont.LeftThumbY = state.L.Y;
+                    cont.RightThumbX = state.R.X;
+                    cont.RightThumbY = state.R.Y;
                     break;
 
                 case SASteeringWheelEmulationAxisType.LY:
-                    cont.LeftThumbX = state.LX;
+                    cont.LeftThumbX = state.L.X;
                     cont.LeftThumbY = (byte)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbX = state.RX;
-                    cont.RightThumbY = state.RY;
+                    cont.RightThumbX = state.R.X;
+                    cont.RightThumbY = state.R.Y;
                     break;
 
                 case SASteeringWheelEmulationAxisType.RX:
-                    cont.LeftThumbX = state.LX;
-                    cont.LeftThumbY = state.LY;
+                    cont.LeftThumbX = state.L.X;
+                    cont.LeftThumbY = state.L.Y;
                     cont.RightThumbX = (byte)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbY = state.RY;
+                    cont.RightThumbY = state.R.Y;
                     break;
 
                 case SASteeringWheelEmulationAxisType.RY:
-                    cont.LeftThumbX = state.LX;
-                    cont.LeftThumbY = state.LY;
-                    cont.RightThumbX = state.RX;
+                    cont.LeftThumbX = state.L.X;
+                    cont.LeftThumbY = state.L.Y;
+                    cont.RightThumbX = state.R.X;
                     cont.RightThumbY = (byte)state.SASteeringWheelEmulationUnit;
                     break;
 

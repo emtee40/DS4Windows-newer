@@ -62,37 +62,37 @@ namespace DS4Windows
             switch (steeringWheelMappedAxis)
             {
                 case SASteeringWheelEmulationAxisType.None:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
+                    cont.LeftThumbX = AxisScale(state.L.X, false);
+                    cont.LeftThumbY = AxisScale(state.L.Y, true);
+                    cont.RightThumbX = AxisScale(state.R.X, false);
+                    cont.RightThumbY = AxisScale(state.R.Y, true);
                     break;
 
                 case SASteeringWheelEmulationAxisType.LX:
                     cont.LeftThumbX = (short)state.SASteeringWheelEmulationUnit;
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
+                    cont.LeftThumbY = AxisScale(state.L.Y, true);
+                    cont.RightThumbX = AxisScale(state.R.X, false);
+                    cont.RightThumbY = AxisScale(state.R.Y, true);
                     break;
 
                 case SASteeringWheelEmulationAxisType.LY:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
+                    cont.LeftThumbX = AxisScale(state.L.X, false);
                     cont.LeftThumbY = (short)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbX = AxisScale(state.RX, false);
-                    cont.RightThumbY = AxisScale(state.RY, true);
+                    cont.RightThumbX = AxisScale(state.R.X, false);
+                    cont.RightThumbY = AxisScale(state.R.Y, true);
                     break;
 
                 case SASteeringWheelEmulationAxisType.RX:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
+                    cont.LeftThumbX = AxisScale(state.L.X, false);
+                    cont.LeftThumbY = AxisScale(state.L.Y, true);
                     cont.RightThumbX = (short)state.SASteeringWheelEmulationUnit;
-                    cont.RightThumbY = AxisScale(state.RY, true);
+                    cont.RightThumbY = AxisScale(state.R.Y, true);
                     break;
 
                 case SASteeringWheelEmulationAxisType.RY:
-                    cont.LeftThumbX = AxisScale(state.LX, false);
-                    cont.LeftThumbY = AxisScale(state.LY, true);
-                    cont.RightThumbX = AxisScale(state.RX, false);
+                    cont.LeftThumbX = AxisScale(state.L.X, false);
+                    cont.LeftThumbY = AxisScale(state.L.Y, true);
+                    cont.RightThumbX = AxisScale(state.R.X, false);
                     cont.RightThumbY = (short)state.SASteeringWheelEmulationUnit;
                     break;
 

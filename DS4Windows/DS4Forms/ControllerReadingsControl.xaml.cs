@@ -214,24 +214,24 @@ namespace DS4WinWPF.DS4Forms
 
                 Dispatcher.Invoke(() =>
                 {
-                    int x = baseState.LX;
-                    int y = baseState.LY;
+                    int x = baseState.L.X;
+                    int y = baseState.L.Y;
 
                     Canvas.SetLeft(lsValRec, x / 255.0 * CANVAS_WIDTH - 3);
                     Canvas.SetTop(lsValRec, y / 255.0 * CANVAS_WIDTH - 3);
                     //bool mappedLS = interState.LX != x || interState.LY != y;
                     //if (mappedLS)
                     //{
-                        Canvas.SetLeft(lsMapValRec, interState.LX / 255.0 * CANVAS_WIDTH - 3);
-                        Canvas.SetTop(lsMapValRec, interState.LY / 255.0 * CANVAS_WIDTH - 3);
+                        Canvas.SetLeft(lsMapValRec, interState.L.X / 255.0 * CANVAS_WIDTH - 3);
+                        Canvas.SetTop(lsMapValRec, interState.L.Y / 255.0 * CANVAS_WIDTH - 3);
                     //}
 
-                    x = baseState.RX;
-                    y = baseState.RY;
+                    x = baseState.R.X;
+                    y = baseState.R.Y;
                     Canvas.SetLeft(rsValRec, x / 255.0 * CANVAS_WIDTH - 3);
                     Canvas.SetTop(rsValRec, y / 255.0 * CANVAS_WIDTH - 3);
-                    Canvas.SetLeft(rsMapValRec, interState.RX / 255.0 * CANVAS_WIDTH - 3);
-                    Canvas.SetTop(rsMapValRec, interState.RY / 255.0 * CANVAS_WIDTH - 3);
+                    Canvas.SetLeft(rsMapValRec, interState.R.X / 255.0 * CANVAS_WIDTH - 3);
+                    Canvas.SetTop(rsMapValRec, interState.R.Y / 255.0 * CANVAS_WIDTH - 3);
 
                     x = exposeState.getAccelX() + 127;
                     y = exposeState.getAccelZ() + 127;
@@ -317,15 +317,15 @@ namespace DS4WinWPF.DS4Forms
         private void UpdateCoordLabels(DS4State inState, DS4State mapState,
             DS4StateExposed exposeState)
         {
-            lxInValLb.Content = inState.LX;
-            lxOutValLb.Content = mapState.LX;
-            lyInValLb.Content = inState.LY;
-            lyOutValLb.Content = mapState.LY;
+            lxInValLb.Content = inState.L.X;
+            lxOutValLb.Content = mapState.L.X;
+            lyInValLb.Content = inState.L.Y;
+            lyOutValLb.Content = mapState.L.Y;
 
-            rxInValLb.Content = inState.RX;
-            rxOutValLb.Content = mapState.RX;
-            ryInValLb.Content = inState.RY;
-            ryOutValLb.Content = mapState.RY;
+            rxInValLb.Content = inState.R.X;
+            rxOutValLb.Content = mapState.R.X;
+            ryInValLb.Content = inState.R.Y;
+            ryOutValLb.Content = mapState.R.Y;
 
             sixAxisXInValLb.Content = exposeState.AccelX;
             sixAxisXOutValLb.Content = mapState.Motion.outputAccelX;

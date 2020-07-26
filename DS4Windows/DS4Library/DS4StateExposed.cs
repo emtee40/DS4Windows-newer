@@ -35,10 +35,10 @@ namespace DS4Windows
         bool TouchButton { get { return _state.TouchButton; } }
         bool Touch1Finger { get { return _state.Touch1Finger; } }
         bool Touch2Fingers { get { return _state.Touch2Fingers; } }
-        byte LX { get { return _state.LX; } }
-        byte RX { get { return _state.RX; } }
-        byte LY { get { return _state.LY; } }
-        byte RY { get { return _state.RY; } }
+        byte LX { get { return _state.L.X; } }
+        byte RX { get { return _state.R.X; } }
+        byte LY { get { return _state.L.Y; } }
+        byte RY { get { return _state.R.Y; } }
         byte L2 { get { return _state.L2; } }
         byte R2 { get { return _state.R2; } }
         int Battery { get { return _state.Battery; } }

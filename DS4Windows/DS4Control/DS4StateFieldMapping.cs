@@ -66,15 +66,15 @@ namespace DS4Windows
         {
             unchecked
             {
-                axisdirs[(int)DS4Controls.LXNeg] = cState.LX;
-                axisdirs[(int)DS4Controls.LXPos] = cState.LX;
-                axisdirs[(int)DS4Controls.LYNeg] = cState.LY;
-                axisdirs[(int)DS4Controls.LYPos] = cState.LY;
+                axisdirs[(int)DS4Controls.LXNeg] = cState.L.X;
+                axisdirs[(int)DS4Controls.LXPos] = cState.L.X;
+                axisdirs[(int)DS4Controls.LYNeg] = cState.L.Y;
+                axisdirs[(int)DS4Controls.LYPos] = cState.L.Y;
 
-                axisdirs[(int)DS4Controls.RXNeg] = cState.RX;
-                axisdirs[(int)DS4Controls.RXPos] = cState.RX;
-                axisdirs[(int)DS4Controls.RYNeg] = cState.RY;
-                axisdirs[(int)DS4Controls.RYPos] = cState.RY;
+                axisdirs[(int)DS4Controls.RXNeg] = cState.R.X;
+                axisdirs[(int)DS4Controls.RXPos] = cState.R.X;
+                axisdirs[(int)DS4Controls.RYNeg] = cState.R.Y;
+                axisdirs[(int)DS4Controls.RYPos] = cState.R.Y;
 
                 triggers[(int)DS4Controls.L2] = cState.L2;
                 triggers[(int)DS4Controls.R2] = cState.R2;
@@ -127,15 +127,15 @@ namespace DS4Windows
         {
             unchecked
             {
-                state.LX = axisdirs[(int)DS4Controls.LXNeg];
-                state.LX = axisdirs[(int)DS4Controls.LXPos];
-                state.LY = axisdirs[(int)DS4Controls.LYNeg];
-                state.LY = axisdirs[(int)DS4Controls.LYPos];
+                state.L.X = axisdirs[(int)DS4Controls.LXNeg];
+                state.L.X = axisdirs[(int)DS4Controls.LXPos];
+                state.L.Y = axisdirs[(int)DS4Controls.LYNeg];
+                state.L.Y = axisdirs[(int)DS4Controls.LYPos];
 
-                state.RX = axisdirs[(int)DS4Controls.RXNeg];
-                state.RX = axisdirs[(int)DS4Controls.RXPos];
-                state.RY = axisdirs[(int)DS4Controls.RYNeg];
-                state.RY = axisdirs[(int)DS4Controls.RYPos];
+                state.R.X = axisdirs[(int)DS4Controls.RXNeg];
+                state.R.X = axisdirs[(int)DS4Controls.RXPos];
+                state.R.Y = axisdirs[(int)DS4Controls.RYNeg];
+                state.R.Y = axisdirs[(int)DS4Controls.RYPos];
 
                 state.L2 = triggers[(int)DS4Controls.L2];
                 state.R2 = triggers[(int)DS4Controls.R2];
