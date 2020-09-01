@@ -16,7 +16,6 @@ namespace DS4Windows
     public class ControlService
     {
         public ViGEmClient vigemTestClient = null;
-        public const int DS4_CONTROLLER_COUNT = Global.DS4_CONTROLLER_COUNT;
         public DS4Device[] DS4Controllers = new DS4Device[DS4_CONTROLLER_COUNT];
         public Mouse[] touchPad = new Mouse[DS4_CONTROLLER_COUNT];
         public bool running = false;
@@ -28,10 +27,10 @@ namespace DS4Windows
         public ControllerSlotManager slotManager = new ControllerSlotManager();
         public bool recordingMacro = false;
         public event EventHandler<DebugEventArgs> Debug = null;
-        bool[] buttonsdown = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
+        bool[] buttonsdown = new bool[DS4_CONTROLLER_COUNT];
         bool[] held = new bool[DS4_CONTROLLER_COUNT];
-        int[] oldmouse = new int[DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
-        public OutputDevice[] outputDevices = new OutputDevice[Global.DS4_CONTROLLER_COUNT] { null, null, null, null, null, null, null, null };
+        int[] oldmouse = InitControllerArray(DS4_CONTROLLER_COUNT, -1);
+        public OutputDevice[] outputDevices = new OutputDevice[DS4_CONTROLLER_COUNT];
         Thread tempThread;
         Thread tempBusThread;
         Thread eventDispatchThread;
@@ -52,11 +51,7 @@ namespace DS4Windows
         public delegate void HotplugControllerHandler(ControlService sender, DS4Device device, int index);
         public event HotplugControllerHandler HotplugController;
 
-        private byte[][] udpOutBuffers = new byte[DS4_CONTROLLER_COUNT][]
-        {
-            new byte[100], new byte[100], new byte[100], new byte[100],
-            new byte[100], new byte[100], new byte[100], new byte[100]
-        };
+        private byte[][] udpOutBuffers = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new byte[100]; });
 
         void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
         {
@@ -1534,11 +1529,11 @@ namespace DS4Windows
             }
         }
 
-        public bool[] lag = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        public bool[] inWarnMonitor = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        private byte[] currentBattery = new byte[DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        private bool[] charging = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        private string[] tempStrings = new string[DS4_CONTROLLER_COUNT] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public bool[] lag = new bool[DS4_CONTROLLER_COUNT];
+        public bool[] inWarnMonitor = new bool[DS4_CONTROLLER_COUNT];
+        //private byte[] currentBattery = new byte[DS4_CONTROLLER_COUNT];
+        //private bool[] charging = new bool[DS4_CONTROLLER_COUNT];
+        private string[] tempStrings = new string[DS4_CONTROLLER_COUNT];
 
         // Called every time a new input report has arrived
         //protected virtual void On_Report(object sender, EventArgs e, int ind)
@@ -1794,8 +1789,8 @@ namespace DS4Windows
             return result;
         }
 
-        public bool[] touchreleased = new bool[DS4_CONTROLLER_COUNT] { true, true, true, true, true, true, true, true },
-            touchslid = new bool[DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
+        public bool[] touchreleased = InitControllerArray(DS4_CONTROLLER_COUNT, true);
+        public bool[] touchslid = new bool[DS4_CONTROLLER_COUNT];
 
         public Dispatcher EventDispatcher { get => eventDispatcher; }
         public OutputSlotManager OutputslotMan { get => outputslotMan; }

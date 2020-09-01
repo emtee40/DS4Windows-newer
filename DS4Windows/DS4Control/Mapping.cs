@@ -61,7 +61,7 @@ namespace DS4Windows
 
         public class ActionState
         {
-            public bool[] dev = new bool[Global.DS4_CONTROLLER_COUNT];
+            public bool[] dev = new bool[DS4_CONTROLLER_COUNT];
         }
 
         struct ControlToXInput
@@ -75,11 +75,7 @@ namespace DS4Windows
             }
         }
 
-        static Queue<ControlToXInput>[] customMapQueue = new Queue<ControlToXInput>[Global.DS4_CONTROLLER_COUNT]
-        {
-            new Queue<ControlToXInput>(), new Queue<ControlToXInput>(), new Queue<ControlToXInput>(), new Queue<ControlToXInput>(),
-            new Queue<ControlToXInput>(), new Queue<ControlToXInput>(), new Queue<ControlToXInput>(), new Queue<ControlToXInput>()
-        };
+        static Queue<ControlToXInput>[] customMapQueue = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new Queue<ControlToXInput>(); });
 
         struct DS4Vector2
         {
@@ -159,19 +155,14 @@ namespace DS4Windows
             }
         }
 
-        private static DS4SquareStick[] outSqrStk = new DS4SquareStick[Global.DS4_CONTROLLER_COUNT] { new DS4SquareStick(),
-        new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
-        new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick()};
+        private static DS4SquareStick[] outSqrStk = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new DS4SquareStick(); }); 
 
-        public static byte[] gyroStickX = new byte[Global.DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
-        public static byte[] gyroStickY = new byte[Global.DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
+        public static byte[] gyroStickX = InitControllerArray<byte>(DS4_CONTROLLER_COUNT, 128);
+        public static byte[] gyroStickY = InitControllerArray<byte>(DS4_CONTROLLER_COUNT, 128);
 
         // [<Device>][<AxisId>]. LX = 0, LY = 1, RX = 2, RY = 3
-        public static byte[][] lastStickAxisValues = new byte[4][]
-        {
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-            new byte[4] {128, 128, 128, 128}, new byte[4] {128, 128, 128, 128},
-        };
+        public static byte[][] lastStickAxisValues = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new byte[4] { 128, 128, 128, 128 }; }); 
+
         //static int lastGyroX = 0;
         //static int lastGyroZ = 0;
 
@@ -182,33 +173,16 @@ namespace DS4Windows
         //private static OneEuroFilter wheel360FilterX = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
         //private static OneEuroFilter wheel360FilterZ = new OneEuroFilter(minCutoff: 0.1, beta: 0.02);
 
-        public static OneEuroFilter[] wheelFilters = new OneEuroFilter[ControlService.DS4_CONTROLLER_COUNT];
+        public static OneEuroFilter[] wheelFilters = new OneEuroFilter[DS4_CONTROLLER_COUNT];
 
         static ReaderWriterLockSlim syncStateLock = new ReaderWriterLockSlim();
 
         public static SyntheticState globalState = new SyntheticState();
-        public static SyntheticState[] deviceState = new SyntheticState[Global.DS4_CONTROLLER_COUNT]
-            { new SyntheticState(), new SyntheticState(), new SyntheticState(),
-              new SyntheticState(), new SyntheticState(), new SyntheticState(), new SyntheticState(),
-              new SyntheticState()  };
+        public static SyntheticState[] deviceState = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new SyntheticState(); });
 
-        public static DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[Global.DS4_CONTROLLER_COUNT] {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping()
-        };
-        public static DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[Global.DS4_CONTROLLER_COUNT]
-        {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping()
-        };
-        public static DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[Global.DS4_CONTROLLER_COUNT]
-        {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping()
-        };
+        public static DS4StateFieldMapping[] fieldMappings = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new DS4StateFieldMapping(); });
+        public static DS4StateFieldMapping[] outputFieldMappings = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new DS4StateFieldMapping(); });
+        public static DS4StateFieldMapping[] previousFieldMappings = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new DS4StateFieldMapping(); });
 
         // TODO When we disconnect, process a null/dead state to release any keys or buttons.
         public static DateTime oldnow = DateTime.UtcNow;
@@ -219,20 +193,18 @@ namespace DS4Windows
         public static bool[] pressedonce = new bool[261], macrodone = new bool[38];
         static bool[] macroControl = new bool[25];
         static uint macroCount = 0;
-        static Dictionary<string, Task>[] macroTaskQueue = new Dictionary<string, Task>[Global.DS4_CONTROLLER_COUNT] { new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>() };
+        static Dictionary<string, Task>[] macroTaskQueue = InitControllerArrayFunc(DS4_CONTROLLER_COUNT, () => { return new Dictionary<string, Task>(); });
 
         //actions
-        public static int[] fadetimer = new int[Global.DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] prevFadetimer = new int[Global.DS4_CONTROLLER_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static DS4Color[] lastColor = new DS4Color[Global.DS4_CONTROLLER_COUNT];
+        public static int[] fadetimer = new int[DS4_CONTROLLER_COUNT];
+        public static int[] prevFadetimer = new int[DS4_CONTROLLER_COUNT];
+        public static DS4Color[] lastColor = new DS4Color[DS4_CONTROLLER_COUNT];
         public static List<ActionState> actionDone = new List<ActionState>();
-        public static SpecialAction[] untriggeraction = new SpecialAction[Global.DS4_CONTROLLER_COUNT];
-        public static DateTime[] nowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
-        public static DateTime[] oldnowAction = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
-        public static int[] untriggerindex = new int[Global.DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
-        public static DateTime[] oldnowKeyAct = new DateTime[Global.DS4_CONTROLLER_COUNT] { DateTime.MinValue,
-            DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-            DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
+        public static SpecialAction[] untriggeraction = new SpecialAction[DS4_CONTROLLER_COUNT];
+        public static DateTime[] nowAction = InitControllerArray(DS4_CONTROLLER_COUNT, DateTime.MinValue);
+        public static DateTime[] oldnowAction = InitControllerArray(DS4_CONTROLLER_COUNT, DateTime.MinValue);
+        public static int[] untriggerindex = InitControllerArray(DS4_CONTROLLER_COUNT, -1);
+        public static DateTime[] oldnowKeyAct = InitControllerArray(DS4_CONTROLLER_COUNT, DateTime.MinValue);
 
         private static DS4Controls[] shiftTriggerMapping = new DS4Controls[26] { DS4Controls.None, DS4Controls.Cross, DS4Controls.Circle, DS4Controls.Square,
             DS4Controls.Triangle, DS4Controls.Options, DS4Controls.Share, DS4Controls.DpadUp, DS4Controls.DpadDown,
@@ -301,8 +273,8 @@ namespace DS4Windows
         public static int prevmouseaccel = 0;
         private static double horizontalRemainder = 0.0, verticalRemainder = 0.0;
         public const int MOUSESPEEDFACTOR = 48;
-        private const double MOUSESTICKANTIOFFSET = 0.0128;
-        private const double MOUSESTICKMINVELOCITY = 67.5;
+        //private const double MOUSESTICKANTIOFFSET = 0.0128;
+        //private const double MOUSESTICKMINVELOCITY = 67.5;
         //private const double MOUSESTICKMINVELOCITY = 40.0;
 
         public static void Commit(int device)

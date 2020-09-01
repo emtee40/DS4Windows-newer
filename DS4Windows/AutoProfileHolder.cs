@@ -131,8 +131,7 @@ namespace DS4WinWPF
         public string Path { get => path; set => SetSearchPath(value); }
         public string Title { get => title; set => SetSearchTitle(value); }
         public bool Turnoff { get => turnoff; set => turnoff = value; }
-        public string[] ProfileNames { get; set; } = new string[Global.DS4_CONTROLLER_COUNT] { string.Empty, string.Empty,
-            string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+        public string[] ProfileNames { get; set; } = Global.InitControllerArray(Global.DS4_CONTROLLER_COUNT, string.Empty);
 
         public AutoProfileEntity(string pathStr, string titleStr)
         {
