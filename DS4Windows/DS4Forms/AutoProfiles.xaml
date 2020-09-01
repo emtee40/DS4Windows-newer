@@ -22,7 +22,7 @@
                         IsEnabled="{Binding Exists}" Click="RemoveAutoBtn_Click" />
                     <Button x:Name="saveAutoBtn" Content="{lex:Loc Save}" Margin="20,0,0,0" Height="20" Width="80" Click="SaveAutoBtn_Click" />
                 </StackPanel>
-                <Grid Margin="0,8">
+                <Grid x:Name="Grid" Margin="0,8">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -35,7 +35,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Content="{lex:Loc Controller1Text}" Margin="{StaticResource spaceMargin}" />
-                    <ComboBox x:Name="cont1AutoProf" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                    <ComboBox Grid.Column="1" Margin="{StaticResource spaceMargin}"
                               SelectedIndex="{Binding SelectedIndexCon[0]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
@@ -55,7 +55,7 @@
                     </ComboBox>
 
                     <Label Content="{lex:Loc Controller2Text}" Grid.Row="1" Margin="{StaticResource spaceMargin}" />
-                    <ComboBox x:Name="cont2AutoProf" Grid.Row="1" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="{StaticResource spaceMargin}"
                               SelectedIndex="{Binding SelectedIndexCon[1]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
@@ -75,7 +75,7 @@
                     </ComboBox>
 
                     <Label Content="{lex:Loc Controller3Text}" Grid.Row="2" Margin="{StaticResource spaceMargin}" />
-                    <ComboBox x:Name="cont3AutoProf" Grid.Row="2" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="{StaticResource spaceMargin}"
                               SelectedIndex="{Binding SelectedIndexCon[2]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
@@ -95,7 +95,7 @@
                     </ComboBox>
 
                     <Label Content="{lex:Loc Controller4Text}" Grid.Row="3" Margin="{StaticResource spaceMargin}" />
-                    <ComboBox x:Name="cont4AutoProf" Grid.Row="3" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="{StaticResource spaceMargin}"
                               SelectedIndex="{Binding SelectedIndexCon[3]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">

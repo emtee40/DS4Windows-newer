@@ -7,6 +7,7 @@ using Ookii.Dialogs.Wpf;
 using DS4WinWPF.DS4Forms.ViewModels;
 using Microsoft.Win32;
 using DS4Windows;
+using System.Windows.Data;
 
 namespace DS4WinWPF.DS4Forms
 {
@@ -37,8 +38,6 @@ namespace DS4WinWPF.DS4Forms
             if (!File.Exists(Global.appdatapath + @"\Auto Profiles.xml"))
                 Global.CreateAutoProfiles(m_Profile);
 
-            //LoadP();
-
             if (Global.UseCustomSteamFolder &&
                 Directory.Exists(Global.CustomSteamFolder))
                 steamgamesdir = Global.CustomSteamFolder;
@@ -64,10 +63,16 @@ namespace DS4WinWPF.DS4Forms
             autoProfVM.CurrentItemChange += AutoProfVM_CurrentItemChange;
 
             this.profileList = profileList;
-            cont1AutoProfCol.Collection = profileList.ProfileListCol;
-            cont2AutoProfCol.Collection = profileList.ProfileListCol;
-            cont3AutoProfCol.Collection = profileList.ProfileListCol;
-            cont4AutoProfCol.Collection = profileList.ProfileListCol;
+
+            foreach (UIElement element in Grid.Children)
+            {
+                if (element is ComboBox)
+                {
+                    ComboBox cb = (ComboBox)element;
+                    CollectionContainer cc = cb.ItemsSource.OfType<CollectionContainer>().First();
+                    cc.Collection = profileList.ProfileListCol;
+                }
+            }
         }
 
         private void AutoProfVM_CurrentItemChange(AutoProfilesViewModel sender, ProgramItem item)
@@ -102,10 +107,14 @@ namespace DS4WinWPF.DS4Forms
                 editControlsPanel.DataContext = null;
                 editControlsPanel.IsEnabled = false;
 
-                cont1AutoProf.SelectedIndex = 0;
-                cont2AutoProf.SelectedIndex = 0;
-                cont3AutoProf.SelectedIndex = 0;
-                cont4AutoProf.SelectedIndex = 0;
+                foreach (UIElement element in Grid.Children)
+                {
+                    if (element is ComboBox)
+                    {
+                        ComboBox cb = (ComboBox)element;
+                        cb.SelectedIndex = 0;
+                    }
+                }
             }
         }
 
