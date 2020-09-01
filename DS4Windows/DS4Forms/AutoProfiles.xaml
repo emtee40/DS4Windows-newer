@@ -22,21 +22,23 @@
                         IsEnabled="{Binding Exists}" Click="RemoveAutoBtn_Click" />
                     <Button x:Name="saveAutoBtn" Content="{lex:Loc Save}" Margin="20,0,0,0" Height="20" Width="80" Click="SaveAutoBtn_Click" />
                 </StackPanel>
+                
                 <Grid x:Name="Grid" Margin="0,8">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <!-- Updated in code -->
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="{lex:Loc Controller1Text}" Margin="{StaticResource spaceMargin}" />
-                    <ComboBox Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon[0]}">
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="1" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                                  SelectedIndex="{Binding SelectedIndexCon[0]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -49,14 +51,18 @@
                         <ComboBox.ItemsSource>
                             <CompositeCollection>
                                 <ComboBoxItem Content="(none)"/>
-                                <CollectionContainer x:Name="cont1AutoProfCol" />
+                                <CollectionContainer />
                             </CompositeCollection>
                         </ComboBox.ItemsSource>
                     </ComboBox>
 
-                    <Label Content="{lex:Loc Controller2Text}" Grid.Row="1" Margin="{StaticResource spaceMargin}" />
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="2" />
+                    </StackPanel>
                     <ComboBox Grid.Row="1" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon[1]}">
+                                  SelectedIndex="{Binding SelectedIndexCon[1]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -69,14 +75,18 @@
                         <ComboBox.ItemsSource>
                             <CompositeCollection>
                                 <ComboBoxItem Content="(none)"/>
-                                <CollectionContainer x:Name="cont2AutoProfCol" />
+                                <CollectionContainer />
                             </CompositeCollection>
                         </ComboBox.ItemsSource>
                     </ComboBox>
 
-                    <Label Content="{lex:Loc Controller3Text}" Grid.Row="2" Margin="{StaticResource spaceMargin}" />
+                    
+                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="3" />
+                    </StackPanel>
                     <ComboBox Grid.Row="2" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon[2]}">
+                                  SelectedIndex="{Binding SelectedIndexCon[2]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -89,14 +99,18 @@
                         <ComboBox.ItemsSource>
                             <CompositeCollection>
                                 <ComboBoxItem Content="(none)"/>
-                                <CollectionContainer x:Name="cont3AutoProfCol" />
+                                <CollectionContainer />
                             </CompositeCollection>
                         </ComboBox.ItemsSource>
                     </ComboBox>
 
-                    <Label Content="{lex:Loc Controller4Text}" Grid.Row="3" Margin="{StaticResource spaceMargin}" />
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="4" />
+                    </StackPanel>
                     <ComboBox Grid.Row="3" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon[3]}">
+                                  SelectedIndex="{Binding SelectedIndexCon[3]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -109,10 +123,109 @@
                         <ComboBox.ItemsSource>
                             <CompositeCollection>
                                 <ComboBoxItem Content="(none)"/>
-                                <CollectionContainer x:Name="cont4AutoProfCol" />
+                                <CollectionContainer />
                             </CompositeCollection>
                         </ComboBox.ItemsSource>
                     </ComboBox>
+
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="5" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="4" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                                  SelectedIndex="{Binding SelectedIndexCon[4]}">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                <TextBlock Text="{Binding Content}" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type entity:ProfileEntity}">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                        <ComboBox.ItemsSource>
+                            <CompositeCollection>
+                                <ComboBoxItem Content="(none)"/>
+                                <CollectionContainer />
+                            </CompositeCollection>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+
+                    <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="6" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="5" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                                  SelectedIndex="{Binding SelectedIndexCon[5]}">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                <TextBlock Text="{Binding Content}" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type entity:ProfileEntity}">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                        <ComboBox.ItemsSource>
+                            <CompositeCollection>
+                                <ComboBoxItem Content="(none)"/>
+                                <CollectionContainer />
+                            </CompositeCollection>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+
+                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="7" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="6" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                                  SelectedIndex="{Binding SelectedIndexCon[6]}">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                <TextBlock Text="{Binding Content}" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type entity:ProfileEntity}">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                        <ComboBox.ItemsSource>
+                            <CompositeCollection>
+                                <ComboBoxItem Content="(none)"/>
+                                <CollectionContainer />
+                            </CompositeCollection>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+
+                    <StackPanel Grid.Row="7" Grid.Column="0" Orientation="Horizontal">
+                        <Label Content="{lex:Loc ControllerText}" />
+                        <Label Content="8" />
+                    </StackPanel>
+                    <ComboBox Grid.Row="7" Grid.Column="1" Margin="{StaticResource spaceMargin}"
+                                  SelectedIndex="{Binding SelectedIndexCon[7]}">
+                        <ComboBox.Resources>
+                            <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                <TextBlock Text="{Binding Content}" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type entity:ProfileEntity}">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.Resources>
+                        <ComboBox.ItemsSource>
+                            <CompositeCollection>
+                                <ComboBoxItem Content="(none)"/>
+                                <CollectionContainer />
+                            </CompositeCollection>
+                        </ComboBox.ItemsSource>
+                    </ComboBox>
+
+
+
                 </Grid>
                 <CheckBox Content="Turn Off DS4Window Temporarily" Margin="{StaticResource spaceMargin}"
                           IsChecked="{Binding Turnoff}" />

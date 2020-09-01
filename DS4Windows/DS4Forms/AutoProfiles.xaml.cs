@@ -53,6 +53,14 @@ namespace DS4WinWPF.DS4Forms
 
         public void SetupDataContext(ProfileList profileList)
         {
+            if (Grid.RowDefinitions.Count != Global.DS4_CONTROLLER_COUNT)
+            {
+                for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
+                {
+                    Grid.RowDefinitions.Add(new RowDefinition());
+                }
+            }
+            
             autoProfVM = new AutoProfilesViewModel(autoProfileHolder, profileList);
             programListLV.DataContext = autoProfVM;
             programListLV.ItemsSource = autoProfVM.ProgramColl;
