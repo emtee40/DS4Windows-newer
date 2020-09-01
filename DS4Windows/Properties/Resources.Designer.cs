@@ -1043,9 +1043,9 @@ namespace DS4WinWPF.Properties {
                 return ResourceManager.GetString("QuickCharge", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to You must quit other applications like UWP apps (Netflix), Steam, Uplay, NVIDIA IN-GAME before activating the &apos;Hide DS4 Controller&apos; option. For more info check https://github.com/grasmanek94/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues.
+        ///   Looks up a localized string similar to You must quit other applications like UWP apps (Netflix), Steam, Uplay, Edge, NVIDIA IN-GAME before activating the &apos;Hide DS4 Controller&apos; option. For more info check https://github.com/grasmanek94/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues.
         /// </summary>
         public static string QuitOtherPrograms {
             get {
