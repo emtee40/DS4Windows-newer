@@ -2141,10 +2141,10 @@ namespace DS4Windows
             new SquareStickInfo(),
         };
 
-        public SteeringWheelSmoothingInfo[] wheelSmoothInfo = new SteeringWheelSmoothingInfo[5]
+        public SteeringWheelSmoothingInfo[] wheelSmoothInfo = new SteeringWheelSmoothingInfo[Global.DS4_CONTROLLER_COUNT + 1]
         {
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
-            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
+            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
+            new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(), new SteeringWheelSmoothingInfo(),
             new SteeringWheelSmoothingInfo(),
         };
 
