@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS4Windows;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -51,8 +52,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool RevertDefaultProfileOnUnknown
         {
-            get => DS4Windows.Global.AutoProfileRevertDefaultProfile;
-            set => DS4Windows.Global.AutoProfileRevertDefaultProfile = value;
+            get => Global.AutoProfileRevertDefaultProfile;
+            set => Global.AutoProfileRevertDefaultProfile = value;
         }
 
         public AutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)
@@ -175,11 +176,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 if (!skip)
                 {
                     ProgramItem item = new ProgramItem(target);
-                    /*if (autoProfileHolder.AutoProfileDict.TryGetValue(target, out AutoProfileEntity autoEntity))
-                    {
-                        item.MatchedAutoProfile = autoEntity;
-                    }
-                    */
 
                     programColl.Add(item);
                     existingapps.Add(target);
@@ -193,21 +189,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 AutoProfileEntity tempEntry = new AutoProfileEntity(item.Path, item.Title);
                 tempEntry.Turnoff = item.Turnoff;
-                int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
 
-                tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
+                for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
+                {
+                    int tempindex = item.SelectedIndexCon[i];
+                    tempEntry.ProfileNames[i] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                        AutoProfileEntity.NONE_STRING;
+                }
 
                 item.MatchedAutoProfile = tempEntry;
                 autoProfileHolder.AutoProfileColl.Add(item.MatchedAutoProfile);
@@ -218,22 +206,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (item.MatchedAutoProfile != null)
             {
-                AutoProfileEntity tempEntry = item.MatchedAutoProfile;
-                int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
-                    AutoProfileEntity.NONE_STRING;
+                for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
+                {
+                    AutoProfileEntity tempEntry = item.MatchedAutoProfile;
+                    int tempindex = item.SelectedIndexCon[i];
+                    tempEntry.ProfileNames[i] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                        AutoProfileEntity.NONE_STRING;
+                }
             }
         }
 
@@ -426,48 +405,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler ExistsChanged;
 
-        private int selectedIndexCon1 = 0;
-        private int selectedIndexCon2 = 0;
-        private int selectedIndexCon3 = 0;
-        private int selectedIndexCon4 = 0;
-
-        public int SelectedIndexCon1
-        {
-            get => selectedIndexCon1;
-            set
-            {
-                if (selectedIndexCon1 == value) return;
-                selectedIndexCon1 = value;
-            }
-        }
-
-        public int SelectedIndexCon2
-        {
-            get => selectedIndexCon2;
-            set
-            {
-                if (selectedIndexCon2 == value) return;
-                selectedIndexCon2 = value;
-            }
-        }
-        public int SelectedIndexCon3
-        {
-            get => selectedIndexCon3;
-            set
-            {
-                if (selectedIndexCon3 == value) return;
-                selectedIndexCon3 = value;
-            }
-        }
-        public int SelectedIndexCon4
-        {
-            get => selectedIndexCon4;
-            set
-            {
-                if (selectedIndexCon4 == value) return;
-                selectedIndexCon4 = value;
-            }
-        }
+        public int[] SelectedIndexCon { get; set; } = new int[Global.DS4_CONTROLLER_COUNT];
 
         public ProgramItem(string path, AutoProfileEntity autoProfileEntity = null)
         {
@@ -499,10 +437,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (matchedAutoProfile == null)
             {
-                selectedIndexCon1 = 0;
-                selectedIndexCon2 = 0;
-                selectedIndexCon3 = 0;
-                selectedIndexCon4 = 0;
+                for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
+                {
+                    SelectedIndexCon[i] = 0;
+                }
             }
 
             ExistsChanged?.Invoke(this, EventArgs.Empty);

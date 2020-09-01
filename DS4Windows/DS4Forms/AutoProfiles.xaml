@@ -36,7 +36,7 @@
 
                     <Label Content="{lex:Loc Controller1Text}" Margin="{StaticResource spaceMargin}" />
                     <ComboBox x:Name="cont1AutoProf" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon1}">
+                              SelectedIndex="{Binding SelectedIndexCon[0]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -56,7 +56,7 @@
 
                     <Label Content="{lex:Loc Controller2Text}" Grid.Row="1" Margin="{StaticResource spaceMargin}" />
                     <ComboBox x:Name="cont2AutoProf" Grid.Row="1" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon2}">
+                              SelectedIndex="{Binding SelectedIndexCon[1]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -76,7 +76,7 @@
 
                     <Label Content="{lex:Loc Controller3Text}" Grid.Row="2" Margin="{StaticResource spaceMargin}" />
                     <ComboBox x:Name="cont3AutoProf" Grid.Row="2" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon3}">
+                              SelectedIndex="{Binding SelectedIndexCon[2]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />
@@ -96,7 +96,7 @@
 
                     <Label Content="{lex:Loc Controller4Text}" Grid.Row="3" Margin="{StaticResource spaceMargin}" />
                     <ComboBox x:Name="cont4AutoProf" Grid.Row="3" Grid.Column="1" Margin="{StaticResource spaceMargin}"
-                              SelectedIndex="{Binding SelectedIndexCon4}">
+                              SelectedIndex="{Binding SelectedIndexCon[3]}">
                         <ComboBox.Resources>
                             <DataTemplate DataType="{x:Type ComboBoxItem}">
                                 <TextBlock Text="{Binding Content}" />

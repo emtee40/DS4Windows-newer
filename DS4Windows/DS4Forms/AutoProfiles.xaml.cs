@@ -76,61 +76,21 @@ namespace DS4WinWPF.DS4Forms
             {
                 if (item.MatchedAutoProfile != null)
                 {
-                    ProfileEntity tempProf = null;
-                    string profileName = item.MatchedAutoProfile.ProfileNames[0];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
+                    for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
                     {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
+                        string profileName = item.MatchedAutoProfile.ProfileNames[i];
+                        if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
                         {
-                            item.SelectedIndexCon1 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
+                            ProfileEntity tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
+                            if (tempProf != null)
+                            {
+                                item.SelectedIndexCon[i] = profileList.ProfileListCol.IndexOf(tempProf) + 1;
+                            }
                         }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon1 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[1];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
+                        else
                         {
-                            item.SelectedIndexCon2 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
+                            item.SelectedIndexCon[i] = 0;
                         }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon2 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[2];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon3 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon3 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[3];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon4 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon4 = 0;
                     }
                 }
 
