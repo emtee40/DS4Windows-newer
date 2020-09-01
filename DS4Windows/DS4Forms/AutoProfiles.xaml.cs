@@ -53,11 +53,11 @@ namespace DS4WinWPF.DS4Forms
 
         public void SetupDataContext(ProfileList profileList)
         {
-            if (Grid.RowDefinitions.Count != Global.DS4_CONTROLLER_COUNT)
+            if (AutoProfileGridEntries.RowDefinitions.Count != Global.DS4_CONTROLLER_COUNT)
             {
                 for (int i = 0; i < Global.DS4_CONTROLLER_COUNT; ++i)
                 {
-                    Grid.RowDefinitions.Add(new RowDefinition());
+                    AutoProfileGridEntries.RowDefinitions.Add(new RowDefinition());
                 }
             }
             
@@ -72,7 +72,7 @@ namespace DS4WinWPF.DS4Forms
 
             this.profileList = profileList;
 
-            foreach (UIElement element in Grid.Children)
+            foreach (UIElement element in AutoProfileGridEntries.Children)
             {
                 if (element is ComboBox)
                 {
@@ -115,7 +115,7 @@ namespace DS4WinWPF.DS4Forms
                 editControlsPanel.DataContext = null;
                 editControlsPanel.IsEnabled = false;
 
-                foreach (UIElement element in Grid.Children)
+                foreach (UIElement element in AutoProfileGridEntries.Children)
                 {
                     if (element is ComboBox)
                     {

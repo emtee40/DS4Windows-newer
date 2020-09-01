@@ -22,8 +22,8 @@
                         IsEnabled="{Binding Exists}" Click="RemoveAutoBtn_Click" />
                     <Button x:Name="saveAutoBtn" Content="{lex:Loc Save}" Margin="20,0,0,0" Height="20" Width="80" Click="SaveAutoBtn_Click" />
                 </StackPanel>
-                
-                <Grid x:Name="Grid" Margin="0,8">
+
+                <Grid x:Name="AutoProfileGridEntries" Margin="0,8">
                     <Grid.RowDefinitions>
                         <!-- Updated in code -->
                     </Grid.RowDefinitions>
