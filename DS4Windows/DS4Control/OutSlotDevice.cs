@@ -27,7 +27,6 @@ namespace DS4WinWPF.DS4Control
         private InputBound inputBound;
         private OutContType permanentType;
 
-        private OutContType currentType;
         private int index;
         public int Index => index;
 

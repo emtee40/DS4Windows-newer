@@ -393,7 +393,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler MatchedAutoProfileChanged;
         public delegate void AutoProfileHandler(ProgramItem sender, bool added);
-        public event AutoProfileHandler AutoProfileAction;
         public string Filename { get => filename;  }
         public ImageSource Exeicon { get => exeicon; }
 

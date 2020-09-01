@@ -10,16 +10,14 @@ namespace DS4WinWPF.DS4Forms.ViewModels
     public class PermanentOutDevViewModel
     {
         private DS4Windows.OutputSlotManager outSlotManager;
-        private List<PermanentSlotDeviceEntry> slotDeviceEntries;
 
-        public List<PermanentSlotDeviceEntry> SlotDeviceEntries
-        {
-            get => slotDeviceEntries;
-        }
+        public List<PermanentSlotDeviceEntry> SlotDeviceEntries { get; }
 
         public PermanentOutDevViewModel(DS4Windows.ControlService controlService,
             DS4Windows.OutputSlotManager outputMan)
         {
+            SlotDeviceEntries = new List<PermanentSlotDeviceEntry>();
+
             outSlotManager = outputMan;
             foreach(OutSlotDevice tempDev in outputMan.OutputSlots)
             {
@@ -33,13 +31,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private void OutSlotManager_SlotUnassigned(DS4Windows.OutputSlotManager sender,
             int slotNum, OutSlotDevice _)
         {
-            slotDeviceEntries[slotNum].UpdateDevice();
+            SlotDeviceEntries[slotNum].UpdateDevice();
         }
 
         private void OutSlotManager_SlotAssigned(DS4Windows.OutputSlotManager sender,
             int slotNum, OutSlotDevice _)
         {
-            slotDeviceEntries[slotNum].UpdateDevice();
+            SlotDeviceEntries[slotNum].UpdateDevice();
         }
     }
 

@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DS4Windows")]
-[assembly: AssemblyDescription("Sony DualShock 4 to Microsoft Xinput controller mapper")]
+[assembly: AssemblyTitle("DS4Windows - 8 Controller support edition")]
+[assembly: AssemblyDescription("Sony DualShock 4 to Microsoft Xinput controller mapper -  8 Controller support edition")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DS4Windows")]
-[assembly: AssemblyCopyright("Copyright © Scarlet.Crush Productions 2012, 2013; InhexSTER, HecticSeptic, electrobrains 2013, 2014; Jays2Kings 2013, 2014, 2015, 2016; Ryochan7 2017, 2018, 2019, 2020")]
+[assembly: AssemblyProduct("DS4Windows - 8 Controller support edition")]
+[assembly: AssemblyCopyright("Copyright © Scarlet.Crush Productions 2012, 2013; InhexSTER, HecticSeptic, electrobrains 2013, 2014; Jays2Kings 2013, 2014, 2015, 2016; Ryochan7 2017, 2018, 2019, 2020; grasmanek94 2019, 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,7 +51,7 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.7")]
-[assembly: AssemblyFileVersion("2.1.7")]
+[assembly: AssemblyVersion("2.1.8")]
+[assembly: AssemblyFileVersion("2.1.8")]
 [assembly: NeutralResourcesLanguage("en")]
 [assembly: Guid("a52b5b20-d9ee-4f32-8518-307fa14aa0c6")]

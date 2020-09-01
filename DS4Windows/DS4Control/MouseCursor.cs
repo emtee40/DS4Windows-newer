@@ -60,7 +60,6 @@ namespace DS4Windows
 
         int tempInt = 0;
         double tempDouble = 0.0;
-        bool tempBool = false;
 
         public virtual void sixaxisMoved(SixAxisEventArgs arg)
         {
