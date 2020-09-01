@@ -168,17 +168,8 @@
   <data name="Color" xml:space="preserve">
     <value>顏色</value>
   </data>
-  <data name="Controller1Text" xml:space="preserve">
-    <value>控制器1</value>
-  </data>
-  <data name="Controller2Text" xml:space="preserve">
-    <value>控制器2</value>
-  </data>
-  <data name="Controller3Text" xml:space="preserve">
-    <value>控制器3</value>
-  </data>
-  <data name="Controller4Text" xml:space="preserve">
-    <value>控制器4</value>
+  <data name="ControllerText" xml:space="preserve">
+    <value>控制器</value>
   </data>
   <data name="Controllers" xml:space="preserve">
     <value>控制器</value>

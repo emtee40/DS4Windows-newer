@@ -241,83 +241,20 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Controller 1.
-        /// </summary>
-        public static string Controller1Text {
-            get {
-                return ResourceManager.GetString("Controller1Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 2.
-        /// </summary>
-        public static string Controller2Text {
-            get {
-                return ResourceManager.GetString("Controller2Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 3.
-        /// </summary>
-        public static string Controller3Text {
-            get {
-                return ResourceManager.GetString("Controller3Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 4.
-        /// </summary>
-        public static string Controller4Text {
-            get {
-                return ResourceManager.GetString("Controller4Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 5.
-        /// </summary>
-        public static string Controller5Text {
-            get {
-                return ResourceManager.GetString("Controller5Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 6.
-        /// </summary>
-        public static string Controller6Text {
-            get {
-                return ResourceManager.GetString("Controller6Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 7.
-        /// </summary>
-        public static string Controller7Text {
-            get {
-                return ResourceManager.GetString("Controller7Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Controller 8.
-        /// </summary>
-        public static string Controller8Text {
-            get {
-                return ResourceManager.GetString("Controller8Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Controllers.
         /// </summary>
         public static string Controllers {
             get {
                 return ResourceManager.GetString("Controllers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controller .
+        /// </summary>
+        public static string ControllerText {
+            get {
+                return ResourceManager.GetString("ControllerText", resourceCulture);
             }
         }
         

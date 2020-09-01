@@ -168,17 +168,8 @@
   <data name="Color" xml:space="preserve">
     <value>Цвет</value>
   </data>
-  <data name="Controller1Text" xml:space="preserve">
-    <value>Контроллер 1</value>
-  </data>
-  <data name="Controller2Text" xml:space="preserve">
-    <value>Контроллер 2</value>
-  </data>
-  <data name="Controller3Text" xml:space="preserve">
-    <value>Контроллер 3</value>
-  </data>
-  <data name="Controller4Text" xml:space="preserve">
-    <value>Контроллер 4</value>
+  <data name="ControllerText" xml:space="preserve">
+    <value>Контроллер </value>
   </data>
   <data name="Controllers" xml:space="preserve">
     <value>Контроллеры</value>
