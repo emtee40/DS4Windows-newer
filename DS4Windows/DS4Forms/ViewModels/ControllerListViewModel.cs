@@ -69,22 +69,17 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             if (writeAccess)
             {
-                _colListLocker.EnterWriteLock();
+                using (WriteLocker locker = new WriteLocker(_colListLocker))
+                {
+                    accessMethod?.Invoke();
+                }
             }
             else
             {
-                _colListLocker.EnterReadLock();
-            }
-
-            accessMethod?.Invoke();
-
-            if (writeAccess)
-            {
-                _colListLocker.ExitWriteLock();
-            }
-            else
-            {
-                _colListLocker.ExitReadLock();
+                using (ReadLocker locker = new ReadLocker(_colListLocker))
+                {
+                    accessMethod?.Invoke();
+                }
             }
         }
 
@@ -258,8 +253,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             get
             {
-                string source = device.IsExclusive ? "/DS4Windows;component/Resources/checked.png" :
-                    "/DS4Windows;component/Resources/cancel.png";
+                string source = "/DS4Windows;component/Resources/cancel.png";
+                switch(device.CurrentExclusiveStatus)
+                {
+                    case DS4Device.ExclusiveStatus.Exclusive:
+                        source = "/DS4Windows;component/Resources/checked.png";
+                        break;
+                    case DS4Device.ExclusiveStatus.HidGuardAffected:
+                        source = "/DS4Windows;component/Resources/key-solid.png";
+                        break;
+                    default:
+                        break;
+                }
+
                 return source;
             }
         }
@@ -308,8 +314,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             get
             {
-                string temp = device.isExclusive() ? "Exclusive Access" :
-                    "Shared Access";
+                string temp = "Shared Access";
+                switch(device.CurrentExclusiveStatus)
+                {
+                    case DS4Device.ExclusiveStatus.Exclusive:
+                        temp = "Exclusive Access";
+                        break;
+                    case DS4Device.ExclusiveStatus.HidGuardAffected:
+                        temp = "HidGuardian Access";
+                        break;
+                    default:
+                        break;
+                }
+
                 return temp;
             }
         }
@@ -361,8 +378,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
             //Global.Save();
             Global.LoadProfile(devIndex, true, App.rootHub);
-            DS4Windows.AppLogger.LogToGui(Properties.Resources.UsingProfile.
-                Replace("*number*", (devIndex + 1).ToString()).Replace("*Profile name*", prof), false);
+            string prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, $"{device.Battery}");
+            DS4Windows.AppLogger.LogToGui(prolog, false);
 
             selectedProfile = prof;
             this.selectedEntity = profileListHolder.ProfileListCol.SingleOrDefault(x => x.Name == prof);

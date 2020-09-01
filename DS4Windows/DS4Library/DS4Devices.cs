@@ -56,6 +56,25 @@ namespace DS4Windows
 
     public delegate void RequestElevationDelegate(RequestElevationArgs args);
 
+    public class CheckVirtualInfo : EventArgs
+    {
+        private string deviceInstanceId;
+        public string DeviceInstanceId
+        {
+            get => deviceInstanceId;
+            set => deviceInstanceId = value;
+        }
+
+        private string propertyValue;
+        public string PropertyValue { get => propertyValue; set => propertyValue = value; }
+
+        public CheckVirtualInfo() : base()
+        {
+        }
+    }
+
+    public delegate CheckVirtualInfo CheckVirtualDelegate(string deviceInstanceId);
+
     public class DS4Devices
     {
         // (HID device path, DS4Device)
@@ -66,6 +85,7 @@ namespace DS4Windows
         private static List<HidDevice> DisabledDevices = new List<HidDevice>();
         private static Stopwatch sw = new Stopwatch();
         public static event RequestElevationDelegate RequestElevation;
+        public static CheckVirtualDelegate checkVirtualFunc = null;
         public static bool isExclusiveMode = false;
         internal const int SONY_VID = 0x054C;
         internal const int RAZER_VID = 0x1532;
@@ -99,12 +119,17 @@ namespace DS4Windows
             new VidPidInfo(HORI_VID, 0x0084, "Hori Fighting Cmd"), // Hori Fighting Commander (special kind of gamepad without touchpad or sticks. There is a hardware switch to alter d-pad type between dpad and LS/RS)
             new VidPidInfo(NACON_VID, 0x0D13, "Nacon Revol Pro v.3"),
             new VidPidInfo(HORI_VID, 0x0066, "Horipad FPS Plus", VidPidFeatureSet.NoGyroCalib), // Horipad FPS Plus (wired only. No light bar, rumble and Gyro/Accel sensor. Cannot Hide "HID-compliant vendor-defined device" in USB Composite Device. Other feature works fine.)
+            new VidPidInfo(0x9886, 0x0025, "Astro C40", VidPidFeatureSet.NoGyroCalib), // Astro C40 (wired and BT. Works if Astro specific xinput drivers haven't been installed. Uninstall those to use the pad as dinput device)
+            new VidPidInfo(0x0E8F, 0x1114, "Gamo2 Divaller", VidPidFeatureSet.NoGyroCalib), // Gamo2 Divaller (wired only. Light bar not controllable. No touchpad, gyro or rumble)
+            new VidPidInfo(HORI_VID, 0x0101, "Hori Mini Hatsune Miku FT", VidPidFeatureSet.NoGyroCalib), // Hori Mini Hatsune Miku FT (wired only. No light bar, gyro or rumble)
+            new VidPidInfo(HORI_VID, 0x00C9, "Hori Taiko Controller", VidPidFeatureSet.NoGyroCalib), // Hori Taiko Controller (wired only. No light bar, touchpad, gyro, rumble, sticks or triggers)
+            new VidPidInfo(0x0C12, 0x1E1C, "SnakeByte Game:Pad 4S", VidPidFeatureSet.NoGyroCalib | VidPidFeatureSet.NoBatteryReading), // SnakeByte Gamepad for PS4 (wired only. No gyro. No light bar). If it doesn't work then try the latest gamepad firmware from https://mysnakebyte.com/
         };
 
-        private static string devicePathToInstanceId(string devicePath)
+        public static string devicePathToInstanceId(string devicePath)
         {
             string deviceInstanceId = devicePath;
-            deviceInstanceId = deviceInstanceId.Remove(0, deviceInstanceId.LastIndexOf('\\') + 1);
+            deviceInstanceId = deviceInstanceId.Remove(0, deviceInstanceId.LastIndexOf("?\\") + 2);
             deviceInstanceId = deviceInstanceId.Remove(deviceInstanceId.LastIndexOf('{'));
             deviceInstanceId = deviceInstanceId.Replace('#', '\\');
             if (deviceInstanceId.EndsWith("\\"))
@@ -118,9 +143,11 @@ namespace DS4Windows
         private static bool IsRealDS4(HidDevice hDevice)
         {
             string deviceInstanceId = devicePathToInstanceId(hDevice.DevicePath);
-            string temp = Global.GetDeviceProperty(deviceInstanceId,
-                NativeMethods.DEVPKEY_Device_UINumber);
-            return string.IsNullOrEmpty(temp);
+            CheckVirtualInfo info = checkVirtualFunc(deviceInstanceId);
+            return string.IsNullOrEmpty(info.PropertyValue);
+            //string temp = Global.GetDeviceProperty(deviceInstanceId,
+            //    NativeMethods.DEVPKEY_Device_UINumber);
+            //return string.IsNullOrEmpty(temp);
         }
 
         // Enumerates ds4 controllers in the system
@@ -129,7 +156,11 @@ namespace DS4Windows
             lock (Devices)
             {
                 IEnumerable<HidDevice> hDevices = HidDevices.EnumerateDS4(knownDevices);
-                hDevices = hDevices.Where(dev => IsRealDS4(dev)).Select(dev => dev);
+                if (checkVirtualFunc != null)
+                {
+                    hDevices = hDevices.Where(dev => IsRealDS4(dev)).Select(dev => dev);
+                }
+
                 //hDevices = from dev in hDevices where IsRealDS4(dev) select dev;
                 // Sort Bluetooth first in case USB is also connected on the same controller.
                 hDevices = hDevices.OrderBy<HidDevice, ConnectionType>((HidDevice d) => { return DS4Device.HidConnectionType(d); });

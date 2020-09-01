@@ -56,7 +56,7 @@ namespace DS4Windows
             OutputSlots = new OutSlotDevice[Global.DS4_CONTROLLER_COUNT];
             for(int i = 0; i < OutputSlots.Length; ++i)
             {
-                OutputSlots[i] = new OutSlotDevice();
+                OutputSlots[i] = new OutSlotDevice(i);
             }
 
             queueLocker = new ReaderWriterLockSlim();
@@ -128,8 +128,13 @@ namespace DS4Windows
                     outputDevices[slot] = outputDevice;
                     deviceDict.Add(slot, outputDevice);
                     revDeviceDict.Add(outputDevice, slot);
+
                     OutputSlots[slot].AttachedDevice(outputDevice, contType);
-                    if (inIdx != -1) outdevs[inIdx] = outputDevice;
+                    if (inIdx != -1)
+                    { 
+                        outdevs[inIdx] = outputDevice;
+                        OutputSlots[slot].CurrentInputBound = OutSlotDevice.InputBound.Bound;
+                    }
                     SlotAssigned?.Invoke(this, slot, OutputSlots[slot]);
 
                     Task.Delay(DELAY_TIME).Wait();
@@ -160,7 +165,11 @@ namespace DS4Windows
                     deviceDict.Remove(slot);
                     revDeviceDict.Remove(outputDevice);
                     outputDevice.Disconnect();
-                    if (inIdx != -1) outdevs[inIdx] = null;
+
+                    if (inIdx != -1)
+                    { 
+                        outdevs[inIdx] = null;
+                    }
                     OutputSlots[slot].DetachDevice();
                     SlotUnassigned?.Invoke(this, slot, OutputSlots[slot]);
 

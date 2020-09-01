@@ -341,7 +341,7 @@
     <value>Controller *number*'s latency now under 10ms</value>
   </data>
   <data name="LatencyOverTen" xml:space="preserve">
-    <value>Controller *number*'s latency over 10ms</value>
+    <value>Controller {0}'s latency over 10ms ({1} ms)</value>
   </data>
   <data name="LaunchProgram" xml:space="preserve">
     <value>Launch *program*</value>
@@ -386,7 +386,7 @@
     <value>No Profile Loaded</value>
   </data>
   <data name="NotUsingProfile" xml:space="preserve">
-    <value>Controller *number* is not using a profile</value>
+    <value>Controller {0} is not using a profile. Battery level is {1}%</value>
   </data>
   <data name="NotValid" xml:space="preserve">
     <value>Not valid</value>
@@ -587,7 +587,7 @@
     <value>Using Exclusive Mode</value>
   </data>
   <data name="UsingProfile" xml:space="preserve">
-    <value>Controller *number* is using Profile "*Profile name*"</value>
+    <value>Controller {0} is using Profile "{1}". Battery level is {2}%</value>
   </data>
   <data name="UsingShared" xml:space="preserve">
     <value>Using Shared Mode</value>

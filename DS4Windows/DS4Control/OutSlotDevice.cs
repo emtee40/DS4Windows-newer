@@ -27,6 +27,10 @@ namespace DS4WinWPF.DS4Control
         private InputBound inputBound;
         private OutContType permanentType;
 
+        private OutContType currentType;
+        private int index;
+        public int Index => index;
+
         public AttachedStatus CurrentAttachedStatus { get; private set; }
         public OutputDevice OutputDevice { get; private set; }
         public ReserveStatus CurrentReserveStatus
@@ -67,8 +71,9 @@ namespace DS4WinWPF.DS4Control
 
         public OutContType CurrentType { get; set; }
 
-        public OutSlotDevice()
+        public OutSlotDevice(int idx)
         {
+            this.index = idx;
             CurrentReserveStatusChanged += OutSlotDevice_CurrentReserveStatusChanged;
         }
 
@@ -99,6 +104,8 @@ namespace DS4WinWPF.DS4Control
                 OutputDevice = null;
                 CurrentAttachedStatus = AttachedStatus.UnAttached;
                 CurrentType = OutContType.None;
+                CurrentInputBound = InputBound.Unbound;
+
                 if (reserveStatus == ReserveStatus.Dynamic)
                 {
                     PermanentType = OutContType.None;

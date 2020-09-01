@@ -124,6 +124,15 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Apply.
+        /// </summary>
+        public static string Apply {
+            get {
+                return ResourceManager.GetString("Apply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto Profiles.
         /// </summary>
         public static string AutoProfiles {
@@ -322,6 +331,26 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom Exe Name.
+        /// </summary>
+        public static string CustomExeName {
+            get {
+                return ResourceManager.GetString("CustomExeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some games implement a block that causes DS4 input to be ignored if a game detects either DS4Windows.exe or InputMapper.exe running at the time. A workaround to the block is to rename DS4Windows.exe so the check in the game fails. Specifying a custom exe name here allows DS4Updater to automatically update a custom copy of DS4Windows to the desired file name. Make sure to omit the extension.
+        ///
+        ///Example: whyme_DS4Windows.
+        /// </summary>
+        public static string CustomExeNameInfo {
+            get {
+                return ResourceManager.GetString("CustomExeNameInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete {
@@ -427,6 +456,15 @@ namespace DS4WinWPF.Translations {
         public static string HideUnchecked {
             get {
                 return ResourceManager.GetString("HideUnchecked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HidNinja.
+        /// </summary>
+        public static string HidNinja {
+            get {
+                return ResourceManager.GetString("HidNinja", resourceCulture);
             }
         }
         

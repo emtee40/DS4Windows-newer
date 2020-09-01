@@ -62,6 +62,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public ImageSource uacSource;
         public ImageSource UACSource { get => uacSource; }
 
+        public ImageSource questionMarkSource;
+        public ImageSource QuestionMarkSource { get => questionMarkSource; }
+
         private Visibility showRunStartPanel = Visibility.Collapsed;
         public Visibility ShowRunStartPanel {
             get => showRunStartPanel;
@@ -95,7 +98,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler WhiteDS4IconChanged;
 
-        public bool CheckForUpdates { get => DS4Windows.Global.CheckWhen > 0;
+        public bool CheckForUpdates
+        {
+            get => DS4Windows.Global.CheckWhen > 0;
             set
             {
                 DS4Windows.Global.CheckWhen = value ? 24 : 0;
@@ -104,7 +109,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler CheckForUpdatesChanged;
 
-        public int CheckEvery { get
+        public int CheckEvery
+        {
+            get
             {
                 int temp = DS4Windows.Global.CheckWhen;
                 if (temp > 23)
@@ -205,6 +212,22 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler ViewEnabledChanged;
 
+        public string FakeExeName
+        {
+            get => DS4Windows.Global.FakeExeName;
+            set
+            {
+                string temp = DS4Windows.Global.FakeExeName;
+                if (temp == value) return;
+                DS4Windows.Global.FakeExeName = value;
+                FakeExeNameChanged?.Invoke(this, EventArgs.Empty);
+                FakeExeNameChangeCompare?.Invoke(this, temp, value);
+            }
+        }
+        public event EventHandler FakeExeNameChanged;
+        public event FakeExeNameChangeHandler FakeExeNameChangeCompare;
+        public delegate void FakeExeNameChangeHandler(SettingsViewModel sender,
+            string oldvalue, string newvalue);
 
         public SettingsViewModel()
         {
@@ -227,6 +250,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                       hBitmap, IntPtr.Zero, Int32Rect.Empty,
                       BitmapSizeOptions.FromEmptyOptions());
             uacSource = wpfBitmap;
+
+            img = SystemIcons.Question;
+            wpfBitmap =
+                 Imaging.CreateBitmapSourceFromHBitmap(
+                      img.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty,
+                      BitmapSizeOptions.FromEmptyOptions());
+            questionMarkSource = wpfBitmap;
 
             runAtStartup = StartupMethods.RunAtStartup();
             runStartProg = StartupMethods.HasStartProgEntry();
@@ -280,8 +310,39 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             RunAtStartupChanged += SettingsViewModel_RunAtStartupChanged;
             RunStartProgChanged += SettingsViewModel_RunStartProgChanged;
             RunStartTaskChanged += SettingsViewModel_RunStartTaskChanged;
+            FakeExeNameChanged += SettingsViewModel_FakeExeNameChanged;
+            FakeExeNameChangeCompare += SettingsViewModel_FakeExeNameChangeCompare;
 
             //CheckForUpdatesChanged += SettingsViewModel_CheckForUpdatesChanged;
+        }
+
+        private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
+            string oldvalue, string newvalue)
+        {
+            string old_exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.exe");
+            string old_conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.exe.config");
+
+            if (!string.IsNullOrEmpty(oldvalue))
+            {
+                if (File.Exists(old_exefile))
+                {
+                    File.Delete(old_exefile);
+                }
+
+                if (File.Exists(old_conf_file))
+                {
+                    File.Delete(old_conf_file);
+                }
+            }
+        }
+
+        private void SettingsViewModel_FakeExeNameChanged(object sender, EventArgs e)
+        {
+            string temp = FakeExeName;
+            if (!string.IsNullOrEmpty(temp))
+            {
+                CreateFakeExe(FakeExeName);
+            }
         }
 
         private void SettingsViewModel_RunStartTaskChanged(object sender, EventArgs e)
@@ -354,6 +415,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             CheckForUpdatesChanged?.Invoke(this, EventArgs.Empty);
             CheckEveryChanged?.Invoke(this, EventArgs.Empty);
             CheckEveryUnitChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void CreateFakeExe(string filename)
+        {
+            string exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.exe");
+            string current_conf_file_path = $"{DS4Windows.Global.exelocation}.config";
+            string conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.exe.config");
+
+            File.Copy(DS4Windows.Global.exelocation, exefile);
+            File.Copy(current_conf_file_path, conf_file);
         }
     }
 }

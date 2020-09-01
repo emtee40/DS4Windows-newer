@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WIN64;</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -49,8 +49,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>WIN64;</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>none</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -136,8 +135,11 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
@@ -192,6 +194,7 @@
     <Compile Include="DS4Control\OutputSlotManager.cs" />
     <Compile Include="DS4Control\OutputSlotPersist.cs" />
     <Compile Include="DS4Control\OutSlotDevice.cs" />
+    <Compile Include="DS4Control\ProfileMigration.cs" />
     <Compile Include="DS4Control\ProfilePropGroups.cs" />
     <Compile Include="DS4Control\Program.cs" />
     <Compile Include="DS4Control\ScpUtil.cs" />
@@ -243,6 +246,7 @@
     <Compile Include="DS4Forms\UpdaterWindow.xaml.cs">
       <DependentUpon>UpdaterWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DS4Forms\Converters\EscapeAccessKeysConverter.cs" />
     <Compile Include="DS4Forms\ViewModels\AutoProfilesViewModel.cs" />
     <Compile Include="DS4Forms\ViewModels\BindingWindowViewModel.cs" />
     <Compile Include="DS4Forms\ViewModels\ControllerListViewModel.cs" />
@@ -287,9 +291,11 @@
     <Compile Include="LoggerHolder.cs" />
     <Compile Include="LogWriter.cs" />
     <Compile Include="DS4Control\MacroParser.cs" />
+    <Compile Include="OneEuroFilter.cs" />
     <Compile Include="ProfileEntity.cs" />
     <Compile Include="ProfileList.cs" />
     <Compile Include="DS4Forms\ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ReaderWriteLockSlimWrappers.cs" />
     <Compile Include="Translations\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -408,6 +414,14 @@
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.nl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.fr.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.de.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
@@ -429,6 +443,14 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.ru.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.zh-CN.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.zh-TW.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
@@ -476,12 +498,13 @@
     <Content Include="BezierCurveEditor\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\social\parler.png" />
+    <Resource Include="Resources\key-solid.png" />
     <Resource Include="Resources\social\bitchute.png" />
     <Resource Include="Resources\social\youtube_social_icon_red.png" />
     <Resource Include="Resources\social\twitter_logo_initial.png" />
     <Resource Include="Resources\social\minds.png" />
     <Resource Include="Resources\social\mastodon.png" />
-    <Resource Include="Resources\social\lbrylogo.png" />
     <Resource Include="Resources\social\frog_site_logo.png" />
     <Resource Include="Resources\social\discord.png" />
     <Resource Include="Resources\social\bittube.png" />
@@ -541,7 +564,7 @@
     <PostBuildEvent>rem Copy compiled l18n assemblies to alt folder
 GOTO END
 if not exist $(TargetDir)Lang mkdir $(TargetDir)Lang
-set langs=cs es it ja pt-BR ru
+set langs=cs de es fr it ja nl pt-BR ru zh-CN zh-TW
 
 for %25%25l in (%25langs%25) do (
   xcopy $(TargetDir)%25%25l $(TargetDir)Lang\%25%25l\ /s /y

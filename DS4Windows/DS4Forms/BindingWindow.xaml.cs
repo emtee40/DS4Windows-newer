@@ -353,6 +353,10 @@ namespace DS4WinWPF.DS4Forms
                 new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.X360Controls.RXNeg });
             rslBtn.Click += OutputButtonBtn_Click;
 
+            associatedBindings.Add(touchpadClickBtn,
+                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.X360Controls.TouchpadClick });
+            touchpadClickBtn.Click += OutputButtonBtn_Click;
+
             associatedBindings.Add(mouseUpBtn,
                 new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.X360Controls.MouseUp });
             mouseUpBtn.Click += OutputButtonBtn_Click;
@@ -608,6 +612,9 @@ namespace DS4WinWPF.DS4Forms
             associatedBindings.Add(raltBtn,
                 new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA5 });
             raltBtn.Click += OutputKeyBtn_Click;
+            associatedBindings.Add(rwinBtn,
+                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x5C });
+            rwinBtn.Click += OutputKeyBtn_Click;
             associatedBindings.Add(rctrlBtn,
                 new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA3 });
             rctrlBtn.Click += OutputKeyBtn_Click;
@@ -723,7 +730,7 @@ namespace DS4WinWPF.DS4Forms
                 new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6E });
             numPeriodBtn.Click += OutputKeyBtn_Click;
             associatedBindings.Add(numEnterBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x13 });
+                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x0D });
             numEnterBtn.Click += OutputKeyBtn_Click;
         }
 
@@ -731,7 +738,7 @@ namespace DS4WinWPF.DS4Forms
         {
             ImageSourceConverter sourceConverter = new ImageSourceConverter();
             ImageSource temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4 Config.png") as ImageSource;
+                ConvertFromString($"{DS4Windows.Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4 Config.png") as ImageSource;
             conImageBrush.ImageSource = temp;
 
             Canvas.SetLeft(aBtn, 442); Canvas.SetTop(aBtn, 148);
@@ -784,6 +791,8 @@ namespace DS4WinWPF.DS4Forms
             Canvas.SetLeft(dpadRBtn, 194); Canvas.SetTop(dpadRBtn, 112);
             Canvas.SetLeft(dpadDBtn, 170); Canvas.SetTop(dpadDBtn, 144);
             Canvas.SetLeft(dpadLBtn, 144); Canvas.SetTop(dpadLBtn, 112);
+
+            touchpadClickBtn.Visibility = Visibility.Visible;
         }
 
         private void RegBindRadio_Click(object sender, RoutedEventArgs e)

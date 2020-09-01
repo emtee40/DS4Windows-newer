@@ -20,6 +20,7 @@ namespace DS4Windows
 
         private readonly string _description;
         private readonly string _devicePath;
+        private readonly string _parentPath;
         private readonly HidDeviceAttributes _deviceAttributes;
 
         private readonly HidDeviceCapabilities _deviceCapabilities;
@@ -27,10 +28,11 @@ namespace DS4Windows
         private string serial = null;
         private const string BLANK_SERIAL = "00:00:00:00:00:00";
 
-        internal HidDevice(string devicePath, string description = null)
+        internal HidDevice(string devicePath, string description = null, string parentPath = null)
         {
             _devicePath = devicePath;
             _description = description;
+            _parentPath = parentPath;
 
             try
             {
@@ -57,6 +59,7 @@ namespace DS4Windows
         public HidDeviceCapabilities Capabilities { get { return _deviceCapabilities; } }
         public HidDeviceAttributes Attributes { get { return _deviceAttributes; } }
         public string DevicePath { get { return _devicePath; } }
+        public string ParentPath { get => _parentPath; }
 
         public override string ToString()
         {
@@ -453,11 +456,11 @@ namespace DS4Windows
 
             if (isExclusive)
             {
-                hidHandle = NativeMethods.CreateFile(devicePathName, access, 0, IntPtr.Zero, NativeMethods.OpenExisting, 0x20000000 | 0x80000000 | 0x100 | NativeMethods.FILE_FLAG_OVERLAPPED, 0);
+                hidHandle = NativeMethods.CreateFile(devicePathName, access, 0, IntPtr.Zero, NativeMethods.OpenExisting, NativeMethods.FILE_FLAG_NO_BUFFERING | NativeMethods.FILE_FLAG_WRITE_THROUGH | NativeMethods.FILE_ATTRIBUTE_TEMPORARY | NativeMethods.FILE_FLAG_OVERLAPPED, 0);
             }
             else
             {
-                hidHandle = NativeMethods.CreateFile(devicePathName, access, NativeMethods.FILE_SHARE_READ | NativeMethods.FILE_SHARE_WRITE, IntPtr.Zero, NativeMethods.OpenExisting, 0x20000000 | 0x80000000 | 0x100 | NativeMethods.FILE_FLAG_OVERLAPPED, 0);
+                hidHandle = NativeMethods.CreateFile(devicePathName, access, NativeMethods.FILE_SHARE_READ | NativeMethods.FILE_SHARE_WRITE, IntPtr.Zero, NativeMethods.OpenExisting, NativeMethods.FILE_FLAG_NO_BUFFERING | NativeMethods.FILE_FLAG_WRITE_THROUGH | NativeMethods.FILE_ATTRIBUTE_TEMPORARY | NativeMethods.FILE_FLAG_OVERLAPPED, 0);
             }
 
             return hidHandle;

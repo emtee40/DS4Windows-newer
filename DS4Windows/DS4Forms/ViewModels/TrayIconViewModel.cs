@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -159,54 +160,57 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             MenuItem item;
             int idx = 0;
 
-            _colLocker.EnterReadLock();
-            foreach (ControllerHolder holder in controllerList)
+            using (ReadLocker locker = new ReadLocker(_colLocker))
             {
-                DS4Device currentDev = holder.Device;
-                item = new MenuItem() { Header = $"Controller {idx+1}" };
-                item.Tag = idx;
-                //item.ContextMenu = new ContextMenu();
-                ItemCollection subitems = item.Items;
-                string currentProfile = Global.ProfilePath[idx];
-                foreach (ProfileEntity entry in profileListHolder.ProfileListCol)
+                foreach (ControllerHolder holder in controllerList)
                 {
-                    MenuItem temp = new MenuItem() { Header = entry.Name };
-                    temp.Tag = idx;
-                    temp.Click += ProfileItem_Click;
-                    if (entry.Name == currentProfile)
+                    DS4Device currentDev = holder.Device;
+                    item = new MenuItem() { Header = $"Controller {idx + 1}" };
+                    item.Tag = idx;
+                    //item.ContextMenu = new ContextMenu();
+                    ItemCollection subitems = item.Items;
+                    string currentProfile = Global.ProfilePath[idx];
+                    foreach (ProfileEntity entry in profileListHolder.ProfileListCol)
                     {
-                        temp.IsChecked = true;
+                        // Need to escape profile name to disable Access Keys for control
+                        string name = entry.Name;
+                        name = Regex.Replace(name, "_{1}", "__");
+                        MenuItem temp = new MenuItem() { Header = name };
+                        temp.Tag = idx;
+                        temp.Click += ProfileItem_Click;
+                        if (entry.Name == currentProfile)
+                        {
+                            temp.IsChecked = true;
+                        }
+
+                        subitems.Add(temp);
                     }
 
-                    subitems.Add(temp);
+                    items.Add(item);
+                    idx++;
                 }
 
-                items.Add(item);
-                idx++;
-            }
-
-            item = new MenuItem() { Header = "Disconnect Menu" };
-            idx = 0;
-            foreach (ControllerHolder holder in controllerList)
-            {
-                DS4Device tempDev = holder.Device;
-                if (tempDev.Synced && !tempDev.Charging)
+                item = new MenuItem() { Header = "Disconnect Menu" };
+                idx = 0;
+                foreach (ControllerHolder holder in controllerList)
                 {
-                    MenuItem subitem = new MenuItem() { Header = $"Disconnect Controller {idx+1}" };
-                    subitem.Click += DisconnectMenuItem_Click;
-                    subitem.Tag = idx;
-                    item.Items.Add(subitem);
+                    DS4Device tempDev = holder.Device;
+                    if (tempDev.Synced && !tempDev.Charging)
+                    {
+                        MenuItem subitem = new MenuItem() { Header = $"Disconnect Controller {idx + 1}" };
+                        subitem.Click += DisconnectMenuItem_Click;
+                        subitem.Tag = idx;
+                        item.Items.Add(subitem);
+                    }
+
+                    idx++;
                 }
 
-                idx++;
+                if (idx == 0)
+                {
+                    item.IsEnabled = false;
+                }
             }
-
-            if (idx == 0)
-            {
-                item.IsEnabled = false;
-            }
-
-            _colLocker.ExitReadLock();
 
             items.Add(item);
             items.Add(new Separator());
@@ -336,25 +340,25 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             ControllerHolder item = null;
             int idx = 0;
 
-            _colLocker.EnterWriteLock();
-            foreach (ControllerHolder holder in controllerList)
+            using (WriteLocker locker = new WriteLocker(_colLocker))
             {
-                if (currentDev == holder.Device)
+                foreach (ControllerHolder holder in controllerList)
                 {
-                    item = holder;
-                    break;
+                    if (currentDev == holder.Device)
+                    {
+                        item = holder;
+                        break;
+                    }
+
+                    idx++;
                 }
 
-                idx++;
+                if (item != null)
+                {
+                    controllerList.RemoveAt(idx);
+                    RemoveDeviceEvents(currentDev);
+                }
             }
-
-            if (item != null)
-            {
-                controllerList.RemoveAt(idx);
-                RemoveDeviceEvents(currentDev);
-            }
-
-            _colLocker.ExitWriteLock();
 
             PopulateToolText();
         }

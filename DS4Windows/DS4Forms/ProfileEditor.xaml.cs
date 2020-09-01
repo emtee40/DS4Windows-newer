@@ -358,122 +358,122 @@ namespace DS4WinWPF.DS4Forms
             ImageSourceConverter sourceConverter = new ImageSourceConverter();
 
             ImageSource temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Cross.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Cross.png") as ImageSource;
             ImageBrush crossHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Circle.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Circle.png") as ImageSource;
             ImageBrush circleHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Square.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Square.png") as ImageSource;
             ImageBrush squareHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Triangle.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Triangle.png") as ImageSource;
             ImageBrush triangleHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_L1.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_L1.png") as ImageSource;
             ImageBrush l1Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_R1.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_R1.png") as ImageSource;
             ImageBrush r1Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_L2.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_L2.png") as ImageSource;
             ImageBrush l2Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_R2.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_R2.png") as ImageSource;
             ImageBrush r2Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Share.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Share.png") as ImageSource;
             ImageBrush shareHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_options.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_options.png") as ImageSource;
             ImageBrush optionsHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_PS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_PS.png") as ImageSource;
             ImageBrush guideHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_TouchLeft.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_TouchLeft.png") as ImageSource;
             ImageBrush leftTouchHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_TouchMulti.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_TouchMulti.png") as ImageSource;
             ImageBrush multiTouchTouchHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_TouchRight.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_TouchRight.png") as ImageSource;
             ImageBrush rightTouchHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_TouchUpper.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_TouchUpper.png") as ImageSource;
             ImageBrush topTouchHover = new ImageBrush(temp);
 
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_LS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_LS.png") as ImageSource;
             ImageBrush l3Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_LS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_LS.png") as ImageSource;
             ImageBrush lsuHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_LS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_LS.png") as ImageSource;
             ImageBrush lsrHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_LS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_LS.png") as ImageSource;
             ImageBrush lsdHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_LS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_LS.png") as ImageSource;
             ImageBrush lslHover = new ImageBrush(temp);
 
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_RS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_RS.png") as ImageSource;
             ImageBrush r3Hover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_RS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_RS.png") as ImageSource;
             ImageBrush rsuHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_RS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_RS.png") as ImageSource;
             ImageBrush rsrHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_RS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_RS.png") as ImageSource;
             ImageBrush rsdHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_RS.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_RS.png") as ImageSource;
             ImageBrush rslHover = new ImageBrush(temp);
 
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Up.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Up.png") as ImageSource;
             ImageBrush upHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Right.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Right.png") as ImageSource;
             ImageBrush rightHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Down.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Down.png") as ImageSource;
             ImageBrush downHover = new ImageBrush(temp);
 
             temp = sourceConverter.
-                ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/DS4-Config_Left.png") as ImageSource;
+                ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/DS4-Config_Left.png") as ImageSource;
             ImageBrush leftHover = new ImageBrush(temp);
 
             hoverImages[crossConBtn] = crossHover;
@@ -526,8 +526,9 @@ namespace DS4WinWPF.DS4Forms
                     Global.ProfilePath[Global.DS4_CONTROLLER_COUNT] = profile.Name;
                 }
 
-                Global.LoadProfile(device, false, App.rootHub);
+                Global.LoadProfile(device, false, App.rootHub, false);
                 profileNameTxt.Text = profile.Name;
+                profileNameTxt.IsEnabled = false;
             }
             else
             {
@@ -596,7 +597,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.cacheProfileCustomsFlags(profileSettingsVM.Device);
+            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void InputControlHighlight(Button control)
@@ -713,6 +714,13 @@ namespace DS4WinWPF.DS4Forms
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
             if (profileSettingsVM.FuncDevNum < Global.DS4_CONTROLLER_COUNT)
+            ApplyBtn_Click(sender, e);
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ApplyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (profileSettingsVM.FuncDevNum < Global.DS4_CONTROLLER_COUNT)
             {
                 App.rootHub.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
@@ -739,7 +747,6 @@ namespace DS4WinWPF.DS4Forms
                 {
                     currentProfile.SaveProfile(deviceNum);
                     currentProfile.FireSaved();
-                    Closed?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
@@ -748,7 +755,6 @@ namespace DS4WinWPF.DS4Forms
                     {
                         Global.SaveProfile(deviceNum, temp);
                         CreatedProfile?.Invoke(this, temp);
-                        Closed?.Invoke(this, EventArgs.Empty);
                     }
                     else
                     {
@@ -768,7 +774,7 @@ namespace DS4WinWPF.DS4Forms
         {
             keepsize = true;
             ImageSourceConverter c = new ImageSourceConverter();
-            sizeImage.Source = c.ConvertFromString("pack://application:,,,/DS4Windows;component/Resources/checked.png") as ImageSource;
+            sizeImage.Source = c.ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/checked.png") as ImageSource;
         }
 
         public void Close()
@@ -845,14 +851,14 @@ namespace DS4WinWPF.DS4Forms
                     if (!rumbleActive)
                     {
                         profileSettingsVM.HeavyRumbleActive = true;
-                        d.setRumble(d.LeftHeavySlowRumble,
+                        d.setRumble(d.RightLightFastRumble,
                             (byte)Math.Min(255, 255 * profileSettingsVM.RumbleBoost / 100));
                         heavyRumbleTestBtn.Content = Properties.Resources.StopHText;
                     }
                     else
                     {
                         profileSettingsVM.HeavyRumbleActive = false;
-                        d.setRumble(0, 0);
+                        d.setRumble(d.RightLightFastRumble, 0);
                         heavyRumbleTestBtn.Content = Properties.Resources.TestHText;
                     }
                 }
@@ -872,13 +878,13 @@ namespace DS4WinWPF.DS4Forms
                     {
                         profileSettingsVM.LightRumbleActive = true;
                         d.setRumble((byte)Math.Min(255, 255 * profileSettingsVM.RumbleBoost / 100),
-                            d.RightLightFastRumble);
+                            d.LeftHeavySlowRumble);
                         lightRumbleTestBtn.Content = Properties.Resources.StopLText;
                     }
                     else
                     {
                         profileSettingsVM.LightRumbleActive = false;
-                        d.setRumble(0, 0);
+                        d.setRumble(0, d.LeftHeavySlowRumble);
                         lightRumbleTestBtn.Content = Properties.Resources.TestLText;
                     }
                 }
@@ -1241,7 +1247,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.cacheProfileCustomsFlags(profileSettingsVM.Device);
+            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -1276,7 +1282,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.cacheProfileCustomsFlags(profileSettingsVM.Device);
+            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void SwipeControlsButton_Click(object sender, RoutedEventArgs e)
@@ -1289,7 +1295,7 @@ namespace DS4WinWPF.DS4Forms
             window.ShowDialog();
             mpControl.UpdateMappingName();
             UpdateHighlightLabel(mpControl);
-            Global.cacheProfileCustomsFlags(profileSettingsVM.Device);
+            Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
         }
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -1319,7 +1325,7 @@ namespace DS4WinWPF.DS4Forms
                     mpControl.UpdateMappingName();
                 }
 
-                Global.cacheProfileCustomsFlags(profileSettingsVM.Device);
+                Global.CacheProfileCustomsFlags(profileSettingsVM.Device);
                 highlightControlDisplayLb.Content = "";
             }
         }
