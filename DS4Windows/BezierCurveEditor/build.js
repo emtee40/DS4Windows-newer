@@ -132,7 +132,7 @@
                                 t = e.value,
                                 n = e.progress;
                             return i.createElement("div", null, i.createElement("h1", null, i.createElement("a", {
-                                href: "https://github.com/Ryochan7/DS4Windows/wiki/Settings",
+                                href: "https://github.com/grasmanek94/DS4Windows/wiki/Settings",
                                 style: l
                             }, u.name)), 
                             i.createElement("p", {style:{"whiteSpace": "pre-wrap"}}, "(1) Grab and move around red handles in a graph to customize the bezier curve or enter specific curve values in the textbox.\n(2) When you are happy with the curve, copy-paste the EASING CURVE DEFINITION values (comma separated list of 4 numbers) to a custom LS/RS/R2/L3/SA curve output options in DS4Windows application."),
@@ -188,7 +188,7 @@
                             i.createElement("p", null, i.createElement("a", {
                                 style: l,
                                 target: "_blank",
-                                href: "https://github.com/Ryochan7/DS4Windows/wiki/Settings"
+                                href: "https://github.com/grasmanek94/DS4Windows/wiki/Settings"
                             }, "Click here to see DS4Windows documentation of axis curve options.")), 
                             i.createElement("p", null, i.createElement("a", {
                                 style: l,

@@ -18,32 +18,32 @@ namespace DS4WinWPF.DS4Forms
 
         private void ChangeLogLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://docs.google.com/document/d/1CovpH08fbPSXrC6TmEprzgPwCe0tTjQ_HTFfDotpmxk/edit?usp=sharing");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void PaypalLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://paypal.me/ryochan7");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void PatreonLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://patreon.com/user?u=501036");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void SubscribeStartLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://subscribestar.com/ryochan7");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void SiteLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://ryochan7.github.io/ds4windows-site/");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void SourceLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://github.com/Ryochan7/DS4Windows");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void Jays2KingsLink_Click(object sender, RoutedEventArgs e)
@@ -63,32 +63,32 @@ namespace DS4WinWPF.DS4Forms
 
         private void YoutubeSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://www.youtube.com/channel/UCIoUA_XLlCSZbvZGeg3Byeg");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void BitchuteSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://www.bitchute.com/channel/uE2CbiV96u1k/");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void BittubeSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://bittube.tv/profile/ds4windows");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void TwitterSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://twitter.com/ds4windows");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void MastodonSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://fosstodon.org/@ds4windows");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void MindsSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://www.minds.com/ds4windows/");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
 
         private void DiscordSocialBtn_Click(object sender, RoutedEventArgs e)
@@ -98,7 +98,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void ParlerSocialBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://parler.com/profile/ds4windows/");
+            Util.StartProcessHelper("https://github.com/grasmanek94/DS4Windows/");
         }
     }
 }

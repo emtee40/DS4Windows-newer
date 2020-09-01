@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Hotkeys/About" Height="450" Width="800">
     <DockPanel>
-        <Label x:Name="headerLb" Content="DS4Windows - Ryochan7 Build (Version " DockPanel.Dock="Top" HorizontalAlignment="Center" />
+        <Label x:Name="headerLb" Content="DS4Windows - grasmanek94 Build (Version " DockPanel.Dock="Top" HorizontalAlignment="Center" />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center" Margin="0,4,0,0">
             <Button x:Name="youtubeSocialBtn" Click="YoutubeSocialBtn_Click"
                     BorderBrush="{x:Null}" Background="{x:Null}" Cursor="Hand" ToolTip="YouTube">

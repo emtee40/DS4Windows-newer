@@ -9,11 +9,11 @@ more games are accessible.
 This project is a fork of the work of Jays2Kings. You can find the old project
 website at [ds4windows.com](http://ds4windows.com).
 
-![DS4Windows Preview](https://raw.githubusercontent.com/Ryochan7/DS4Windows/jay/ds4winwpf_screen_20200412.png)
+![DS4Windows Preview](https://raw.githubusercontent.com/grasmanek94/DS4Windows/jay/ds4winwpf_screen_20200412.png)
 
 ## Downloads
 
-- **[Main builds of DS4Windows](https://github.com/Ryochan7/DS4Windows/releases)**
+- **[Main builds of DS4Windows](https://github.com/grasmanek94/DS4Windows/releases)**
 
 ## Requirements
 
@@ -94,13 +94,6 @@ that will be tested by users that I will not have access to
 playing. There are likely going to be times when I cannot directly test
 against a game since I will not have access to play it. Most free to play
 games or games that include a playable demo should be fine for testing.
-For other games, it might be better if people could test against any game
-that I have in my game library and try to reproduce a problem. Here are
-links to my Steam and GOG profiles so that people can see what games I have
-access to play.
-
-https://steamcommunity.com/id/Ryochan7/games/?tab=all  
-https://www.gog.com/u/Ryochan7/games
 
 ## Pull Requests
 
@@ -110,20 +103,3 @@ the performance of other parts of the application. Some consideration will
 be made during code review to try to tweak the changes in order to improve
 application performance. However, there is a chance that a pull request will be
 rejected if no reasonable solution can be found to incorporate code changes.
-
-## Tip Jar
-
-If you would like to send some coin my way, here are some means by
-which to do so.
-
-**PayPal:** https://paypal.me/ryochan7  
-**Patreon:** https://patreon.com/user?u=501036  
-**SubscribeStar:** https://subscribestar.com/ryochan7
-
-### Crypto
-
-**Bitcoin:** 1DnMJwjdd7JRfHJap2mmTmADYm38SzR2z9  
-**Dogecoin:** D9fhbXp9bCHEhuS8vX1BmVu6t7Y2nVNUCK  
-**Litecoin:** La5mniW7SFMH2RhqDgUty3RwkBSYbjbnJ6  
-**Monero:** 49RvRMiMewaeez1Y2auxHmfMaAUYfhUpBem4ohzRJd9b5acPcxzh1icjnhZfjnYd1S7NQ57reQ7cP1swGre3rpfzUgJhEB7
-

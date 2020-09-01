@@ -420,7 +420,7 @@
   </data>
   <data name="QuitOtherPrograms" xml:space="preserve">
     <value>Перед активацией функции "Спрятать DS4" вы должны выйти из игровых клиентов, таких как Steam, Uplay, Origin и пр.
- Подробности на https://github.com/Ryochan7/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues</value>
+ Подробности на https://github.com/grasmanek94/DS4Windows/wiki/Exclusive-Mode-(Hide-DS4-Controller-config-option)-tips-and-issues</value>
   </data>
   <data name="RecordText" xml:space="preserve">
     <value>Запись</value>

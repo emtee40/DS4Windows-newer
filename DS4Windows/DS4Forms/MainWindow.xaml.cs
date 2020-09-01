@@ -163,7 +163,7 @@ namespace DS4WinWPF.DS4Forms
         private void DownloadUpstreamVersionInfo()
         {
             // Sorry other devs, gonna have to find your own server
-            Uri url = new Uri("https://raw.githubusercontent.com/Ryochan7/DS4Windows/jay/DS4Windows/newest.txt");
+            Uri url = new Uri("https://raw.githubusercontent.com/grasmanek94/DS4Windows/jay/DS4Windows/newest.txt");
             string filename = Global.appdatapath + "\\version.txt";
             bool success = false;
             using (var downloadStream = new FileStream(filename, FileMode.Create))
@@ -281,7 +281,7 @@ namespace DS4WinWPF.DS4Forms
                         {
                             MessageBox.Show(Properties.Resources.PleaseDownloadUpdater);
                         });
-                        //Process.Start($"https://github.com/Ryochan7/DS4Updater/releases/download/v{UPDATER_VERSION}/{updaterExe}");
+                        //Process.Start($"https://github.com/grasmanek94/DS4Updater/releases/download/v{UPDATER_VERSION}/{updaterExe}");
                     }
                 }
                 else
@@ -311,7 +311,7 @@ namespace DS4WinWPF.DS4Forms
                 (!string.IsNullOrEmpty(version) && FileVersionInfo.GetVersionInfo(destPath).FileVersion.CompareTo(version) != 0))
             {
                 launch = false;
-                Uri url2 = new Uri($"https://github.com/Ryochan7/DS4Updater/releases/download/v{version}/{mainWinVM.updaterExe}");
+                Uri url2 = new Uri($"https://github.com/grasmanek94/DS4Updater/releases/download/v{version}/{mainWinVM.updaterExe}");
                 string filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DS4Updater.exe");
                 using (var downloadStream = new FileStream(filename, FileMode.Create))
                 {
