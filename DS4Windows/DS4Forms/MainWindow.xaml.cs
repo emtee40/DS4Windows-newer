@@ -187,7 +187,7 @@ namespace DS4WinWPF.DS4Forms
         {
             string result = string.Empty;
             // Sorry other devs, gonna have to find your own server
-            Uri url = new Uri("https://raw.githubusercontent.com/Ryochan7/DS4Updater/master/Updater2/newest.txt");
+            Uri url = new Uri("https://raw.githubusercontent.com/grasmanek94/DS4Updater/master/Updater2/newest.txt");
             string filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DS4Updater_version.txt");
             bool readFile = false;
             using (var downloadStream = new FileStream(filename, FileMode.Create))
