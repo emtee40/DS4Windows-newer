@@ -332,7 +332,7 @@
     <comment>settings tab&gt;utils</comment>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>Применить</value>
+    <value>Изменения этого параметра вступают в силу во время подключения геймпада.</value>
     <comment>Profiles&gt;Edit&gt;Apply
 (button)</comment>
   </data>
@@ -393,5 +393,14 @@
     <value>Контроллеры не подключены (Максимум {0})</value>
     <comment>Controllers tab
 (if controllers are disabled)</comment>
+  </data>
+  <data name="EnableOutputDataToDS4" xml:space="preserve">
+    <value>Включить вывод данных в DS4</value>
+    <comment>Profiles tab&gt;edit&gt;Other</comment>
+  </data>
+  <data name="EnableOutputDataToDS4Tip" xml:space="preserve">
+    <value>Периодически выводить данные световой панели и вибрации на геймпад DS4. Снимите флажок, если геймпад не поддерживает прием данных.
+Изменения этого параметра вступают в силу во время подключения геймпада.</value>
+    <comment>To enter a line break into a string resource value in VisualStudio resource editor press Shift+Enter.</comment>
   </data>
 </root>
