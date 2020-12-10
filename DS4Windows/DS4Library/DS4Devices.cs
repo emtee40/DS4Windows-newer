@@ -212,6 +212,7 @@ namespace DS4Windows
                         try {
                             return InputDeviceFactory.CreateDevice(ds.metaInfo.inputDevType, ds.hDevice, ds.metaInfo.name, ds.metaInfo.featureSet) as DualSenseDevice;
                         } catch (Exception e) {
+                            AppLogger.LogToGui("Created duplicate DualSense device. If you're changing the connection from type (BT/USB), you might need to stop/start DS4Windows.", true);
                             return null;
                         }})
                     .Where(ds => ds != null)
