@@ -6,6 +6,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
+using Xceed.Wpf.Toolkit.Core.Converters;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace DS4Windows
 {
@@ -199,8 +201,25 @@ namespace DS4Windows
                     //return DS4Device.HidConnectionType(d);
                     return metainfo.checkConnection(d);
                 });
-
+                
                 List<HidDevice> tempList = hDevices.ToList();
+
+                List<HidDevice> duplicateDualSenses = hDevices.ToList()
+                    .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId)))
+                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) x) => x.metaInfo.inputDevType == InputDeviceType.DualSense)
+                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => hDevices.Select(hDevice => dsDevice.hDevice == hDevice).Count() > 1)
+                    .Select(((HidDevice hDevice, VidPidInfo metaInfo) ds) => {
+                        try {
+                            return InputDeviceFactory.CreateDevice(ds.metaInfo.inputDevType, ds.hDevice, ds.metaInfo.name, ds.metaInfo.featureSet) as DualSenseDevice;
+                        } catch (Exception e) {
+                            return null;
+                        }})
+                    .Where(ds => ds != null)
+                    .Where(dsDevice => dsDevice.ConnectionType == ConnectionType.BT)
+                    .Select(dsDevice => dsDevice.HidDevice)
+                    .ToList();
+                tempList.RemoveAll(tempDevice => duplicateDualSenses.Contains(tempDevice));
+                    
                 purgeHiddenExclusiveDevices();
                 tempList.AddRange(DisabledDevices);
                 int devCount = tempList.Count();
@@ -216,8 +235,7 @@ namespace DS4Windows
                     else if (DevicePaths.Contains(hDevice.DevicePath))
                         continue; // BT/USB endpoint already open once
 
-                    VidPidInfo metainfo = knownDevices.Single(x => x.vid == hDevice.Attributes.VendorId &&
-                        x.pid == hDevice.Attributes.ProductId);
+                    VidPidInfo metainfo = knownDevices.Single(x => x.vid == hDevice.Attributes.VendorId && x.pid == hDevice.Attributes.ProductId);
                     if (!hDevice.IsOpen)
                     {
                         hDevice.OpenDevice(isExclusiveMode);
@@ -270,7 +288,7 @@ namespace DS4Windows
 
                         bool validSerial = !serial.Equals(DS4Device.BLANK_SERIAL);
                         bool newdev = true;
-                        if (validSerial && deviceSerials.Contains(serial))
+                        if (validSerial && deviceSerials.Contains(serial) && serialDevices.TryGetValue(serial, out DS4Device ds) && !(ds is DualSenseDevice))
                         {
                             // Check if Quick Charge flag is engaged
                             if (serialDevices.TryGetValue(serial, out DS4Device tempDev) && tempDev.ReadyQuickChargeDisconnect)
