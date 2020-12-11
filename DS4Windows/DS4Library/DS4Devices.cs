@@ -202,9 +202,9 @@ namespace DS4Windows
                     return metainfo.checkConnection(d);
                 });
                 
-                List<HidDevice> tempList = hDevices.ToList();
+                
 
-                List<HidDevice> duplicateDualSenses = hDevices.ToList()
+                HashSet<HidDevice> duplicateDualSenses = hDevices.ToList()
                     .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId)))
                     .Where(((HidDevice hDevice, VidPidInfo metaInfo) x) => x.metaInfo.inputDevType == InputDeviceType.DualSense)
                     .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => hDevices.Select(hDevice => dsDevice.hDevice == hDevice).Count() > 1)
@@ -218,8 +218,9 @@ namespace DS4Windows
                     .Where(ds => ds != null)
                     .Where(dsDevice => dsDevice.ConnectionType == ConnectionType.BT)
                     .Select(dsDevice => dsDevice.HidDevice)
-                    .ToList();
-                tempList.RemoveAll(tempDevice => duplicateDualSenses.Contains(tempDevice));
+                    .ToHashSet();
+                
+                List<HidDevice> tempList = hDevices.Except(duplicateDualSenses).ToList();
                     
                 purgeHiddenExclusiveDevices();
                 tempList.AddRange(DisabledDevices);
