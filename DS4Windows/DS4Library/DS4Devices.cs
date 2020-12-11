@@ -205,19 +205,11 @@ namespace DS4Windows
                 
 
                 HashSet<HidDevice> duplicateDualSenses = hDevices.ToList()
-                    .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId)))
-                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) x) => x.metaInfo.inputDevType == InputDeviceType.DualSense)
-                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => hDevices.Select(hDevice => dsDevice.hDevice == hDevice).Count() > 1)
-                    .Select(((HidDevice hDevice, VidPidInfo metaInfo) ds) => {
-                        try {
-                            return InputDeviceFactory.CreateDevice(ds.metaInfo.inputDevType, ds.hDevice, ds.metaInfo.name, ds.metaInfo.featureSet) as DualSenseDevice;
-                        } catch (Exception e) {
-                            AppLogger.LogToGui("Created duplicate DualSense device. If you're changing the connection from type (BT/USB), you might need to stop/start DS4Windows.", true);
-                            return null;
-                        }})
-                    .Where(ds => ds != null)
-                    .Where(dsDevice => dsDevice.ConnectionType == ConnectionType.BT)
-                    .Select(dsDevice => dsDevice.HidDevice)
+                    .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId))) // Extract metainfo from devices
+                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.metaInfo.inputDevType == InputDeviceType.DualSense) // Filter only DualSense devices
+                    .Select(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.hDevice) // Metainfo no longer needed
+                    .Where(hDevice => hDevices.Select(x => hDevice.Attributes.ProductId == x.Attributes.ProductId).Count() > 1) // Only consider duplicate devices
+                    .Where(hDevice => DualSenseDevice.DetermineConnectionType(hDevice) == ConnectionType.BT) // Only ignore Bluetooth devices
                     .ToHashSet();
                 
                 List<HidDevice> tempList = hDevices.Except(duplicateDualSenses).ToList();
