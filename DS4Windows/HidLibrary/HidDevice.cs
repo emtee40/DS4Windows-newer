@@ -502,25 +502,16 @@ namespace DS4Windows
 #else
                 uint bufferLen = 126;
 #endif
-                try
-                {
-
-                    if (NativeMethods.HidD_GetSerialNumberString(safeReadHandle.DangerousGetHandle(), buffer, bufferLen)
-                    )
-                    {
-                        string MACAddr = System.Text.Encoding.Unicode.GetString(buffer).Replace("\0", string.Empty)
-                            .ToUpper();
-                        MACAddr =
-                            $"{MACAddr[0]}{MACAddr[1]}:{MACAddr[2]}{MACAddr[3]}:{MACAddr[4]}{MACAddr[5]}:{MACAddr[6]}{MACAddr[7]}:{MACAddr[8]}{MACAddr[9]}:{MACAddr[10]}{MACAddr[11]}";
-                        serial = MACAddr;
-                    }
-                }
-                catch (Exception e)
-                {
-                    AppLogger.LogToGui("Failed to read serial, generating dummy MAC", true);
-                    serial = null;
-                }
                 
+                if (NativeMethods.HidD_GetSerialNumberString(safeReadHandle.DangerousGetHandle(), buffer, bufferLen)
+                )
+                {
+                    string MACAddr = System.Text.Encoding.Unicode.GetString(buffer).Replace("\0", string.Empty)
+                        .ToUpper();
+                    MACAddr =
+                        $"{MACAddr[0]}{MACAddr[1]}:{MACAddr[2]}{MACAddr[3]}:{MACAddr[4]}{MACAddr[5]}:{MACAddr[6]}{MACAddr[7]}:{MACAddr[8]}{MACAddr[9]}:{MACAddr[10]}{MACAddr[11]}";
+                    serial = MACAddr;
+                }
             }
 
             // If serial# reading failed then generate a dummy MAC address based on HID device path (WinOS generated runtime unique value based on connected usb port and hub or BT channel).
