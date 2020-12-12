@@ -885,6 +885,18 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set => Global.SquStickInfo[device].rsMode = value;
         }
 
+        public double LSSquareAmount
+        {
+            get => Global.SquStickInfo[device].lsAmount;
+            set => Global.SquStickInfo[device].lsAmount = value;
+        }
+
+        public double RSSquareAmount
+        {
+            get => Global.SquStickInfo[device].rsAmount;
+            set => Global.SquStickInfo[device].rsAmount = value;
+        }
+
         public double LSSquareRoundness
         {
             get => Global.SquStickInfo[device].lsRoundness;

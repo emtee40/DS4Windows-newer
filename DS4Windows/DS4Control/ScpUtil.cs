@@ -2256,9 +2256,19 @@ namespace DS4Windows
             return (value < min) ? min : (value > max) ? max : value;
         }
 
+        public static byte Clamp(byte min, byte value, byte max)
+        {
+            return Math.Min(Math.Max(value, min), max);
+        }
+
         private static int ClampInt(int min, int value, int max)
         {
             return (value < min) ? min : (value > max) ? max : value;
+        }
+
+        public static double Lerp(double a, double b, double t)
+        {
+            return a * (1.0 - t) + b * t;
         }
     }
 
@@ -3101,6 +3111,9 @@ namespace DS4Windows
 
                 XmlNode xmlLsSquareStickMode = m_Xdoc.CreateNode(XmlNodeType.Element, "LSSquareStick", null); xmlLsSquareStickMode.InnerText = squStickInfo[device].lsMode.ToString(); rootElement.AppendChild(xmlLsSquareStickMode);
                 XmlNode xmlRsSquareStickMode = m_Xdoc.CreateNode(XmlNodeType.Element, "RSSquareStick", null); xmlRsSquareStickMode.InnerText = squStickInfo[device].rsMode.ToString(); rootElement.AppendChild(xmlRsSquareStickMode);
+
+                XmlNode xmlSquareStickAmount = m_Xdoc.CreateNode(XmlNodeType.Element, "SquareStickAmount", null); xmlSquareStickAmount.InnerText = squStickInfo[device].lsAmount.ToString(); rootElement.AppendChild(xmlSquareStickAmount);
+                XmlNode xmlSquareRStickAmount = m_Xdoc.CreateNode(XmlNodeType.Element, "SquareRStickAmount", null); xmlSquareRStickAmount.InnerText = squStickInfo[device].rsAmount.ToString(); rootElement.AppendChild(xmlSquareRStickAmount);
 
                 XmlNode xmlSquareStickRoundness = m_Xdoc.CreateNode(XmlNodeType.Element, "SquareStickRoundness", null); xmlSquareStickRoundness.InnerText = squStickInfo[device].lsRoundness.ToString(); rootElement.AppendChild(xmlSquareStickRoundness);
                 XmlNode xmlSquareRStickRoundness = m_Xdoc.CreateNode(XmlNodeType.Element, "SquareRStickRoundness", null); xmlSquareRStickRoundness.InnerText = squStickInfo[device].rsRoundness.ToString(); rootElement.AppendChild(xmlSquareRStickRoundness);
@@ -4420,6 +4433,11 @@ namespace DS4Windows
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSSquareStick"); bool.TryParse(Item.InnerText, out squStickInfo[device].lsMode); }
                 catch { squStickInfo[device].lsMode = false; missingSetting = true; }
+
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareStickAmount"); double.TryParse(Item.InnerText, out squStickInfo[device].lsAmount); }
+                catch { squStickInfo[device].lsAmount = 100.0; missingSetting = true; }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareRStickAmount"); double.TryParse(Item.InnerText, out squStickInfo[device].rsAmount); }
+                catch { squStickInfo[device].rsAmount = 100.0; missingSetting = true; }
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareStickRoundness"); double.TryParse(Item.InnerText, out squStickInfo[device].lsRoundness); }
                 catch { squStickInfo[device].lsRoundness = 5.0; missingSetting = true; }
@@ -5977,6 +5995,8 @@ namespace DS4Windows
             gyroMouseToggle[device] = false;
             squStickInfo[device].lsMode = false;
             squStickInfo[device].rsMode = false;
+            squStickInfo[device].lsAmount = 100.0;
+            squStickInfo[device].rsAmount = 100.0;
             squStickInfo[device].lsRoundness = 5.0;
             squStickInfo[device].rsRoundness = 5.0;
             setLsOutCurveMode(device, 0);

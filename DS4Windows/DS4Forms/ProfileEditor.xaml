@@ -319,6 +319,10 @@
                                             <Label Content="Square Stick:" Grid.Row="7" Grid.Column="0" />
                                             <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right">
                                                 <CheckBox IsChecked="{Binding LSSquareStick}" Margin="{StaticResource spaceMargin}" VerticalAlignment="Center" />
+                                                <xctk:DoubleUpDown d:IsHidden="True" FormatString="F1" Value="{Binding LSSquareAmount,FallbackValue=100}"
+                                                       MinWidth="60" Minimum="0.0" Maximum="100.0" Increment="1.0" IsEnabled="{Binding LSSquareStick}"
+                                                       Margin="{StaticResource spaceMargin}" />
+                                                <Label Content="%" />
                                                 <xctk:DoubleUpDown d:IsHidden="True" FormatString="F1" Value="{Binding LSSquareRoundness,FallbackValue=5}"
                                                        MinWidth="100" Minimum="0.0" Maximum="1000.0" Increment="1.0" IsEnabled="{Binding LSSquareStick}"
                                                        Margin="{StaticResource spaceMargin}" />
@@ -467,6 +471,10 @@
                                             <Label Content="Square Stick:" Grid.Row="7" Grid.Column="0" />
                                             <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right">
                                                 <CheckBox IsChecked="{Binding RSSquareStick}" Margin="{StaticResource spaceMargin}" VerticalAlignment="Center" />
+                                                <xctk:DoubleUpDown d:IsHidden="True" FormatString="F1" Value="{Binding RSSquareAmount,FallbackValue=100}"
+                                                       MinWidth="60" Minimum="0.0" Maximum="100.0" Increment="1.0" IsEnabled="{Binding RSSquareStick}"
+                                                       Margin="{StaticResource spaceMargin}" />
+                                                <Label Content="%" />
                                                 <xctk:DoubleUpDown d:IsHidden="True" FormatString="F1" Value="{Binding RSSquareRoundness,FallbackValue=5}"
                                                        MinWidth="100" Minimum="0.0" Maximum="1000.0" Increment="1.0" IsEnabled="{Binding RSSquareStick}"
                                                        Margin="{StaticResource spaceMargin}" />

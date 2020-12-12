@@ -93,80 +93,80 @@ namespace DS4Windows
                 this.x = x;
                 this.y = y;
             }
-        }
 
-        class DS4SquareStick
-        {
-            public DS4Vector2 current;
-            public DS4Vector2 squared;
-
-            public DS4SquareStick()
+            public static DS4Vector2 operator +(DS4Vector2 lhs, double rhs)
             {
-                current = new DS4Vector2(0.0, 0.0);
-                squared = new DS4Vector2(0.0, 0.0);
+                return new DS4Vector2(lhs.x + rhs, lhs.y + rhs);
             }
 
-            public void CircleToSquare(double roundness)
+            public static DS4Vector2 operator -(DS4Vector2 lhs, double rhs)
             {
-                const double PiOverFour = Math.PI / 4.0;
+                return new DS4Vector2(lhs.x - rhs, lhs.y - rhs);
+            }
 
-                // Determine the theta angle
-                double angle = Math.Atan2(current.y, -current.x);
-                angle += Math.PI;
-                double cosAng = Math.Cos(angle);
-                // Scale according to which wall we're clamping to
-                // X+ wall
-                if (angle <= PiOverFour || angle > 7.0 * PiOverFour)
-                {
-                    double tempVal = 1.0 / cosAng;
-                    //Console.WriteLine("1 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // Y+ wall
-                else if (angle > PiOverFour && angle <= 3.0 * PiOverFour)
-                {
-                    double tempVal = 1.0 / Math.Sin(angle);
-                    //Console.WriteLine("2 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // X- wall
-                else if (angle > 3.0 * PiOverFour && angle <= 5.0 * PiOverFour)
-                {
-                    double tempVal = -1.0 / cosAng;
-                    //Console.WriteLine("3 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                // Y- wall
-                else if (angle > 5.0 * PiOverFour && angle <= 7.0 * PiOverFour)
-                {
-                    double tempVal = -1.0 / Math.Sin(angle);
-                    //Console.WriteLine("4 ANG: {0} | TEMP: {1}", angle, tempVal);
-                    squared.x = current.x * tempVal;
-                    squared.y = current.y * tempVal;
-                }
-                else return;
+            public static DS4Vector2 operator *(DS4Vector2 lhs, double rhs)
+            {
+                return new DS4Vector2(lhs.x * rhs, lhs.y * rhs);
+            }
 
-                //double lengthOld = Math.Sqrt((x * x) + (y * y));
-                double length = current.x / cosAng;
-                //Console.WriteLine("LENGTH TEST ({0}) ({1}) {2}", lengthOld, length, (lengthOld == length).ToString());
-                double factor = Math.Pow(length, roundness);
-                //double ogX = current.x, ogY = current.y;
-                current.x += (squared.x - current.x) * factor;
-                current.y += (squared.y - current.y) * factor;
-                //Console.WriteLine("INPUT: {0} {1} | {2} {3} | {4} {5} | {6} {7}",
-                //    ogX, ogY, current.x, current.y, squared.x, squared.y, length, factor);
+            public static DS4Vector2 operator /(DS4Vector2 lhs, double rhs)
+            {
+                return new DS4Vector2(lhs.x / rhs, lhs.y / rhs);
             }
         }
 
-        private static DS4SquareStick[] outSqrStk = new DS4SquareStick[Global.TEST_PROFILE_ITEM_COUNT]
+        static double Length(DS4Vector2 v)
         {
-            new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
-            new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(), new DS4SquareStick(),
-            new DS4SquareStick(),
-        };
+            return Math.Sqrt(v.x * v.x + v.y * v.y);
+        }
+
+        static DS4Vector2 Lerp(DS4Vector2 a, DS4Vector2 b, double t)
+        {
+            return new DS4Vector2(Global.Lerp(a.x, b.x, t), Global.Lerp(a.y, b.y, t));
+        }
+
+        static DS4Vector2 Clamp(double min, DS4Vector2 v, double max)
+        {
+            return new DS4Vector2(Global.Clamp(min, v.x, max), Global.Clamp(min, v.y, max));
+        }
+
+        // Maps coordinates from range [0, 255] to [-1, 1].
+        private static DS4Vector2 NativeToNormal(DS4Vector2 v)
+        {
+            return Clamp(-1.0, (v - 127.5) / 127.5, 1.0);
+        }
+
+        // Maps coordinates from range [-1, 1] to [0, 255].
+        private static DS4Vector2 NormalToNative(DS4Vector2 v)
+        {
+            return Clamp(0.0, v * 127.5 + 127.5, 255.0);
+        }
+
+        // Maps coordinates from circle of radius 1 to 2x2 square.
+        private static DS4Vector2 CircleToSquare(DS4Vector2 v)
+        {
+            return v * Length(v) / Math.Max(Math.Abs(v.x), Math.Abs(v.y));
+        }
+
+        // Maps coordinates from circle of radius 1 to 2x2 square according to different factors.
+        // The amount controls global blending between the circle and square mapping. It affects
+        // how "square" the joystick behaves. The roundness controls blending between the circle
+        // and square mapping as a function of distance from the origin; it affects how much the
+        // joystick "snaps" to the corners of the square.
+        private static DS4Vector2 CircleToSquare(DS4Vector2 v, double amount, double roundness)
+        {
+            return Lerp(v, CircleToSquare(v), amount * Math.Pow(Length(v), roundness));
+        }
+
+        private static void ApplySquareStick(ref byte x, ref byte y, bool active, double amount, double roundness)
+        {
+            if (active)
+            {
+                var square = NormalToNative(CircleToSquare(NativeToNormal(new DS4Vector2(x, y)), 0.01 * amount, roundness));
+                x = (byte)square.x;
+                y = (byte)square.y;
+            }
+        }
 
         public static byte[] gyroStickX = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
         public static byte[] gyroStickY = new byte[Global.MAX_DS4_CONTROLLER_COUNT] { 128, 128, 128, 128, 128, 128, 128, 128 };
@@ -1005,6 +1005,10 @@ namespace DS4Windows
                 }
             }
 
+            SquareStickInfo squStk = GetSquareStickInfo(device);
+            ApplySquareStick(ref dState.LX, ref dState.LY, squStk.lsMode, squStk.lsAmount, squStk.lsRoundness);
+            ApplySquareStick(ref dState.RX, ref dState.RY, squStk.rsMode, squStk.rsAmount, squStk.rsRoundness);
+
             double lsSens = getLSSens(device);
             if (lsSens != 1.0)
             {
@@ -1026,25 +1030,6 @@ namespace DS4Windows
             double r2Sens = getR2Sens(device);
             if (r2Sens != 1.0)
                 dState.R2 = (byte)Global.Clamp(0, r2Sens * dState.R2, 255);
-
-            SquareStickInfo squStk = GetSquareStickInfo(device);
-            if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
-            {
-                double capX = dState.LX >= 128 ? 127.0 : 128.0;
-                double capY = dState.LY >= 128 ? 127.0 : 128.0;
-                double tempX = (dState.LX - 128.0) / capX;
-                double tempY = (dState.LY - 128.0) / capY;
-                DS4SquareStick sqstick = outSqrStk[device];
-                sqstick.current.x = tempX; sqstick.current.y = tempY;
-                sqstick.CircleToSquare(squStk.lsRoundness);
-                //Console.WriteLine("Input ({0}) | Output ({1})", tempY, sqstick.current.y);
-                tempX = sqstick.current.x < -1.0 ? -1.0 : sqstick.current.x > 1.0
-                    ? 1.0 : sqstick.current.x;
-                tempY = sqstick.current.y < -1.0 ? -1.0 : sqstick.current.y > 1.0
-                    ? 1.0 : sqstick.current.y;
-                dState.LX = (byte)(tempX * capX + 128.0);
-                dState.LY = (byte)(tempY * capY + 128.0);
-            }
 
             int lsOutCurveMode = getLsOutCurveMode(device);
             if (lsOutCurveMode > 0 && (dState.LX != 128 || dState.LY != 128))
@@ -1138,24 +1123,6 @@ namespace DS4Windows
                 }
             }
             
-            if (squStk.rsMode && (dState.RX != 128 || dState.RY != 128))
-            {
-                double capX = dState.RX >= 128 ? 127.0 : 128.0;
-                double capY = dState.RY >= 128 ? 127.0 : 128.0;
-                double tempX = (dState.RX - 128.0) / capX;
-                double tempY = (dState.RY - 128.0) / capY;
-                DS4SquareStick sqstick = outSqrStk[device];
-                sqstick.current.x = tempX; sqstick.current.y = tempY;
-                sqstick.CircleToSquare(squStk.rsRoundness);
-                tempX = sqstick.current.x < -1.0 ? -1.0 : sqstick.current.x > 1.0
-                    ? 1.0 : sqstick.current.x;
-                tempY = sqstick.current.y < -1.0 ? -1.0 : sqstick.current.y > 1.0
-                    ? 1.0 : sqstick.current.y;
-                //Console.WriteLine("Input ({0}) | Output ({1})", tempY, sqstick.current.y);
-                dState.RX = (byte)(tempX * capX + 128.0);
-                dState.RY = (byte)(tempY * capY + 128.0);
-            }
-
             int rsOutCurveMode = getRsOutCurveMode(device);
             if (rsOutCurveMode > 0 && (dState.RX != 128 || dState.RY != 128))
             {
