@@ -208,7 +208,7 @@ namespace DS4Windows
                     .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId))) // Extract metainfo from devices
                     .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.metaInfo.inputDevType == InputDeviceType.DualSense) // Filter only DualSense devices
                     .Select(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.hDevice) // Metainfo no longer needed
-                    .Where(hDevice => hDevices.Select(x => hDevice.Attributes.ProductId == x.Attributes.ProductId).Count() > 1) // Only consider duplicate devices
+                    .Where(hDevice => hDevices.Select(x =>  hDevice.Attributes.VendorId == x.Attributes.VendorId && hDevice.Attributes.ProductId == x.Attributes.ProductId).Count() > 1) // Only consider duplicate devices
                     .Where(hDevice => DualSenseDevice.DetermineConnectionType(hDevice) == ConnectionType.BT) // Only ignore Bluetooth devices
                     .ToHashSet();
                 
