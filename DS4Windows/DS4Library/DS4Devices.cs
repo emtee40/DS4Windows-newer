@@ -203,10 +203,8 @@ namespace DS4Windows
                 
 
                 HashSet<HidDevice> duplicateDualSenses = hDevices.ToList()
-                    .Select(hDevice => (hDevice, knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId))) // Extract metainfo from devices
-                    .Where(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.metaInfo.inputDevType == InputDeviceType.DualSense) // Filter only DualSense devices
-                    .Select(((HidDevice hDevice, VidPidInfo metaInfo) dsDevice) => dsDevice.hDevice) // Metainfo no longer needed
-                    .Where(hDevice => hDevices.Select(x => hDevice.DevicePath.Split('#').Last() == x.DevicePath.Split('#').Last()).Count() > 1) // Only consider duplicate devices
+                    .Where(hDevice => knownDevices.Single(kd => kd.vid == hDevice.Attributes.VendorId && kd.pid == hDevice.Attributes.ProductId).inputDevType == InputDeviceType.DualSense) // Filter DualSense devices
+                    .Where(hDevice => hDevices.Count(x => hDevice.DevicePath.Split('#').Last() == x.DevicePath.Split('#').Last()) > 1) // Only consider duplicate devices
                     .Where(hDevice => DualSenseDevice.DetermineConnectionType(hDevice) == ConnectionType.BT) // Only ignore Bluetooth devices
                     .ToHashSet();
                 
