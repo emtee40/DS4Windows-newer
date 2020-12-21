@@ -23,7 +23,7 @@ namespace DS4Windows
     public enum DS4Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, L1, L2, L3, R1, R2, R3, Square, Triangle, Circle, Cross, DpadUp, DpadRight, DpadDown, DpadLeft, PS, TouchLeft, TouchUpper, TouchMulti, TouchRight, Share, Options, Mute, GyroXPos, GyroXNeg, GyroZPos, GyroZNeg, SwipeLeft, SwipeRight, SwipeUp, SwipeDown };
     public enum X360Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, LB, LT, LS, RB, RT, RS, X, Y, B, A, DpadUp, DpadRight, DpadDown, DpadLeft, Guide, Back, Start, TouchpadClick, LeftMouse, RightMouse, MiddleMouse, FourthMouse, FifthMouse, WUP, WDOWN, MouseUp, MouseDown, MouseLeft, MouseRight, Unbound };
 
-    public enum SASteeringWheelEmulationAxisType: byte { None = 0, LX, LY, RX, RY, L2R2, VJoy1X, VJoy1Y, VJoy1Z, VJoy2X, VJoy2Y, VJoy2Z };
+    public enum SASteeringWheelEmulationAxisType : byte { None = 0, LX, LY, RX, RY, L2R2, VJoy1X, VJoy1Y, VJoy1Z, VJoy2X, VJoy2Y, VJoy2Z };
     public enum OutContType : uint { None = 0, X360, DS4 }
 
     public enum GyroOutMode : uint
@@ -138,25 +138,25 @@ namespace DS4Windows
         {
             for (int i = (int)DS4Controls.LXNeg; i <= (int)DS4Controls.LYPos; i++)
             {
-                LS.Add(settingsList[i-1]);
+                LS.Add(settingsList[i - 1]);
             }
 
             for (int i = (int)DS4Controls.RXNeg; i <= (int)DS4Controls.RYPos; i++)
             {
-                RS.Add(settingsList[i-1]);
+                RS.Add(settingsList[i - 1]);
             }
 
-            L2 = settingsList[(int)DS4Controls.L2-1];
-            R2 = settingsList[(int)DS4Controls.R2-1];
+            L2 = settingsList[(int)DS4Controls.L2 - 1];
+            R2 = settingsList[(int)DS4Controls.R2 - 1];
 
-            ControlButtons.Add(settingsList[(int)DS4Controls.L1-1]);
-            ControlButtons.Add(settingsList[(int)DS4Controls.L3-1]);
-            ControlButtons.Add(settingsList[(int)DS4Controls.R1-1]);
-            ControlButtons.Add(settingsList[(int)DS4Controls.R3-1]);
+            ControlButtons.Add(settingsList[(int)DS4Controls.L1 - 1]);
+            ControlButtons.Add(settingsList[(int)DS4Controls.L3 - 1]);
+            ControlButtons.Add(settingsList[(int)DS4Controls.R1 - 1]);
+            ControlButtons.Add(settingsList[(int)DS4Controls.R3 - 1]);
 
             for (int i = (int)DS4Controls.Square; i <= (int)DS4Controls.SwipeDown; i++)
             {
-                ControlButtons.Add(settingsList[i-1]);
+                ControlButtons.Add(settingsList[i - 1]);
             }
         }
     }
@@ -332,7 +332,7 @@ namespace DS4Windows
         public const int OLD_XINPUT_CONTROLLER_COUNT = 4;
         protected static BackingStore m_Config = new BackingStore();
         protected static Int32 m_IdleTimeout = 600000;
-        public static string exelocation = Assembly.GetExecutingAssembly().Location;
+        public static string exelocation = Path.ChangeExtension(Assembly.GetExecutingAssembly().Location, "exe");
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
         public static string exeFileName = Path.GetFileName(exelocation);
         public static FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(exelocation);
@@ -590,18 +590,30 @@ namespace DS4Windows
 
         public static Dictionary<DS4Controls, int> macroDS4Values = new Dictionary<DS4Controls, int>()
         {
-            [DS4Controls.Cross] = 261, [DS4Controls.Circle] = 262,
-            [DS4Controls.Square] = 263, [DS4Controls.Triangle] = 264,
-            [DS4Controls.Options] = 265, [DS4Controls.Share] = 266,
-            [DS4Controls.DpadUp] = 267, [DS4Controls.DpadDown] = 268,
-            [DS4Controls.DpadLeft] = 269, [DS4Controls.DpadRight] = 270,
-            [DS4Controls.PS] = 271, [DS4Controls.L1] = 272,
-            [DS4Controls.R1] = 273, [DS4Controls.L2] = 274,
-            [DS4Controls.R2] = 275, [DS4Controls.L3] = 276,
-            [DS4Controls.R3] = 277, [DS4Controls.LXPos] = 278,
-            [DS4Controls.LXNeg] = 279, [DS4Controls.LYPos] = 280,
-            [DS4Controls.LYNeg] = 281, [DS4Controls.RXPos] = 282,
-            [DS4Controls.RXNeg] = 283, [DS4Controls.RYPos] = 284,
+            [DS4Controls.Cross] = 261,
+            [DS4Controls.Circle] = 262,
+            [DS4Controls.Square] = 263,
+            [DS4Controls.Triangle] = 264,
+            [DS4Controls.Options] = 265,
+            [DS4Controls.Share] = 266,
+            [DS4Controls.DpadUp] = 267,
+            [DS4Controls.DpadDown] = 268,
+            [DS4Controls.DpadLeft] = 269,
+            [DS4Controls.DpadRight] = 270,
+            [DS4Controls.PS] = 271,
+            [DS4Controls.L1] = 272,
+            [DS4Controls.R1] = 273,
+            [DS4Controls.L2] = 274,
+            [DS4Controls.R2] = 275,
+            [DS4Controls.L3] = 276,
+            [DS4Controls.R3] = 277,
+            [DS4Controls.LXPos] = 278,
+            [DS4Controls.LXNeg] = 279,
+            [DS4Controls.LYPos] = 280,
+            [DS4Controls.LYNeg] = 281,
+            [DS4Controls.RXPos] = 282,
+            [DS4Controls.RXNeg] = 283,
+            [DS4Controls.RYPos] = 284,
             [DS4Controls.RYNeg] = 285,
         };
 
@@ -791,12 +803,12 @@ namespace DS4Windows
         }
 
         public static bool CheckAffectedStatus(string deviceInstanceId,
-            HashSet<string> affectedDevs, HashSet<string> exemptedDevices, bool force=false)
+            HashSet<string> affectedDevs, HashSet<string> exemptedDevices, bool force = false)
         {
             bool result = false;
             List<string> hardwareIdList = GrabDeviceHardwareIds(deviceInstanceId);
             bool foundExempt = false;
-            foreach(string hardwareId in hardwareIdList)
+            foreach (string hardwareId in hardwareIdList)
             {
                 foundExempt = foundExempt || exemptedDevices.Contains(hardwareId);
             }
@@ -1321,7 +1333,7 @@ namespace DS4Windows
         public static void setRumbleAutostopTime(int index, int value)
         {
             m_Config.rumbleAutostopTime[index] = value;
-            
+
             DS4Device tempDev = Program.rootHub.DS4Controllers[index];
             if (tempDev != null && tempDev.isSynced())
                 tempDev.RumbleAutostopTime = value;
@@ -1515,7 +1527,7 @@ namespace DS4Windows
         }
 
         public static bool[] GyroMouseToggle => m_Config.gyroMouseToggle;
-        public static void SetGyroMouseToggle(int index, bool value, ControlService control) 
+        public static void SetGyroMouseToggle(int index, bool value, ControlService control)
             => m_Config.SetGyroMouseToggle(index, value, control);
 
         public static GyroMouseInfo[] GyroMouseInfo => m_Config.gyroMouseInfo;
@@ -1915,8 +1927,8 @@ namespace DS4Windows
         {
             return m_Config.profileActions[index];
         }
-        
-        public static void UpdateDS4CSetting (int deviceNum, string buttonName, bool shift, object action, string exts, DS4KeyType kt, int trigger = 0)
+
+        public static void UpdateDS4CSetting(int deviceNum, string buttonName, bool shift, object action, string exts, DS4KeyType kt, int trigger = 0)
         {
             m_Config.UpdateDS4CSetting(deviceNum, buttonName, shift, action, exts, kt, trigger);
             m_Config.containsCustomAction[deviceNum] = m_Config.HasCustomActions(deviceNum);
@@ -2062,7 +2074,7 @@ namespace DS4Windows
         }
 
         public static bool Load() => m_Config.Load();
-        
+
         public static void LoadProfile(int device, bool launchprogram, ControlService control,
             bool xinputChange = true, bool postLoad = true)
         {
@@ -2239,7 +2251,7 @@ namespace DS4Windows
             float sr = sat2 - sat1;
             Color csR;
             if (bri1 == 0)
-                csR = HuetoRGB(hue2,sat2,bri2 - br*ratio);
+                csR = HuetoRGB(hue2, sat2, bri2 - br * ratio);
             else
                 csR = HuetoRGB(hue2 - hr * ratio, sat2 - sr * ratio, bri2 - br * ratio);
 
@@ -2248,7 +2260,7 @@ namespace DS4Windows
 
         public static Color HuetoRGB(float hue, float sat, float bri)
         {
-            float C = (1-Math.Abs(2*bri)-1)* sat;
+            float C = (1 - Math.Abs(2 * bri) - 1) * sat;
             float X = C * (1 - Math.Abs((hue / 60) % 2 - 1));
             float m = bri - C / 2;
             float R, G, B;
@@ -2443,7 +2455,7 @@ namespace DS4Windows
         public BezierCurve[] szOutBezierCurveObj = new BezierCurve[Global.TEST_PROFILE_ITEM_COUNT] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
 
         private int[] _lsOutCurveMode = new int[Global.TEST_PROFILE_ITEM_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index];  }
+        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index]; }
         public void setLsOutCurveMode(int index, int value)
         {
             if (value >= 1) setOutBezierCurveObjArrayItem(lsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
@@ -2520,7 +2532,7 @@ namespace DS4Windows
             new GyroMouseStickInfo(), new GyroMouseStickInfo(),
             new GyroMouseStickInfo(),
         };
-        
+
         public bool[] gyroMouseStickToggle = new bool[Global.TEST_PROFILE_ITEM_COUNT] { false, false, false,
             false, false, false, false, false, false };
 
@@ -2863,7 +2875,7 @@ namespace DS4Windows
         private string GetGyroOutModeString(GyroOutMode mode)
         {
             string result = "None";
-            switch(mode)
+            switch (mode)
             {
                 case GyroOutMode.Controls:
                     result = "Controls";
@@ -2884,7 +2896,7 @@ namespace DS4Windows
         private GyroOutMode GetGyroOutModeType(string modeString)
         {
             GyroOutMode result = GyroOutMode.None;
-            switch(modeString)
+            switch (modeString)
             {
                 case "Controls":
                     result = GyroOutMode.Controls;
@@ -3129,7 +3141,7 @@ namespace DS4Windows
                 XmlNode xmlBTPollRate = m_Xdoc.CreateNode(XmlNodeType.Element, "BTPollRate", null); xmlBTPollRate.InnerText = btPollRate[device].ToString(); rootElement.AppendChild(xmlBTPollRate);
 
                 XmlNode xmlLsOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveMode", null); xmlLsOutputCurveMode.InnerText = stickOutputCurveString(getLsOutCurveMode(device)); rootElement.AppendChild(xmlLsOutputCurveMode);
-                XmlNode xmlLsOutputCurveCustom  = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveCustom", null); xmlLsOutputCurveCustom.InnerText = lsOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlLsOutputCurveCustom);
+                XmlNode xmlLsOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveCustom", null); xmlLsOutputCurveCustom.InnerText = lsOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlLsOutputCurveCustom);
 
                 XmlNode xmlRsOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "RSOutputCurveMode", null); xmlRsOutputCurveMode.InnerText = stickOutputCurveString(getRsOutCurveMode(device)); rootElement.AppendChild(xmlRsOutputCurveMode);
                 XmlNode xmlRsOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "RSOutputCurveCustom", null); xmlRsOutputCurveCustom.InnerText = rsOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlRsOutputCurveCustom);
@@ -3366,7 +3378,7 @@ namespace DS4Windows
                     NodeShiftControl.AppendChild(ShiftKeyType);
                 if (ShiftExtras.HasChildNodes)
                     NodeShiftControl.AppendChild(ShiftExtras);
-                
+
                 m_Xdoc.AppendChild(rootElement);
                 m_Xdoc.Save(path);
             }
@@ -3834,14 +3846,16 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2AntiDeadZone"); int.TryParse(Item.InnerText, out r2ModInfo[device].antiDeadZone); }
                 catch { r2ModInfo[device].antiDeadZone = 0; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2MaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     l2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { l2ModInfo[device].maxZone = 100; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     r2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
@@ -3859,7 +3873,7 @@ namespace DS4Windows
                 try
                 {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxOutput"); double temp = 100.0;
-                    temp =  double.Parse(Item.InnerText);
+                    temp = double.Parse(Item.InnerText);
                     r2ModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { r2ModInfo[device].maxOutput = 100.0; missingSetting = true; }
@@ -3916,7 +3930,9 @@ namespace DS4Windows
 
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Rainbow"); double.TryParse(Item.InnerText, out lightInfo.rainbow); }
                 catch { lightInfo.rainbow = 0; missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MaxSatRainbow");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MaxSatRainbow");
                     int.TryParse(Item.InnerText, out int temp);
                     lightInfo.maxRainbowSat = Math.Max(0, Math.Min(100, temp)) / 100.0;
                 }
@@ -3951,14 +3967,16 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiDeadZone"); int.TryParse(Item.InnerText, out rsModInfo[device].antiDeadZone); }
                 catch { rsModInfo[device].antiDeadZone = 25; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSMaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     lsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { lsModInfo[device].maxZone = 100; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSMaxZone"); int temp = 100;
                     int.TryParse(Item.InnerText, out temp);
                     rsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
@@ -3986,28 +4004,36 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZDeadZone"); double.TryParse(Item.InnerText, out SZDeadzone[device]); }
                 catch { SZDeadzone[device] = 0.02; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SXMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SXMaxzone[device] = 1.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SZMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SZMaxzone[device] = 1.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SXAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
                 }
                 catch { SXAntiDeadzone[device] = 0.0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
                     SZAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
@@ -4182,7 +4208,9 @@ namespace DS4Windows
                 }
                 catch { saWheelFuzzValues[device] = 0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
                     string tempMode = Item.InnerText;
                     gyroOutMode[device] = GetGyroOutModeType(tempMode);
                 }
@@ -4200,9 +4228,12 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); gyroMouseStickHorizontalAxis[device] = Math.Min(Math.Max(0, temp), 1); }
                 catch { gyroMouseStickHorizontalAxis[device] = 0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.InnerText, out int temp);
-                    gyroMStickInfo[device].deadZone = temp; }
-                catch { gyroMStickInfo[device].deadZone = 30;  missingSetting = true; }
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                    gyroMStickInfo[device].deadZone = temp;
+                }
+                catch { gyroMStickInfo[device].deadZone = 30; missingSetting = true; }
 
                 try
                 {
@@ -4408,9 +4439,12 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); gyroMouseHorizontalAxis[device] = Math.Min(Math.Max(0, temp), 1); }
                 catch { gyroMouseHorizontalAxis[device] = 0; missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.InnerText, out int temp);
-                    SetGyroMouseDZ(device, temp, control); }
-                catch { SetGyroMouseDZ(device, MouseCursor.GYRO_MOUSE_DEADZONE, control);  missingSetting = true; }
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                    SetGyroMouseDZ(device, temp, control);
+                }
+                catch { SetGyroMouseDZ(device, MouseCursor.GYRO_MOUSE_DEADZONE, control); missingSetting = true; }
 
                 try
                 {
@@ -4434,7 +4468,8 @@ namespace DS4Windows
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSCurve"); int.TryParse(Item.InnerText, out rsCurve[device]); }
                 catch { rsCurve[device] = 0; missingSetting = true; }
 
-                try {
+                try
+                {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/BTPollRate");
                     int temp = 0;
                     int.TryParse(Item.InnerText, out temp);
@@ -4944,21 +4979,24 @@ namespace DS4Windows
                     catch { missingSetting = true; }
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/formHeight"); Int32.TryParse(Item.InnerText, out formHeight); }
                     catch { missingSetting = true; }
-                    try {
+                    try
+                    {
                         int temp = 0;
                         Item = m_Xdoc.SelectSingleNode("/Profile/formLocationX"); Int32.TryParse(Item.InnerText, out temp);
                         formLocationX = Math.Max(temp, 0);
                     }
                     catch { missingSetting = true; }
 
-                    try {
+                    try
+                    {
                         int temp = 0;
                         Item = m_Xdoc.SelectSingleNode("/Profile/formLocationY"); Int32.TryParse(Item.InnerText, out temp);
                         formLocationY = Math.Max(temp, 0);
                     }
                     catch { missingSetting = true; }
 
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller1"); profilePath[0] = Item.InnerText;
                         if (profilePath[0].ToLower().Contains("distance"))
                         {
@@ -4968,7 +5006,8 @@ namespace DS4Windows
                         olderProfilePath[0] = profilePath[0];
                     }
                     catch { profilePath[0] = olderProfilePath[0] = string.Empty; distanceProfiles[0] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller2"); profilePath[1] = Item.InnerText;
                         if (profilePath[1].ToLower().Contains("distance"))
                         {
@@ -4978,7 +5017,8 @@ namespace DS4Windows
                         olderProfilePath[1] = profilePath[1];
                     }
                     catch { profilePath[1] = olderProfilePath[1] = string.Empty; distanceProfiles[1] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller3"); profilePath[2] = Item.InnerText;
                         if (profilePath[2].ToLower().Contains("distance"))
                         {
@@ -4988,7 +5028,8 @@ namespace DS4Windows
                         olderProfilePath[2] = profilePath[2];
                     }
                     catch { profilePath[2] = olderProfilePath[2] = string.Empty; distanceProfiles[2] = false; missingSetting = true; }
-                    try {
+                    try
+                    {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Controller4"); profilePath[3] = Item.InnerText;
                         if (profilePath[3].ToLower().Contains("distance"))
                         {
@@ -5921,7 +5962,7 @@ namespace DS4Windows
             enableOutputDataToDS4[device] = true;
             touchpadJitterCompensation[device] = true;
             lowerRCOn[device] = false;
-            
+
             rumble[device] = 100;
             rumbleAutostopTime[device] = 0;
             touchSensitivity[device] = 100;
@@ -5958,7 +5999,7 @@ namespace DS4Windows
             //m_LowLeds[device] = new DS4Color(Color.Black);
 
             Color tempColor = Color.Blue;
-            switch(device)
+            switch (device)
             {
                 case 0: tempColor = Color.Blue; break;
                 case 1: tempColor = Color.Red; break;

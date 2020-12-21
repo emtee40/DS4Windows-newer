@@ -146,38 +146,6 @@ namespace DS4Windows
             }
         }
 
-        public static void StartProcessHelper(string path)
-        {
-            if (!Global.IsAdministrator())
-            {
-                Process.Start(path);
-            }
-            else
-            {
-                StartProcessInExplorer(path);
-            }
-        }
-
-        /// <summary>
-        /// Launch process in Explorer to de-elevate the process if DS4Windows is running
-        /// as under the Admin account
-        /// </summary>
-        /// <param name="path">Program path or URL</param>
-        public static void StartProcessInExplorer(string path)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "explorer.exe";
-            // Need to place Path/URL in double quotes to allow equals sign to not be
-            // interpreted as a delimiter
-            startInfo.Arguments = $"\"{path}\"";
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            try
-            {
-                using (Process temp = Process.Start(startInfo)) { }
-            }
-            catch { }
-        }
-
         public static void LogAssistBackgroundTask(Task task)
         {
             task.ContinueWith((t) =>

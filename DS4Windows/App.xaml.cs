@@ -17,6 +17,7 @@ using System.Windows.Interop;
 using WPFLocalizeExtension.Engine;
 using NLog;
 using System.Windows.Media;
+using Microsoft.Win32.SafeHandles;
 
 namespace DS4WinWPF
 {
@@ -34,6 +35,9 @@ namespace DS4WinWPF
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
+
+        [DllImport("kernel32", EntryPoint = "OpenEventW", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern SafeWaitHandle OpenEvent(uint desiredAccess, bool inheritHandle, string name);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct COPYDATASTRUCT
@@ -69,6 +73,17 @@ namespace DS4WinWPF
             [DS4Windows.AppThemeChoice.Dark] = "DS4Forms/Themes/DarkTheme.xaml",
         };
 
+        private static EventWaitHandle CreateAndReplaceHandle(SafeWaitHandle replacementHandle)
+        {
+            EventWaitHandle eventWaitHandle = new EventWaitHandle(default, default);
+
+            SafeWaitHandle old = eventWaitHandle.SafeWaitHandle;
+            eventWaitHandle.SafeWaitHandle = replacementHandle;
+            old.Dispose();
+
+            return eventWaitHandle;
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             runShutdown = true;
@@ -88,7 +103,7 @@ namespace DS4WinWPF
                 Process.GetCurrentProcess().PriorityClass =
                     ProcessPriorityClass.High;
             }
-            catch { } // Ignore problems raising the priority.
+            catch { /* Ignore problems raising the priority. */ }
 
             // Force Normal IO Priority
             IntPtr ioPrio = new IntPtr(2);
@@ -103,9 +118,12 @@ namespace DS4WinWPF
             try
             {
                 // another instance is already running if OpenExisting succeeds.
-                threadComEvent = EventWaitHandle.OpenExisting(SingleAppComEventName,
-                    System.Security.AccessControl.EventWaitHandleRights.Synchronize |
-                    System.Security.AccessControl.EventWaitHandleRights.Modify);
+                // https://github.com/dotnet/runtime/issues/2117
+                //threadComEvent = EventWaitHandle.OpenExisting(SingleAppComEventName,
+                //    System.Security.AccessControl.EventWaitHandleRights.Synchronize |
+                //    System.Security.AccessControl.EventWaitHandleRights.Modify);
+                // Use this for now
+                threadComEvent = CreateAndReplaceHandle(OpenEvent((uint)(System.Security.AccessControl.EventWaitHandleRights.Synchronize | System.Security.AccessControl.EventWaitHandleRights.Modify), false, SingleAppComEventName));
                 threadComEvent.Set();  // signal the other instance.
                 threadComEvent.Close();
                 Current.Shutdown();    // Quit temp instance
@@ -410,7 +428,8 @@ namespace DS4WinWPF
 
         private void CreateControlService()
         {
-            controlThread = new Thread(() => {
+            controlThread = new Thread(() =>
+            {
                 rootHub = new DS4Windows.ControlService();
                 DS4Windows.Program.rootHub = rootHub;
                 requestClient = new HttpClient();
@@ -426,7 +445,8 @@ namespace DS4WinWPF
 
         private void CreateBaseThread()
         {
-            controlThread = new Thread(() => {
+            controlThread = new Thread(() =>
+            {
                 DS4Windows.Program.rootHub = rootHub;
                 requestClient = new HttpClient();
                 collectTimer = new Timer(GarbageTask, null, 30000, 30000);
@@ -574,7 +594,7 @@ namespace DS4WinWPF
             MemoryMappedFile mmf = null;
             MemoryMappedViewAccessor mma = null;
             EventWaitHandle ipcNotifyEvent = null;
-          
+
             try
             {
                 ipcNotifyEvent = EventWaitHandle.OpenExisting("DS4Windows_IPCResultData_ReadyEvent");

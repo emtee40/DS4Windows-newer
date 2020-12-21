@@ -1029,140 +1029,140 @@ Suspend support not enabled.", true);
             switch (msg)
             {
                 case Util.WM_DEVICECHANGE:
-                {
-                    if (Global.runHotPlug)
                     {
-                        Int32 Type = wParam.ToInt32();
-                        if (Type == DBT_DEVICEARRIVAL ||
-                            Type == DBT_DEVICEREMOVECOMPLETE)
+                        if (Global.runHotPlug)
                         {
-                            lock (hotplugCounterLock)
+                            Int32 Type = wParam.ToInt32();
+                            if (Type == DBT_DEVICEARRIVAL ||
+                                Type == DBT_DEVICEREMOVECOMPLETE)
                             {
-                                hotplugCounter++;
-                            }
+                                lock (hotplugCounterLock)
+                                {
+                                    hotplugCounter++;
+                                }
 
-                            if (!inHotPlug)
-                            {
-                                inHotPlug = true;
-                                Task.Run(() => { InnerHotplug2(); });
+                                if (!inHotPlug)
+                                {
+                                    inHotPlug = true;
+                                    Task.Run(() => { InnerHotplug2(); });
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
-                }
                 case WM_COPYDATA:
-                {
-                    // Received InterProcessCommunication (IPC) message. DS4Win command is embedded as a string value in lpData buffer
-                    try
                     {
-                        App.COPYDATASTRUCT cds = (App.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(App.COPYDATASTRUCT));
-                        if (cds.cbData >= 4 && cds.cbData <= 256)
+                        // Received InterProcessCommunication (IPC) message. DS4Win command is embedded as a string value in lpData buffer
+                        try
                         {
-                            int tdevice = -1;
-
-                            byte[] buffer = new byte[cds.cbData];
-                            Marshal.Copy(cds.lpData, buffer, 0, cds.cbData);
-                            string[] strData = Encoding.ASCII.GetString(buffer).Split('.');
-
-                            if (strData.Length >= 1)
+                            App.COPYDATASTRUCT cds = (App.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(App.COPYDATASTRUCT));
+                            if (cds.cbData >= 4 && cds.cbData <= 256)
                             {
-                                strData[0] = strData[0].ToLower();
+                                int tdevice = -1;
 
-                                if (strData[0] == "start")
-                                { 
-                                    if(!Program.rootHub.running) 
-                                        ChangeService();
-                                }
-                                else if (strData[0] == "stop")
-                                {    
-                                    if (Program.rootHub.running)
-                                        ChangeService();
-                                }
-                                else if (strData[0] == "cycle")
-                                {
-                                    ChangeService();
-                                }
-                                else if (strData[0] == "shutdown")
-                                {
-                                    // Force disconnect all gamepads before closing the app to avoid "Are you sure you want to close the app" messagebox
-                                    if (Program.rootHub.running)
-                                        ChangeService();
+                                byte[] buffer = new byte[cds.cbData];
+                                Marshal.Copy(cds.lpData, buffer, 0, cds.cbData);
+                                string[] strData = Encoding.ASCII.GetString(buffer).Split('.');
 
-                                    // Call closing method and let it to close editor wnd (if it is open) before proceeding to the actual "app closed" handler
-                                    MainDS4Window_Closing(null, new System.ComponentModel.CancelEventArgs());
-                                    MainDS4Window_Closed(this, new System.EventArgs());
-                                }
-                                else if ((strData[0] == "loadprofile" || strData[0] == "loadtempprofile") && strData.Length >= 3)
+                                if (strData.Length >= 1)
                                 {
-                                    // Command syntax: LoadProfile.device#.profileName (fex LoadProfile.1.GameSnake or LoadTempProfile.1.WebBrowserSet)
-                                    if (int.TryParse(strData[1], out tdevice)) tdevice--;
+                                    strData[0] = strData[0].ToLower();
 
-                                    if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
-                                            File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
+                                    if (strData[0] == "start")
                                     {
-                                        if (strData[0] == "loadprofile")
-                                        {
-                                            int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
-                                                    Where(x => x.item.Name == strData[2]).Select(x => x.index).DefaultIfEmpty(-1).First();
+                                        if (!Program.rootHub.running)
+                                            ChangeService();
+                                    }
+                                    else if (strData[0] == "stop")
+                                    {
+                                        if (Program.rootHub.running)
+                                            ChangeService();
+                                    }
+                                    else if (strData[0] == "cycle")
+                                    {
+                                        ChangeService();
+                                    }
+                                    else if (strData[0] == "shutdown")
+                                    {
+                                        // Force disconnect all gamepads before closing the app to avoid "Are you sure you want to close the app" messagebox
+                                        if (Program.rootHub.running)
+                                            ChangeService();
 
-                                            if (idx >= 0 && tdevice < conLvViewModel.ControllerCol.Count)
+                                        // Call closing method and let it to close editor wnd (if it is open) before proceeding to the actual "app closed" handler
+                                        MainDS4Window_Closing(null, new System.ComponentModel.CancelEventArgs());
+                                        MainDS4Window_Closed(this, new System.EventArgs());
+                                    }
+                                    else if ((strData[0] == "loadprofile" || strData[0] == "loadtempprofile") && strData.Length >= 3)
+                                    {
+                                        // Command syntax: LoadProfile.device#.profileName (fex LoadProfile.1.GameSnake or LoadTempProfile.1.WebBrowserSet)
+                                        if (int.TryParse(strData[1], out tdevice)) tdevice--;
+
+                                        if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
+                                                File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
+                                        {
+                                            if (strData[0] == "loadprofile")
                                             {
-                                                conLvViewModel.ControllerCol[tdevice].ChangeSelectedProfile(strData[2]);
+                                                int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
+                                                        Where(x => x.item.Name == strData[2]).Select(x => x.index).DefaultIfEmpty(-1).First();
+
+                                                if (idx >= 0 && tdevice < conLvViewModel.ControllerCol.Count)
+                                                {
+                                                    conLvViewModel.ControllerCol[tdevice].ChangeSelectedProfile(strData[2]);
+                                                }
+                                                else
+                                                {
+                                                    // Preset profile name for later loading
+                                                    Global.ProfilePath[tdevice] = strData[2];
+                                                    //Global.LoadProfile(tdevice, true, Program.rootHub);
+                                                }
                                             }
                                             else
                                             {
-                                                // Preset profile name for later loading
-                                                Global.ProfilePath[tdevice] = strData[2];
-                                                //Global.LoadProfile(tdevice, true, Program.rootHub);
+                                                Global.LoadTempProfile(tdevice, strData[2], true, Program.rootHub);
+                                            }
+
+                                            DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
+                                            if (device != null)
+                                            {
+                                                string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
+                                                Program.rootHub.LogDebug(prolog);
                                             }
                                         }
-                                        else
-                                        {
-                                            Global.LoadTempProfile(tdevice, strData[2], true, Program.rootHub);
-                                        }
+                                    }
+                                    else if (strData[0] == "outputslot" && strData.Length >= 3)
+                                    {
+                                        // Command syntax: 
+                                        //    OutputSlot.slot#.Unplug
+                                        //    OutputSlot.slot#.PlugDS4
+                                        //    OutputSlot.slot#.PlugX360
+                                        if (int.TryParse(strData[1], out tdevice))
+                                            tdevice--;
 
-                                        DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
-                                        if (device != null)
+                                        if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
                                         {
-                                            string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
-                                            Program.rootHub.LogDebug(prolog);
+                                            strData[2] = strData[2].ToLower();
+                                            DS4Control.OutSlotDevice slotDevice = Program.rootHub.OutputslotMan.OutputSlots[tdevice];
+                                            if (strData[2] == "unplug")
+                                                Program.rootHub.DetachUnboundOutDev(slotDevice);
+                                            else if (strData[2] == "plugds4")
+                                                Program.rootHub.AttachUnboundOutDev(slotDevice, OutContType.DS4);
+                                            else if (strData[2] == "plugx360")
+                                                Program.rootHub.AttachUnboundOutDev(slotDevice, OutContType.X360);
                                         }
                                     }
-                                }
-                                else if (strData[0] == "outputslot" && strData.Length >= 3)
-                                {
-                                    // Command syntax: 
-                                    //    OutputSlot.slot#.Unplug
-                                    //    OutputSlot.slot#.PlugDS4
-                                    //    OutputSlot.slot#.PlugX360
-                                    if (int.TryParse(strData[1], out tdevice))
-                                        tdevice--;
-
-                                    if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+                                    else if (strData[0] == "query" && strData.Length >= 3)
                                     {
-                                        strData[2] = strData[2].ToLower();
-                                        DS4Control.OutSlotDevice slotDevice = Program.rootHub.OutputslotMan.OutputSlots[tdevice];
-                                        if (strData[2] == "unplug")
-                                            Program.rootHub.DetachUnboundOutDev(slotDevice);
-                                        else if (strData[2] == "plugds4")
-                                            Program.rootHub.AttachUnboundOutDev(slotDevice, OutContType.DS4);
-                                        else if (strData[2] == "plugx360")
-                                            Program.rootHub.AttachUnboundOutDev(slotDevice, OutContType.X360);
-                                    }
-                                }
-                                else if (strData[0] == "query" && strData.Length >= 3)
-                                {
-                                    string propName;
-                                    string propValue = String.Empty;
+                                        string propName;
+                                        string propValue = String.Empty;
 
-                                    // Command syntax: QueryProfile.device#.Name (fex "Query.1.ProfileName" would print out the name of the active profile in controller 1)
-                                    if (int.TryParse(strData[1], out tdevice))
-                                        tdevice--;
+                                        // Command syntax: QueryProfile.device#.Name (fex "Query.1.ProfileName" would print out the name of the active profile in controller 1)
+                                        if (int.TryParse(strData[1], out tdevice))
+                                            tdevice--;
 
-                                    if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
-                                    {
-                                        // Name of the property to query from a profile or DS4Windows app engine
-                                        propName = strData[2].ToLower();
+                                        if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+                                        {
+                                            // Name of the property to query from a profile or DS4Windows app engine
+                                            propName = strData[2].ToLower();
 
                                             if (propName == "profilename")
                                             {
@@ -1205,20 +1205,20 @@ Suspend support not enabled.", true);
 
                                             else if (propName == "apprunning")
                                                 propValue = App.rootHub.running.ToString(); // Controller idx value is ignored, but it still needs to be in 1..4 range in a cmdline call
-                                    }
+                                        }
 
-                                    // Write out the property value to MMF result data file and notify a client process that the data is available
-                                    ((Application.Current) as App).WriteIPCResultDataMMF(propValue);
+                                        // Write out the property value to MMF result data file and notify a client process that the data is available
+                                        ((Application.Current) as App).WriteIPCResultDataMMF(propValue);
+                                    }
                                 }
                             }
                         }
+                        catch
+                        {
+                            // Eat all exceptions in WM_COPYDATA because exceptions here are not fatal for DS4Windows background app
+                        }
+                        break;
                     }
-                    catch
-                    {
-                        // Eat all exceptions in WM_COPYDATA because exceptions here are not fatal for DS4Windows background app
-                    }
-                    break;
-                }
                 default: break;
             }
 
@@ -1324,7 +1324,8 @@ Suspend support not enabled.", true);
 
         private void ProfFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(Global.appdatapath + "\\Profiles");
+
+            Process.Start(new ProcessStartInfo(Global.appdatapath + "\\Profiles") { UseShellExecute = true });
         }
 
         private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
@@ -1342,12 +1343,11 @@ Suspend support not enabled.", true);
             });
 
             StartStopBtn.IsEnabled = true;
-            Process p = new Process();
-            p.StartInfo.FileName = Global.exelocation;
-            p.StartInfo.Arguments = "-driverinstall";
-            p.StartInfo.Verb = "runas";
-            try { p.Start(); }
-            catch { }
+            try
+            {
+                Process.Start(new ProcessStartInfo(Global.exelocation) { Arguments = "-driverinstall", Verb = "runas", UseShellExecute = true });
+            }
+            catch { /* suppress error */ }
         }
 
         private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
@@ -1361,15 +1361,14 @@ Suspend support not enabled.", true);
 
         private void CheckDrivers()
         {
-            bool deriverinstalled = Global.IsViGEmBusInstalled();
-            if (!deriverinstalled)
+            if (!Global.IsViGEmBusInstalled())
             {
-                Process p = new Process();
-                p.StartInfo.FileName = $"{Global.exelocation}";
-                p.StartInfo.Arguments = "-driverinstall";
-                p.StartInfo.Verb = "runas";
-                try { p.Start(); }
-                catch { }
+                try
+                {
+                    Process.Start(new ProcessStartInfo(Global.exelocation) { Arguments = "-driverinstall", Verb = "runas", UseShellExecute = true });
+                }
+                catch
+                { /* suppress error */ }
             }
         }
 
@@ -1585,14 +1584,14 @@ Suspend support not enabled.", true);
                 profDockPanel.Children.Add(editor);
                 editor.Reload(device, entity);
             }
-            
+
         }
 
         private void Editor_CreatedProfile(ProfileEditor sender, string profile)
         {
             profileListHolder.AddProfileSort(profile);
             int devnum = sender.DeviceNum;
-            if (devnum >= 0 && devnum+1 <= conLvViewModel.ControllerCol.Count)
+            if (devnum >= 0 && devnum + 1 <= conLvViewModel.ControllerCol.Count)
             {
                 conLvViewModel.ControllerCol[devnum].ChangeSelectedProfile(profile);
             }
@@ -1619,7 +1618,7 @@ Suspend support not enabled.", true);
 
         private void Html5GameBtn_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://gamepad-tester.com/");
+            Process.Start(new ProcessStartInfo("https://gamepad-tester.com/") { UseShellExecute = true });
         }
 
         private void HidNinjaBtn_Click(object sender, RoutedEventArgs e)
@@ -1631,9 +1630,11 @@ Suspend support not enabled.", true);
             {
                 try
                 {
-                    using (Process proc = Process.Start(path)) { }
+                    using (Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }))
+                    { }
                 }
-                catch { }
+                catch
+                { /* suppress error */ }
             }
         }
 
@@ -1653,9 +1654,11 @@ Suspend support not enabled.", true);
             {
                 try
                 {
-                    using (Process proc = Process.Start(path)) { }
+                    using (Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }))
+                    { }
                 }
-                catch { }
+                catch
+                { /* suppress error */ }
             }
         }
 

@@ -23,8 +23,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
 
-        public bool SwipeTouchSwitchProfile { get => DS4Windows.Global.SwipeProfiles;
-            set => DS4Windows.Global.SwipeProfiles = value; }
+        public bool SwipeTouchSwitchProfile
+        {
+            get => DS4Windows.Global.SwipeProfiles;
+            set => DS4Windows.Global.SwipeProfiles = value;
+        }
 
         private bool runAtStartup;
         public bool RunAtStartup
@@ -72,7 +75,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public ImageSource QuestionMarkSource { get => questionMarkSource; }
 
         private Visibility showRunStartPanel = Visibility.Collapsed;
-        public Visibility ShowRunStartPanel {
+        public Visibility ShowRunStartPanel
+        {
             get => showRunStartPanel;
             set
             {
@@ -193,8 +197,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
         public event EventHandler UseUDPServerChanged;
 
-        public string UdpIpAddress { get => DS4Windows.Global.getUDPServerListenAddress();
-            set => DS4Windows.Global.setUDPServerListenAddress(value); }
+        public string UdpIpAddress
+        {
+            get => DS4Windows.Global.getUDPServerListenAddress();
+            set => DS4Windows.Global.setUDPServerListenAddress(value);
+        }
         public int UdpPort { get => DS4Windows.Global.getUDPServerPortNum(); set => DS4Windows.Global.setUDPServerPort(value); }
 
         public bool UseUdpSmoothing
@@ -404,31 +411,25 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         }
 
         private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
-            string oldvalue, string newvalue)
+            string oldValue, string newValue)
         {
-            string old_exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.exe");
-            string old_conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{oldvalue}.exe.config");
+            string oldExeFile = Path.Combine(DS4Windows.Global.exedirpath, $"{oldValue}.exe");
 
-            if (!string.IsNullOrEmpty(oldvalue))
+            if (!string.IsNullOrEmpty(oldValue))
             {
-                if (File.Exists(old_exefile))
+                if (File.Exists(oldExeFile))
                 {
-                    File.Delete(old_exefile);
-                }
-
-                if (File.Exists(old_conf_file))
-                {
-                    File.Delete(old_conf_file);
+                    File.Delete(oldExeFile);
                 }
             }
         }
 
         private void SettingsViewModel_FakeExeNameChanged(object sender, EventArgs e)
         {
-            string temp = FakeExeName;
-            if (!string.IsNullOrEmpty(temp))
+            if (!string.IsNullOrEmpty(FakeExeName))
             {
-                CreateFakeExe(FakeExeName);
+                File.Copy(DS4Windows.Global.exelocation, 
+                    Path.Combine(DS4Windows.Global.exedirpath, $"{FakeExeName}.exe"));
             }
         }
 
@@ -502,16 +503,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             CheckForUpdatesChanged?.Invoke(this, EventArgs.Empty);
             CheckEveryChanged?.Invoke(this, EventArgs.Empty);
             CheckEveryUnitChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void CreateFakeExe(string filename)
-        {
-            string exefile = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.exe");
-            string current_conf_file_path = $"{DS4Windows.Global.exelocation}.config";
-            string conf_file = Path.Combine(DS4Windows.Global.exedirpath, $"{filename}.exe.config");
-
-            File.Copy(DS4Windows.Global.exelocation, exefile);
-            File.Copy(current_conf_file_path, conf_file);
         }
     }
 }
