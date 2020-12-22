@@ -3,9 +3,18 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <Platforms>x64;x86</Platforms>
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>DS4W.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BeautyLibsDir>Libs</BeautyLibsDir>
+    <DisableBeauty>False</DisableBeauty>
+    <ForceBeauty>False</ForceBeauty>
+    <DisablePatch>False</DisablePatch>
+    <BeautyLogLevel>Error</BeautyLogLevel>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,11 +28,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Nefarius.ViGEm.Client" Condition="'$(Platform)' == 'x64'">
-      <HintPath>.\libs\x64\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Nefarius.ViGEm.Client" Condition="'$(Platform)' == 'x86'">
-      <HintPath>.\libs\x86\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
+    <Reference Include="Nefarius.ViGEm.Client">
+      <HintPath>..\libs\$(Platform)\Nefarius.ViGEm.Client\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -34,6 +40,7 @@
     <PackageReference Include="Markdown.Xaml" Version="1.0.0" NoWarn="NU1701" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.6.8" />
+    <PackageReference Include="nulastudio.NetCoreBeauty" Version="1.2.9" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
     <PackageReference Include="TaskScheduler" Version="2.9.0" />
     <PackageReference Include="WPFLocalizeExtension" Version="3.8.0" />
@@ -126,6 +133,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <WriteLinesToFile File="$(ProjectDir)\newest.txt" Lines="$(Version)" Overwrite="true"/>
+    <WriteLinesToFile File="$(ProjectDir)\newest.txt" Lines="$(Version)" Overwrite="true" />
   </Target>
 </Project>

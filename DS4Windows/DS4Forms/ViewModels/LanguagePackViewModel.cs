@@ -17,7 +17,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private const string invariantCultureTextValue = "No (English UI)";
 
         // If probing path has been changed in App.config, add the same string here.
-        private const string probingPath = "Lang";
+        private const string probingPath = "Libs";
 
         // Filter language assembly file names in order to ont include irrelevant assemblies to the combo box.
         private const string languageAssemblyName = "DS4Windows.resources.dll";
