@@ -132,6 +132,13 @@
     </None>
   </ItemGroup>
 
+  <!--https://github.com/dotnet/sdk/issues/14261-->
+  <ItemGroup>
+    <TrimmerRootAssembly Include="System.Runtime" />
+    <TrimmerRootAssembly Include="System.Runtime.Extensions" />
+    <TrimmerRootAssembly Include="System.Diagnostics.Debug" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <WriteLinesToFile File="$(ProjectDir)\newest.txt" Lines="$(Version)" Overwrite="true" />
   </Target>
