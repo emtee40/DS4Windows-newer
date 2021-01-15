@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define OUTPUTREPORT0x15
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
@@ -157,8 +159,11 @@ namespace DS4Windows
             HidGuardAffected = 2,
         }
 
-        //internal const int BT_OUTPUT_REPORT_LENGTH = 78;
+#if OUTPUTREPORT0x15
         protected const int BT_OUTPUT_REPORT_LENGTH = 334;
+#else
+        internal const int BT_OUTPUT_REPORT_LENGTH = 78;
+#endif
         internal const int BT_INPUT_REPORT_LENGTH = 547;
         internal const int BT_OUTPUT_CHANGE_LENGTH = 13;
         internal const int USB_OUTPUT_CHANGE_LENGTH = 11;
@@ -617,6 +622,7 @@ namespace DS4Windows
                 synced = isValidSerial();
             }
 
+            GetVersionInfo();
             if (runCalib)
                 RefreshCalibration();
 
@@ -624,8 +630,28 @@ namespace DS4Windows
             {
                 hDevice.OpenFileStream(outputReport.Length);
             }
+            setFeature();
 
             sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
+        }
+
+        private void setFeature()
+        {
+            if (conType == ConnectionType.BT)
+            {
+                if (btOutputMethod == BTOutputReportMethod.WriteFile)
+                {
+                    bool result = false;
+                    byte[] setFeature0x3 = new byte[39] { 0x03, 0x02, 0x00, 0xf1, 0xdf, 0xd3, 0x7b, 0x4f, 0x49, 0x0b, 0x0b, 0x7c, 0x79, 0xde, 0xad,
+                        0x5d, 0xa3, 0x41, 0x8a, 0x9c, 0x2e, 0xaf, 0x09, 0xc4, 0xa6, 0x80, 0xb4, 0x82, 0x87, 0x2c, 0xbf,
+                        0x86, 0xe0, 0x2a, 0x86, 0x60, 0xa0, 0x23, 0x33 };
+
+                    lock (outputReport)
+                    {
+                        result = hDevice.WriteFeatureReport(setFeature0x3);
+                    }
+                }
+            }
         }
 
         private void TimeoutTestThread()
@@ -647,6 +673,7 @@ namespace DS4Windows
 
         protected const int DS4_FEATURE_REPORT_5_LEN = 41;
         protected const int DS4_FEATURE_REPORT_5_CRC32_POS = DS4_FEATURE_REPORT_5_LEN - 4;
+        protected const int DS4_FEATURE_REPORT_0xA3_SIZE = 49;
         public virtual void RefreshCalibration()
         {
             byte[] calibration = new byte[41];
@@ -688,6 +715,18 @@ namespace DS4Windows
                 hDevice.readFeatureData(calibration);
                 sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
             }
+        }
+
+        public void GetVersionInfo()
+        {
+            byte[] info = new byte[DS4_FEATURE_REPORT_0xA3_SIZE];
+            info[0] = 0xA3;
+            hDevice.readFeatureData(info);
+            uint hwVersion = info[35] |
+                                (uint)(info[36] << 8);
+            uint fwVersion = info[41] |
+                                (uint)(info[42] << 8);
+            AppLogger.LogToGui($"hwVersion:{hwVersion.ToString("X4")} fwVersion:{fwVersion.ToString("X4")}", false);
         }
 
         public virtual void StartUpdate()
@@ -1393,14 +1432,18 @@ namespace DS4Windows
 
             if (usingBT && (this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
             {
-                outReportBuffer[0] = 0x15;
-                //outReportBuffer[0] = 0x11;
-                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
+#if OUTPUTREPORT0x15
+                outReportBuffer[0] = 0x15;                
                 outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
-                                                                // enable rumble (0x01), lightbar (0x02), flash (0x04)
-                outReportBuffer[2] = 0xA0;
-                outReportBuffer[3] = 0xf7;
+                outReportBuffer[2] = 0xa0;
+                outReportBuffer[3] = 0xf3;                      // enable rumble (0x01), lightbar (0x02), flash (0x04)
                 outReportBuffer[4] = 0x04;
+#else
+                outReportBuffer[0] = 0x11;
+                outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
+                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
+                outReportBuffer[3] = 0x07; //  0xf7;   
+#endif
                 outReportBuffer[6] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
                 outReportBuffer[7] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
                 outReportBuffer[8] = currentHap.lightbarState.LightBarColor.red; // red

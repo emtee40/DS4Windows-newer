@@ -45,7 +45,9 @@ namespace DS4Windows
 
         public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo)
         {
-            //int iDebugDevCount = 0;
+#if DBGVER
+            int iDebugDevCount = 0;
+#endif
             List<HidDevice> foundDevs = new List<HidDevice>();
             int devInfoLen = devInfo.Length;
             IEnumerable<DeviceInfo> temp = EnumerateDevices();
@@ -55,8 +57,10 @@ namespace DS4Windows
                 DeviceInfo x = devEnum.Current;
                 //DeviceInfo x = temp.ElementAt(i);               
                 HidDevice tempDev = new HidDevice(x.Path, x.Description, x.Parent);
-                //iDebugDevCount++;
-                //AppLogger.LogToGui($"DEBUG: HID#{iDebugDevCount} Path={x.Path}  Description={x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}", false);
+#if DBGVER
+                iDebugDevCount++;
+                AppLogger.LogToGui($"DEBUG: HID#{iDebugDevCount} Path={x.Path}  Description={x.Description}  VID={tempDev.Attributes.VendorHexId}  PID={tempDev.Attributes.ProductHexId}  Usage=0x{tempDev.Capabilities.Usage.ToString("X")}  Version=0x{tempDev.Attributes.Version.ToString("X")}", false);
+#endif
                 bool found = false;
                 for (int j = 0; !found && j < devInfoLen; j++)
                 {
