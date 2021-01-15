@@ -1442,7 +1442,7 @@ namespace DS4Windows
                 outReportBuffer[0] = 0x11;
                 outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
                 //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
-                outReportBuffer[3] = 0x07; //  0xf7;   
+                outReportBuffer[3] = 0xf3; //  0xf7;   
 #endif
                 outReportBuffer[6] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
                 outReportBuffer[7] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
