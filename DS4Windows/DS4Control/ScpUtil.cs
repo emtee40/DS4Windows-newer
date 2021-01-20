@@ -5156,6 +5156,16 @@ namespace DS4Windows
 
                             try
                             {
+                                XmlNode item = xmlDualSenseSupport.SelectSingleNode("EnablePlayerLed");
+                                if (bool.TryParse(item?.InnerText ?? "", out bool temp))
+                                {
+                                    deviceOptions.DualSenseOpts.EnablePlayerLed = temp;
+                                }
+                            }
+                            catch { }
+
+                            try
+                            {
                                 XmlNode item = xmlDualSenseSupport.SelectSingleNode("EnableRumble");
                                 if (bool.TryParse(item?.InnerText ?? "", out bool temp))
                                 {
@@ -5347,9 +5357,14 @@ namespace DS4Windows
             XmlElement xmlDualSenseEnabled = m_Xdoc.CreateElement("Enabled", null);
             xmlDualSenseEnabled.InnerText = deviceOptions.DualSenseOpts.Enabled.ToString();
             xmlDualSenseSupport.AppendChild(xmlDualSenseEnabled);
+
             XmlElement xmlDualSenseEnableRumble = m_Xdoc.CreateElement("EnableRumble", null);
             xmlDualSenseEnableRumble.InnerText = deviceOptions.DualSenseOpts.EnableRumble.ToString();
             xmlDualSenseSupport.AppendChild(xmlDualSenseEnableRumble);
+
+            XmlElement xmlDualSenseEnablePlayerLed = m_Xdoc.CreateElement("EnablePlayerLed", null);
+            xmlDualSenseEnablePlayerLed.InnerText = deviceOptions.DualSenseOpts.EnablePlayerLed.ToString();
+            xmlDualSenseSupport.AppendChild(xmlDualSenseEnablePlayerLed);
 
             XmlElement xmlDualSenseHapticStrength = m_Xdoc.CreateElement("RumbleStrength", null);
             xmlDualSenseHapticStrength.InnerText = deviceOptions.DualSenseOpts.HapticIntensity.ToString();

@@ -74,6 +74,7 @@ namespace DS4Windows.InputDevices
         private uint timeStampPrevious = 0;
         private uint deltaTimeCurrent = 0;
         private bool outputDirty = false;
+        private bool enablePlayerLed = false;
         private DS4HapticState previousHapticState = new DS4HapticState();
         private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
         //private byte outputPendCount = 0;
@@ -98,6 +99,11 @@ namespace DS4Windows.InputDevices
                         break;
                 }
             }
+        }
+
+        public bool EnablePlayerLed
+        {
+            set => enablePlayerLed = value;
         }
 
         public override event ReportHandler<EventArgs> Report = null;
@@ -864,17 +870,20 @@ namespace DS4Windows.InputDevices
                 //outputReport[38] = 0x00;
 
                 /* Player LED section */
-                // 0x01 Enabled LED brightness (value in index 43)
-                // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                outputReport[39] = 0x02;
-                // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
-                // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
-                outputReport[42] = 0x02;
-                // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
-                outputReport[43] = 0x02;
-                // 5 player LED lights below Touchpad.
-                // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[44] = deviceSlotMask;
+                if (enablePlayerLed) // todo fix this 
+                { 
+                    // 0x01 Enabled LED brightness (value in index 43)
+                    // 0x02 Uninterruptable blue LED pulse (action in index 42)
+                    outputReport[39] = 0x02;
+                    // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
+                    // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
+                    outputReport[42] = 0x02;
+                    // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
+                    outputReport[43] = 0x02;
+                    // 5 player LED lights below Touchpad.
+                    // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
+                    outputReport[44] = deviceSlotMask;
+                }
 
                 /* Lightbar colors */
                 outputReport[45] = currentHap.lightbarState.LightBarColor.red;
@@ -968,17 +977,20 @@ namespace DS4Windows.InputDevices
                 //outputReport[39] = 0x00;
 
                 /* Player LED section */
-                // 0x01 Enabled LED brightness (value in index 43)
-                // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                outputReport[40] = 0x02;
-                // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
-                // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
-                outputReport[43] = 0x02;
-                // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
-                outputReport[44] = 0x02;
-                // 5 player LED lights below Touchpad.
-                // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[45] = deviceSlotMask;
+                if (enablePlayerLed)
+                {
+                    // 0x01 Enabled LED brightness (value in index 43)
+                    // 0x02 Uninterruptable blue LED pulse (action in index 42)
+                    outputReport[40] = 0x02;
+                    // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
+                    // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
+                    outputReport[43] = 0x02;
+                    // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
+                    outputReport[44] = 0x02;
+                    // 5 player LED lights below Touchpad.
+                    // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
+                    outputReport[45] = deviceSlotMask;
+                }
 
                 /* Lightbar colors */
                 outputReport[46] = currentHap.lightbarState.LightBarColor.red;

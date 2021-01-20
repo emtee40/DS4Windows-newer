@@ -20,6 +20,7 @@
         <TabControl DockPanel.Dock="Right" Margin="40,4,4,4">
             <TabItem x:Name="dualSenseOptsTabItem" Header="DualSense" Visibility="{Binding DSDeviceOpts.Enabled, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Collapsed'}">
                 <StackPanel Visibility="{Binding DSDeviceOpts.Enabled, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Collapsed'}" Margin="4">
+                    <CheckBox Content="Enable Player LED" IsChecked="{Binding DSDeviceOpts.EnablePlayerLed, FallbackValue='False'}" />
                     <CheckBox Content="Enable Rumble Emulation" IsChecked="{Binding DSDeviceOpts.EnableRumble, FallbackValue='False'}" />
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0" IsEnabled="{Binding DSDeviceOpts.EnableRumble}">
                         <Label Content="Rumble Strength" ContentStringFormat="{}{0}:" />
@@ -27,7 +28,7 @@
                     </StackPanel>
 
                 </StackPanel>
-            </TabItem>
+            </TabItem> 
 
             <TabItem x:Name="switchProOptsTabItem" Header="Switch Pro" Visibility="{Binding SwitchProDeviceOpts.Enabled, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Collapsed'}">
                 <StackPanel Visibility="{Binding SwitchProDeviceOpts.Enabled, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue='Collapsed'}" Margin="4">
