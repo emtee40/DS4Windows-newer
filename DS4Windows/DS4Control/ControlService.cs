@@ -254,7 +254,7 @@ namespace DS4Windows
                 InputDevices.DualSenseDevice tempDSDev = device as InputDevices.DualSenseDevice;
 
                 DualSenseControllerOptions dSOpts = tempDSDev.NativeOptionsStore;
-                dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers); };
+                dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers, device.getBattery()); };
             }
         }
 
@@ -995,7 +995,7 @@ namespace DS4Windows
                         Global.LoadControllerConfigs(device);
                         PostDS4DeviceInit(device);
                         device.LoadStoreSettings();
-                        device.CheckControllerNumDeviceSettings(numControllers);
+                        device.CheckControllerNumDeviceSettings(numControllers, device.getBattery());
 
                         slotManager.AddController(device, i);
                         device.Removal += this.On_DS4Removal;
@@ -1302,7 +1302,7 @@ namespace DS4Windows
                             if (DS4Controllers[Index] != null &&
                                 DS4Controllers[Index].getMacAddress() == device.getMacAddress())
                             {
-                                device.CheckControllerNumDeviceSettings(numControllers);
+                                device.CheckControllerNumDeviceSettings(numControllers, device.getBattery());
                                 return true;
                             }
                         }
@@ -1333,7 +1333,7 @@ namespace DS4Windows
                             Global.LoadControllerConfigs(device);
                             PostDS4DeviceInit(device);
                             device.LoadStoreSettings();
-                            device.CheckControllerNumDeviceSettings(numControllers);
+                            device.CheckControllerNumDeviceSettings(numControllers, device.getBattery());
 
                             slotManager.AddController(device, Index);
                             device.Removal += this.On_DS4Removal;

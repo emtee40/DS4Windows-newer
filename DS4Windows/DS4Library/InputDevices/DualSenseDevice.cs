@@ -172,10 +172,10 @@ namespace DS4Windows.InputDevices
         public DualSenseDevice(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
-            synced = true;
-            DeviceSlotNumberChanged += (sender, e) => {
-                CalculateDeviceSlotMask();
-            };
+            //synced = true;
+            //DeviceSlotNumberChanged += (sender, e) => {
+            //    CalculateDeviceSlotMask();
+            //};
         }
 
         public override void PostInit()
@@ -1210,7 +1210,24 @@ namespace DS4Windows.InputDevices
             SendEmptyOutputReport();
         }
 
-        private void CalculateDeviceSlotMask()
+        public byte DeviceBatteryLinearMask(int deviceBattery)
+        {
+            if (deviceBattery >= 95)
+                deviceSlotMask = 0x01 | 0x02 | 0x08 | 0x10;
+            else if (deviceBattery >= 70)
+                deviceSlotMask = 0x01 | 0x02 | 0x08;
+            else if (deviceBattery >= 50)
+                deviceSlotMask = 0x01 | 0x02;
+            else if (deviceBattery >= 20)
+                deviceSlotMask = 0x01;
+            else if (deviceBattery >= 5)
+                deviceSlotMask = 0x01 | 0x02 | 0x04;
+            else
+                deviceSlotMask = 0x00;
+
+            return deviceSlotMask;
+        }
+        public byte CalculateDeviceSlotMask()
         {
             // Map 1-8 to a symmetrical LED array from a set of
             // 5 LED lights
@@ -1242,6 +1259,7 @@ namespace DS4Windows.InputDevices
                     deviceSlotMask = 0x00;
                     break;
             }
+        return deviceSlotMask;
         }
 
         public override void PrepareTriggerEffect(TriggerId trigger, TriggerEffects effect)
@@ -1266,7 +1284,7 @@ namespace DS4Windows.InputDevices
             });
         }
 
-        public override void CheckControllerNumDeviceSettings(int numControllers)
+        public override void CheckControllerNumDeviceSettings(int numControllers, int deviceBattery)
         {
             if (nativeOptionsStore != null)
             {
@@ -1276,12 +1294,16 @@ namespace DS4Windows.InputDevices
                 }
                 else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.On)
                 {
-                    activeDeviceMask = deviceSlotMask;
+                    activeDeviceMask = 0x01 | 0x02 | 0x04 | 0x08 | 0x10;
                 }
                 else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.MultipleControllers &&
                     numControllers > 1)
                 {
-                    activeDeviceMask = deviceSlotMask;
+                    activeDeviceMask = CalculateDeviceSlotMask();
+                }
+                else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.BatteryPercentage)
+                {
+                    activeDeviceMask = DeviceBatteryLinearMask(deviceBattery);
                 }
                 else
                 {

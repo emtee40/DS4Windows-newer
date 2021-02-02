@@ -93,6 +93,7 @@ namespace DS4Windows
         {
             Off,
             MultipleControllers,
+            BatteryPercentage,
             On,
         }
 

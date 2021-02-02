@@ -2014,7 +2014,7 @@ namespace DS4Windows
         {
         }
 
-        public virtual void CheckControllerNumDeviceSettings(int numControllers)
+        public virtual void CheckControllerNumDeviceSettings(int numControllers, int deviceBattery)
         {
         }
 
