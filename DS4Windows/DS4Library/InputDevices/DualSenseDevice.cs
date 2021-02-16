@@ -8,10 +8,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using DS4Windows;
 
-namespace DS4WinWPF.DS4Library.InputDevices
+namespace DS4Windows.InputDevices
 {
     public class DualSenseDevice : DS4Device
     {
+        public class GyroMouseSensDualSense : GyroMouseSens
+        {
+            private const double MOUSE_COEFFICIENT = 0.009;
+            private const double MOUSE_OFFSET = 0.15;
+            private const double SMOOTH_MOUSE_OFFSET = 0.15;
+
+            public GyroMouseSensDualSense() : base()
+            {
+                mouseCoefficient = MOUSE_COEFFICIENT;
+                mouseOffset = MOUSE_OFFSET;
+                mouseSmoothOffset = SMOOTH_MOUSE_OFFSET;
+            }
+        }
+
         public abstract class InputReportDataBytes
         {
             public const int REPORT_OFFSET = 0;
@@ -34,6 +48,69 @@ namespace DS4WinWPF.DS4Library.InputDevices
             public new const int LY = InputReportDataBytes.LY + REPORT_OFFSET;
         }
 
+        public struct TriggerEffectData
+        {
+            public byte triggerMotorMode;
+            public byte triggerStartResistance;
+            public byte triggerEffectForce;
+            public byte triggerRangeForce;
+            public byte triggerNearReleaseStrength;
+            public byte triggerNearMiddleStrength;
+            public byte triggerPressedStrength;
+            public byte triggerActuationFrequency;
+
+            public void ChangeData(TriggerEffects effect)
+            {
+                switch (effect)
+                {
+                    case TriggerEffects.None:
+                        triggerMotorMode = triggerStartResistance = triggerEffectForce =
+                            triggerRangeForce = triggerNearReleaseStrength = triggerNearMiddleStrength =
+                            triggerPressedStrength = triggerActuationFrequency = 0;
+                        break;
+                    case TriggerEffects.FullClick:
+                        triggerMotorMode = 0x02;
+                        triggerStartResistance = 0xA4;
+                        triggerEffectForce = 0xB4;
+                        triggerRangeForce = 0xFF;
+                        triggerNearReleaseStrength = 0x00;
+                        triggerNearMiddleStrength = 0x00;
+                        triggerPressedStrength = 0x00;
+                        triggerActuationFrequency = 0x00;
+                        break;
+                    case TriggerEffects.Rigid:
+                        triggerMotorMode = 0x01;
+                        triggerStartResistance = 0x00;
+                        triggerEffectForce = 0x00;
+                        triggerRangeForce = 0x00;
+                        triggerNearReleaseStrength = 0x00;
+                        triggerNearMiddleStrength = 0x00;
+                        triggerPressedStrength = 0x00;
+                        triggerActuationFrequency = 0x00;
+                        break;
+                    case TriggerEffects.Pulse:
+                        triggerMotorMode = 0x02;
+                        triggerStartResistance = 0x00;
+                        triggerEffectForce = 0x00;
+                        triggerRangeForce = 0x00;
+                        triggerNearReleaseStrength = 0x00;
+                        triggerNearMiddleStrength = 0x00;
+                        triggerPressedStrength = 0x00;
+                        triggerActuationFrequency = 0x00;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public enum HapticIntensity : uint
+        {
+            Low,
+            Medium,
+            High,
+        }
+
         private const int BT_REPORT_OFFSET = 2;
         private InputReportDataBytes dataBytes;
         protected new const int BT_OUTPUT_REPORT_LENGTH = 78;
@@ -46,15 +123,49 @@ namespace DS4WinWPF.DS4Library.InputDevices
 
         private const byte OUTPUT_REPORT_ID_USB = 0x02;
         private const byte OUTPUT_REPORT_ID_BT = 0x31;
+        private const byte OUTPUT_REPORT_ID_DATA = 0x02;
         private new const byte USB_OUTPUT_CHANGE_LENGTH = 48;
         private const int OUTPUT_MIN_COUNT_BT = 20;
+        private const byte LED_PLAYER_BAR_TOGGLE = 0x10;
         private bool timeStampInit = false;
         private uint timeStampPrevious = 0;
         private uint deltaTimeCurrent = 0;
         private bool outputDirty = false;
         private DS4HapticState previousHapticState = new DS4HapticState();
         private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
-        private byte outputPendCount = 0;
+        //private byte outputPendCount = 0;
+        private new GyroMouseSensDualSense gyroMouseSensSettings;
+        public override GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
+
+        private byte activePlayerLEDMask = 0x00;
+
+        private byte hapticsIntensityByte = 0x02;
+        public HapticIntensity HapticChoice {
+            set
+            {
+                switch (value)
+                {
+                    case HapticIntensity.Low:
+                        hapticsIntensityByte = 0x05;
+                        break;
+                    case HapticIntensity.High:
+                        hapticsIntensityByte = 0x00;
+                        break;
+                    case HapticIntensity.Medium:
+                    default:
+                        hapticsIntensityByte = 0x02;
+                        break;
+                }
+            }
+        }
+
+        private TriggerEffectData l2EffectData;
+        private TriggerEffectData r2EffectData;
+
+        private byte muteLEDByte = 0x00;
+
+        private DualSenseControllerOptions nativeOptionsStore;
+        public DualSenseControllerOptions NativeOptionsStore { get => nativeOptionsStore; }
 
         public override event ReportHandler<EventArgs> Report = null;
         public override event EventHandler BatteryChanged;
@@ -64,11 +175,23 @@ namespace DS4WinWPF.DS4Library.InputDevices
             base(hidDevice, disName, featureSet)
         {
             synced = true;
+            DeviceSlotNumberChanged += (sender, e) => {
+                CalculateDeviceSlotMask();
+            };
+
+            BatteryChanged += (sender, e) =>
+            {
+                PreparePlayerLEDBarByte();
+            };
         }
 
         public override void PostInit()
         {
             HidDevice hidDevice = hDevice;
+            deviceType = InputDeviceType.DualSense;
+            gyroMouseSensSettings = new GyroMouseSensDualSense();
+            optionsStore = nativeOptionsStore = new DualSenseControllerOptions(deviceType);
+            SetupOptionsEvents();
 
             conType = DetermineConnectionType(hDevice);
 
@@ -455,6 +578,7 @@ namespace DS4WinWPF.DS4Library.InputDevices
                     tempByte = inputReport[10 + reportOffset];
                     cState.PS = (tempByte & (1 << 0)) != 0;
                     cState.TouchButton = (tempByte & 0x02) != 0;
+                    cState.OutputTouchButton = cState.TouchButton;
                     cState.Mute = (tempByte & (1 << 2)) != 0;
                     //cState.FrameCounter = (byte)(tempByte >> 2);
 
@@ -542,6 +666,7 @@ namespace DS4WinWPF.DS4Library.InputDevices
                     //Console.WriteLine("{0} {1} {2} {3} {4} Diff({5}) TSms({6}) Sys({7})", tempStamp, inputReport[31 + reportOffset], inputReport[30 + reportOffset], inputReport[29 + reportOffset], inputReport[28 + reportOffset], tempStamp - timeStampPrevious, elapsedDeltaTime, lastTimeElapsedDouble * 0.001);
 
                     cState.elapsedTime = elapsedDeltaTime;
+                    cState.ds4Timestamp = (ushort)((tempStamp / 16) % ushort.MaxValue);
                     timeStampPrevious = tempStamp;
 
                     //elapsedDeltaTime = lastTimeElapsedDouble * .001;
@@ -549,11 +674,13 @@ namespace DS4WinWPF.DS4Library.InputDevices
                     //cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
 
                     // Simpler touch storing
+                    cState.TrackPadTouch0.RawTrackingNum = inputReport[33+reportOffset];
                     cState.TrackPadTouch0.Id = (byte)(inputReport[33+reportOffset] & 0x7f);
                     cState.TrackPadTouch0.IsActive = (inputReport[33+reportOffset] & 0x80) == 0;
                     cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[35+reportOffset] & 0x0f) << 8) | (ushort)(inputReport[34+reportOffset]));
                     cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[36+reportOffset]) << 4) | ((ushort)(inputReport[35+reportOffset] & 0xf0) >> 4));
 
+                    cState.TrackPadTouch0.RawTrackingNum = inputReport[37+reportOffset];
                     cState.TrackPadTouch1.Id = (byte)(inputReport[37+reportOffset] & 0x7f);
                     cState.TrackPadTouch1.IsActive = (inputReport[37+reportOffset] & 0x80) == 0;
                     cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[39+reportOffset] & 0x0f) << 8) | (ushort)(inputReport[38+reportOffset]));
@@ -711,14 +838,19 @@ namespace DS4WinWPF.DS4Library.InputDevices
 
         private void SendEmptyOutputReport()
         {
+            int reportOffset = conType == ConnectionType.BT ? 1 : 0;
             Array.Clear(outputReport, 0, outputReport.Length);
 
             outputReport[0] = conType == ConnectionType.USB ? OUTPUT_REPORT_ID_USB :
                 OUTPUT_REPORT_ID_BT;
 
+            // Disable haptics and trigger motors
+            outputReport[1 + reportOffset] = useRumble ? (byte)0x0F : (byte)0x0C;
+            outputReport[2 + reportOffset] = 0x15; // Toggle all LED lights. 0x01 | 0x04 | 0x10
+
             if (conType == ConnectionType.BT)
             {
-                outputReport[1] = 0x02;
+                outputReport[1] = OUTPUT_REPORT_ID_DATA;
 
                 // Need to calculate and populate CRC32 data so controller will accept the report
                 uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
@@ -738,8 +870,8 @@ namespace DS4WinWPF.DS4Library.InputDevices
             Array.Clear(outputReport, 0, outputReport.Length);
 
             outputReport[0] = OUTPUT_REPORT_ID_BT; // Report ID
-            outputReport[1] = 0x02;
-            outputReport[3] = 0x08; // Turn off all LED lights
+            outputReport[1] = OUTPUT_REPORT_ID_DATA;
+            outputReport[3] = 0x15; // Toggle all LED lights. 0x01 | 0x04 | 0x10
 
             // Need to calculate and populate CRC32 data so controller will accept the report
             uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
@@ -770,18 +902,21 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 // 0x20 Enable internal speaker (even while headset is connected)
                 // 0x40 Enable modification of microphone volume
                 // 0x80 Enable internal mic (even while headset is connected)
-                outputReport[1] = 0x03; // 0x02 | 0x01
+                outputReport[1] = useRumble ? (byte)0x0F : (byte)0x0C; // 0x02 | 0x01 | 0x04 | 0x08;
 
                 // 0x01 Toggling microphone LED, 0x02 Toggling Audio/Mic Mute
                 // 0x04 Toggling LED strips on the sides of the Touchpad, 0x08 Turn off all LED lights
                 // 0x10 Toggle player LED lights below Touchpad, 0x20 ???
                 // 0x40 Adjust overall motor/effect power, 0x80 ???
-                outputReport[2] = 0x15; // 0x04 | 0x01 | 0x10
+                outputReport[2] = 0x55; // 0x04 | 0x01 | 0x10 | 0x40
 
-                // Right? High Freq Motor
-                outputReport[3] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
-                // Left? Low Freq Motor
-                outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+                if (useRumble)
+                {
+                    // Right? High Freq Motor
+                    outputReport[3] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
+                    // Left? Low Freq Motor
+                    outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+                }
 
                 /*
                 // Headphone volume
@@ -798,17 +933,47 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 //*/
 
                 // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
-                outputReport[9] = 0x00;
+                outputReport[9] = muteLEDByte;
+
+                // audio settings requiring mute toggling flags
+                //outputReport[10] = 0x00; // 0x10 microphone mute, 0x40 audio mute
+
+                /* TRIGGER MOTORS  */
+                // R2 Effects
+                outputReport[11] = r2EffectData.triggerMotorMode; // right trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
+                outputReport[12] = r2EffectData.triggerStartResistance; // right trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
+                outputReport[13] = r2EffectData.triggerEffectForce; // right trigger
+                                         // (mode1) amount of force exerted; 0-255
+                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                outputReport[14] = r2EffectData.triggerRangeForce; // right trigger force exerted in range (mode2), 0-255
+                outputReport[15] = r2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
+                outputReport[16] = r2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
+                outputReport[17] = r2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
+                outputReport[20] = r2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
+
+
+                // L2 Effects
+                outputReport[22] = l2EffectData.triggerMotorMode; // left trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
+                outputReport[23] = l2EffectData.triggerStartResistance; // left trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
+                outputReport[24] = l2EffectData.triggerEffectForce; // left trigger
+                                         // (mode1) amount of force exerted; 0-255
+                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                outputReport[25] = l2EffectData.triggerRangeForce; // left trigger: (mode2) amount of force exerted within range; 0-255
+                outputReport[26] = l2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
+                outputReport[27] = l2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
+                outputReport[28] = l2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
+                outputReport[31] = l2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
 
                 // (lower nibble: main motor; upper nibble trigger effects) 0x00 to 0x07 - reduce overall power of the respective motors/effects by 12.5% per increment (this does not affect the regular trigger motor settings, just the automatically repeating trigger effects)
-                outputReport[37] = 0x04;
+                outputReport[37] = hapticsIntensityByte;
                 // Volume of internal speaker (0-7; ties in with index 6. The PS5 default appears to be set a 4)
                 //outputReport[38] = 0x00;
 
                 /* Player LED section */
                 // 0x01 Enabled LED brightness (value in index 43)
                 // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                /*
                 outputReport[39] = 0x02;
                 // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
                 // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
@@ -817,8 +982,7 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 outputReport[43] = 0x02;
                 // 5 player LED lights below Touchpad.
                 // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[44] = 0x04;
-                //*/
+                outputReport[44] = activePlayerLEDMask;
 
                 /* Lightbar colors */
                 outputReport[45] = currentHap.lightbarState.LightBarColor.red;
@@ -863,7 +1027,7 @@ namespace DS4WinWPF.DS4Library.InputDevices
             {
                 //outReportBuffer[0] = OUTPUT_REPORT_ID_BT; // Report ID
                 outputReport[0] = OUTPUT_REPORT_ID_BT; // Report ID
-                outputReport[1] = 0x02;
+                outputReport[1] = OUTPUT_REPORT_ID_DATA;
 
                 // 0x01 Set the main motors (also requires flag 0x02)
                 // 0x02 Set the main motors (also requires flag 0x01)
@@ -873,18 +1037,21 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 // 0x20 Enable internal speaker (even while headset is connected)
                 // 0x40 Enable modification of microphone volume
                 // 0x80 Enable internal mic (even while headset is connected)
-                outputReport[2] = 0x03; // 0x02 | 0x01;
+                outputReport[2] = useRumble ? (byte)0x0F : (byte)0x0C; // 0x02 | 0x01 | 0x04 | 0x08;
 
                 // 0x01 Toggling microphone LED, 0x02 Toggling Audio/Mic Mute
                 // 0x04 Toggling LED strips on the sides of the Touchpad, 0x08 Turn off all LED lights
                 // 0x10 Toggle player LED lights below Touchpad, 0x20 ???
                 // 0x40 Adjust overall motor/effect power, 0x80 ???
-                outputReport[3] = 0x15; // 0x04 | 0x01 | 0x10
+                outputReport[3] = 0x55; // 0x04 | 0x01 | 0x10 | 0x40
 
-                // Right? High Freq Motor
-                outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
-                // Left? Low Freq Motor
-                outputReport[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+                if (useRumble)
+                {
+                    // Right? High Freq Motor
+                    outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
+                    // Left? Low Freq Motor
+                    outputReport[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+                }
 
                 /*
                 // Headphone volume
@@ -901,17 +1068,47 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 //*/
 
                 // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
-                outputReport[10] = 0x00;
+                outputReport[10] = muteLEDByte;
+
+                // audio settings requiring mute toggling flags
+                //outputReport[11] = 0x00; // 0x10 microphone mute, 0x40 audio mute
+
+                /* TRIGGER MOTORS  */
+                // R2 Effects
+                outputReport[12] = r2EffectData.triggerMotorMode; // right trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
+                outputReport[13] = r2EffectData.triggerStartResistance; // right trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
+                outputReport[14] = r2EffectData.triggerEffectForce; // right trigger
+                                                                    // (mode1) amount of force exerted; 0-255
+                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                outputReport[15] = r2EffectData.triggerRangeForce; // right trigger force exerted in range (mode2), 0-255
+                outputReport[16] = r2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
+                outputReport[17] = r2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
+                outputReport[18] = r2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
+                outputReport[21] = r2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
+
+
+                // L2 Effects
+                outputReport[23] = l2EffectData.triggerMotorMode; // left trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
+                outputReport[24] = l2EffectData.triggerStartResistance; // left trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
+                outputReport[25] = l2EffectData.triggerEffectForce; // left trigger
+                                                                    // (mode1) amount of force exerted; 0-255
+                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                outputReport[26] = l2EffectData.triggerRangeForce; // left trigger: (mode2) amount of force exerted within range; 0-255
+                outputReport[27] = l2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
+                outputReport[28] = l2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
+                outputReport[29] = l2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
+                outputReport[32] = l2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
 
                 // (lower nibble: main motor; upper nibble trigger effects) 0x00 to 0x07 - reduce overall power of the respective motors/effects by 12.5% per increment (this does not affect the regular trigger motor settings, just the automatically repeating trigger effects)
-                outputReport[38] = 0x04;
+                outputReport[38] = hapticsIntensityByte;
                 // Volume of internal speaker (0-7; ties in with index 6. The PS5 default appears to be set a 4)
                 //outputReport[39] = 0x00;
 
                 /* Player LED section */
                 // 0x01 Enabled LED brightness (value in index 43)
                 // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                /*
                 outputReport[40] = 0x02;
                 // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
                 // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
@@ -920,8 +1117,7 @@ namespace DS4WinWPF.DS4Library.InputDevices
                 outputReport[44] = 0x02;
                 // 5 player LED lights below Touchpad.
                 // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[45] = 0x04;
-                //*/
+                outputReport[45] = activePlayerLEDMask;
 
                 /* Lightbar colors */
                 outputReport[46] = currentHap.lightbarState.LightBarColor.red;
@@ -1019,6 +1215,187 @@ namespace DS4WinWPF.DS4Library.InputDevices
         private void Detach()
         {
             SendEmptyOutputReport();
+        }
+
+        private void CalculateDeviceSlotMask()
+        {
+            // Map 1-8 to a symmetrical LED array from a set of
+            // 5 LED lights
+            switch (deviceSlotNumber)
+            {
+                case 0:
+                    deviceSlotMask = 0x04;
+                    break;
+                case 1:
+                    deviceSlotMask = 0x02 | 0x08;
+                    break;
+                case 2:
+                    deviceSlotMask = 0x01 | 0x04 | 0x10;
+                    break;
+                case 3:
+                    deviceSlotMask = 0x02 | 0x04 | 0x08;
+                    break;
+                case 4:
+                    deviceSlotMask = 0x01 | 0x10;
+                    break;
+                case 5:
+                    deviceSlotMask = 0x01 | 0x02 | 0x08 | 0x10;
+                    break;
+                case 6:
+                    deviceSlotMask = 0x01 | 0x02 | 0x04 | 0x08 | 0x10;
+                    break;
+                case 7:
+                default:
+                    deviceSlotMask = 0x00;
+                    break;
+            }
+        }
+
+        private void PrepareMuteLEDByte()
+        {
+            if (nativeOptionsStore != null)
+            {
+                switch (nativeOptionsStore.MuteLedMode)
+                {
+                    case DualSenseControllerOptions.MuteLEDMode.Off:
+                        muteLEDByte = 0x00;
+                        break;
+                    case DualSenseControllerOptions.MuteLEDMode.On:
+                        muteLEDByte = 0x01;
+                        break;
+                    case DualSenseControllerOptions.MuteLEDMode.Pulse:
+                        muteLEDByte = 0x02;
+                        break;
+                    default:
+                        muteLEDByte = 0x00;
+                        break;
+                }
+            }
+        }
+
+        private void PreparePlayerLEDBarByte()
+        {
+            if (nativeOptionsStore != null)
+            {
+                if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.Off)
+                {
+                    activePlayerLEDMask = 0x00;
+                }
+                else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.On)
+                {
+                    activePlayerLEDMask = deviceSlotMask;
+                }
+                else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.BatteryPercentage)
+                {
+                    activePlayerLEDMask = DeviceBatteryLinearMask(battery);
+                }
+            }
+        }
+
+        public override void PrepareTriggerEffect(TriggerId trigger, TriggerEffects effect)
+        {
+            if (trigger == TriggerId.LeftTrigger)
+            {
+                l2EffectData.ChangeData(effect);
+            }
+            else if (trigger == TriggerId.RightTrigger)
+            {
+                r2EffectData.ChangeData(effect);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Invalid Trigger Id");
+            }
+
+            queueEvent(() =>
+            {
+                outputDirty = true;
+                PrepareOutReport();
+            });
+        }
+
+        private byte DeviceBatteryLinearMask(int deviceBattery)
+        {
+            byte batteryMask;
+            if (deviceBattery >= 95)
+                batteryMask = 0x01 | 0x02 | 0x08 | 0x10;
+            else if (deviceBattery >= 70)
+                batteryMask = 0x01 | 0x02 | 0x08;
+            else if (deviceBattery >= 50)
+                batteryMask = 0x01 | 0x02;
+            else if (deviceBattery >= 20)
+                batteryMask = 0x01;
+            else if (deviceBattery >= 5)
+                batteryMask = 0x01 | 0x02 | 0x04;
+            else
+                batteryMask = 0x00;
+
+            return batteryMask;
+        }
+
+        public override void CheckControllerNumDeviceSettings(int numControllers)
+        {
+            if (nativeOptionsStore != null)
+            {
+                if (nativeOptionsStore.LedMode ==
+                    DualSenseControllerOptions.LEDBarMode.MultipleControllers)
+                {
+                    if (numControllers > 1)
+                    {
+                        activePlayerLEDMask = deviceSlotMask;
+                    }
+                    else
+                    {
+                        activePlayerLEDMask = 0x00;
+                    }
+                }
+            }
+
+            queueEvent(() =>
+            {
+                outputDirty = true;
+                //PrepareOutReport();
+            });
+        }
+
+        private void SetupOptionsEvents()
+        {
+            if (nativeOptionsStore != null)
+            {
+                nativeOptionsStore.EnableRumbleChanged += (sender, e) =>
+                {
+                    UseRumble = nativeOptionsStore.EnableRumble;
+                    queueEvent(() => { outputDirty = true; });
+                };
+                nativeOptionsStore.HapticIntensityChanged += (sender, e) =>
+                {
+                    HapticChoice = nativeOptionsStore.HapticIntensity;
+                    queueEvent(() => { outputDirty = true; });
+                };
+
+                nativeOptionsStore.MuteLedModeChanged += (sender, e) =>
+                {
+                    PrepareMuteLEDByte();
+                    queueEvent(() => { outputDirty = true; });
+                };
+
+                nativeOptionsStore.LedModeChanged += (sender, e) =>
+                {
+                    PreparePlayerLEDBarByte();
+                    queueEvent(() => { outputDirty = true; });
+                };
+            }
+        }
+
+        public override void LoadStoreSettings()
+        {
+            if (nativeOptionsStore != null)
+            {
+                UseRumble = nativeOptionsStore.EnableRumble;
+                HapticChoice = nativeOptionsStore.HapticIntensity;
+                PrepareMuteLEDByte();
+                PreparePlayerLEDBarByte();
+            }
         }
     }
 }

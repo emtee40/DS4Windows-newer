@@ -49,8 +49,8 @@ namespace DS4WinWPF.DS4Forms
             {
                 crossTrigCk, circleTrigCk, squareTrigCk, triangleTrigCk,
                 optionsTrigCk, shareTrigCk, upTrigCk, downTrigCk,
-                leftTrigCk, rightTrigCk, psTrigCk, l1TrigCk,
-                r1TrigCk, l2TrigCk, r2TrigCk, l3TrigCk,
+                leftTrigCk, rightTrigCk, psTrigCk, muteTrigCk, l1TrigCk,
+                r1TrigCk, l2TrigCk, l2FullPullTrigCk, r2TrigCk, r2TrigFullPullCk, l3TrigCk,
                 r3TrigCk, leftTouchTrigCk, upperTouchTrigCk, multitouchTrigCk,
                 rightTouchTrigCk, lsuTrigCk, lsdTrigCk, lslTrigCk,
                 lsrTrigCk, rsuTrigCk, rsdTrigCk, rslTrigCk,
@@ -63,8 +63,8 @@ namespace DS4WinWPF.DS4Forms
             {
                 unloadCrossTrigCk, unloadCircleTrigCk, unloadSquareTrigCk, unloadTriangleTrigCk,
                 unloadOptionsTrigCk, unloadShareTrigCk, unloadUpTrigCk, unloadDownTrigCk,
-                unloadLeftTrigCk, unloadRightTrigCk, unloadPsTrigCk, unloadL1TrigCk,
-                unloadR1TrigCk, unloadL2TrigCk, unloadR2TrigCk, unloadL3TrigCk,
+                unloadLeftTrigCk, unloadRightTrigCk, unloadPsTrigCk, unloadMuteTrigCk, unloadL1TrigCk,
+                unloadR1TrigCk, unloadL2TrigCk, unloadL2FullPullTrigCk, unloadR2TrigCk, unloadR2FullPullTrigCk, unloadL3TrigCk,
                 unloadR3TrigCk, unloadLeftTouchTrigCk, unloadUpperTouchTrigCk, unloadMultitouchTrigCk,
                 unloadRightTouchTrigCk, unloadLsuTrigCk, unloadLsdTrigCk, unloadLslTrigCk,
                 unloadLsrTrigCk, unloadRsuTrigCk, unloadRsdTrigCk, unloadRslTrigCk,
@@ -339,7 +339,7 @@ namespace DS4WinWPF.DS4Forms
             recordWin.Saved += (sender2, args) =>
             {
                 macroActVM.Macro.Clear();
-                macroActVM.Macro.AddRange((int[])settings.action);
+                macroActVM.Macro.AddRange((int[])settings.action.actionMacro);
                 macroActVM.UpdateMacroString();
             };
 
@@ -419,7 +419,7 @@ namespace DS4WinWPF.DS4Forms
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.TapMacro.Clear();
-                multiActButtonVM.TapMacro.AddRange((int[])settings.action);
+                multiActButtonVM.TapMacro.AddRange((int[])settings.action.actionMacro);
                 multiActButtonVM.UpdateTapDisplayText();
             };
 
@@ -433,7 +433,7 @@ namespace DS4WinWPF.DS4Forms
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.HoldMacro.Clear();
-                multiActButtonVM.HoldMacro.AddRange((int[])settings.action);
+                multiActButtonVM.HoldMacro.AddRange((int[])settings.action.actionMacro);
                 multiActButtonVM.UpdateHoldDisplayText();
             };
 
@@ -447,7 +447,7 @@ namespace DS4WinWPF.DS4Forms
             recordWin.Saved += (sender2, args) =>
             {
                 multiActButtonVM.DoubleTapMacro.Clear();
-                multiActButtonVM.DoubleTapMacro.AddRange((int[])settings.action);
+                multiActButtonVM.DoubleTapMacro.AddRange((int[])settings.action.actionMacro);
                 multiActButtonVM.UpdateDoubleTapDisplayText();
             };
 
@@ -460,7 +460,7 @@ namespace DS4WinWPF.DS4Forms
             dialog.Multiselect = false;
             dialog.AddExtension = true;
             dialog.DefaultExt = ".exe";
-            dialog.Filter = "Exe (*.exe)|*.exe";
+            dialog.Filter = "Exe (*.exe)|*.exe|Batch (*.bat,*.cmd)|*.bat;*.cmd";
             dialog.Title = "Select Program";
 
             dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);

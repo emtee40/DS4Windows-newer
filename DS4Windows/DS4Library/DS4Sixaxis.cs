@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace DS4Windows
 {
@@ -24,6 +25,7 @@ namespace DS4Windows
 
         public int gyroYaw, gyroPitch, gyroRoll, accelX, accelY, accelZ;
         public int outputAccelX, outputAccelY, outputAccelZ;
+        public bool outputGyroControls;
         public double accelXG, accelYG, accelZG;
         public double angVelYaw, angVelPitch, angVelRoll;
         public int gyroYawFull, gyroPitchFull, gyroRollFull;
@@ -67,6 +69,7 @@ namespace DS4Windows
 
             elapsed = src.elapsed;
             previousAxis = src.previousAxis;
+            outputGyroControls = src.outputGyroControls;
         }
 
         public void populate(int X, int Y, int Z,
@@ -92,9 +95,12 @@ namespace DS4Windows
             accelX = -aX / 64;
             accelY = -aY / 64;
             accelZ = aZ / 64;
-            outputAccelX = accelX;
-            outputAccelY = accelY;
-            outputAccelZ = accelZ;
+
+            // Leave blank and have mapping routine alter values as needed
+            outputAccelX = 0;
+            outputAccelY = 0;
+            outputAccelZ = 0;
+            outputGyroControls = false;
 
             elapsed = elapsedDelta;
             previousAxis = prevAxis;
@@ -110,6 +116,52 @@ namespace DS4Windows
         AccelXIdx = 3, AccelYIdx = 4, AccelZIdx = 5;
     }
 
+    public class GyroAverageWindow
+    {
+        public int x;
+        public int y;
+        public int z;
+        public double accelMagnitude;
+        public int numSamples;
+        public DateTime start;
+        public DateTime stop;
+
+        public int DurationMs   // property
+        {
+            get
+            {
+                TimeSpan timeDiff = stop - start;
+                return Convert.ToInt32(timeDiff.TotalMilliseconds);
+            }
+        }
+
+        public GyroAverageWindow()
+        {
+            Reset();
+        }
+
+        public void Reset()
+        {
+            x = y = z = numSamples = 0;
+            accelMagnitude = 0.0;
+            start = stop = DateTime.UtcNow;
+        }
+
+        public bool StopIfElapsed(int ms)
+        {
+            DateTime end = DateTime.UtcNow;
+            TimeSpan timeDiff = end - start;
+            bool shouldStop = Convert.ToInt32(timeDiff.TotalMilliseconds) >= ms;
+            if (!shouldStop) stop = end;
+            return shouldStop;
+        }
+        public double GetWeight(int expectedMs)
+        {
+            if (expectedMs == 0) return 0;
+            return Math.Min(1.0, DurationMs / expectedMs);
+        }
+    }
+
     public class DS4SixAxis
     {
         //public event EventHandler<SixAxisEventArgs> SixAccelMoved = null;
@@ -120,10 +172,30 @@ namespace DS4Windows
         };
         private bool calibrationDone = false;
 
+        // for continuous calibration (JoyShockLibrary)
+        const int num_gyro_average_windows = 3;
+        private int gyro_average_window_front_index = 0;
+        const int gyro_average_window_ms = 5000;
+        private GyroAverageWindow[] gyro_average_window = new GyroAverageWindow[num_gyro_average_windows];
+        private int gyro_offset_x = 0;
+        private int gyro_offset_y = 0;
+        private int gyro_offset_z = 0;
+        private double gyro_accel_magnitude = 1.0f;
+        private Stopwatch gyroAverageTimer = new Stopwatch();
+        public long CntCalibrating
+        {
+            get
+            {
+                return gyroAverageTimer.IsRunning ? gyroAverageTimer.ElapsedMilliseconds : 0;
+            }
+        }
+
         public DS4SixAxis()
         {
             sPrev = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             now = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
+            for (int i = 0; i < gyro_average_window.Length; i++) gyro_average_window[i] = new GyroAverageWindow();
+            gyroAverageTimer.Start();
         }
 
         int temInt = 0;
@@ -230,30 +302,51 @@ namespace DS4Windows
         public unsafe void handleSixaxis(byte* gyro, byte* accel, DS4State state,
             double elapsedDelta)
         {
-            int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
-            int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
-            int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
-            int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
-            int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
-            int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
-
-            //Console.WriteLine("AccelZ: {0}", AccelZ);
-
-            if (calibrationDone)
-                applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
-
-            SixAxisEventArgs args = null;
-            if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
+            unchecked
             {
-                if (SixAccelMoved != null)
-                {
-                    sPrev.copy(now);
-                    now.populate(currentYaw, currentPitch, currentRoll,
-                        AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
+                int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
+                int currentPitch = (short)((ushort)(gyro[1] << 8) | gyro[0]);
+                int currentRoll = (short)((ushort)(gyro[5] << 8) | gyro[4]);
+                int AccelX = (short)((ushort)(accel[1] << 8) | accel[0]);
+                int AccelY = (short)((ushort)(accel[3] << 8) | accel[2]);
+                int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
 
-                    args = new SixAxisEventArgs(state.ReportTimeStamp, now);
-                    state.Motion = now;
-                    SixAccelMoved(this, args);
+                //Console.WriteLine("AccelZ: {0}", AccelZ);
+
+                if (calibrationDone)
+                    applyCalibs(ref currentYaw, ref currentPitch, ref currentRoll, ref AccelX, ref AccelY, ref AccelZ);
+
+                if (gyroAverageTimer.IsRunning)
+                {
+                    double accelMag = Math.Sqrt(AccelX * AccelX + AccelY * AccelY + AccelZ * AccelZ);
+                    PushSensorSamples(currentYaw, currentPitch, currentRoll, (float)accelMag);
+                    if (gyroAverageTimer.ElapsedMilliseconds > 5000L)
+                    {
+                        gyroAverageTimer.Stop();
+                        AverageGyro(ref gyro_offset_x, ref gyro_offset_y, ref gyro_offset_z, ref gyro_accel_magnitude);
+#if DEBUG
+                    Console.WriteLine("AverageGyro {0} {1} {2} {3}", gyro_offset_x, gyro_offset_y, gyro_offset_z, gyro_accel_magnitude);
+#endif
+                    }
+                }
+
+                currentYaw -= gyro_offset_x;
+                currentPitch -= gyro_offset_y;
+                currentRoll -= gyro_offset_z;
+
+                SixAxisEventArgs args = null;
+                if (AccelX != 0 || AccelY != 0 || AccelZ != 0)
+                {
+                    if (SixAccelMoved != null)
+                    {
+                        sPrev.copy(now);
+                        now.populate(currentYaw, currentPitch, currentRoll,
+                            AccelX, AccelY, AccelZ, elapsedDelta, sPrev);
+
+                        args = new SixAxisEventArgs(state.ReportTimeStamp, now);
+                        state.Motion = now;
+                        SixAccelMoved(this, args);
+                    }
                 }
             }
         }
@@ -275,6 +368,81 @@ namespace DS4Windows
         public void FireSixAxisEvent(SixAxisEventArgs args)
         {
             SixAccelMoved?.Invoke(this, args);
+        }
+
+        public void ResetContinuousCalibration()
+        {
+            for (int i = 0; i < num_gyro_average_windows; i++)
+                gyro_average_window[i].Reset();
+
+            gyroAverageTimer.Restart();
+        }
+
+        public unsafe void PushSensorSamples(int x, int y, int z, double accelMagnitude)
+        {
+            // push samples
+            GyroAverageWindow windowPointer = gyro_average_window[gyro_average_window_front_index];
+
+            if (windowPointer.StopIfElapsed(gyro_average_window_ms))
+            {
+                Console.WriteLine("GyroAvg[{0}], numSamples: {1}", gyro_average_window_front_index,
+                    windowPointer.numSamples);
+
+                // next
+                gyro_average_window_front_index = (gyro_average_window_front_index + num_gyro_average_windows - 1) % num_gyro_average_windows;
+                windowPointer = gyro_average_window[gyro_average_window_front_index];
+                windowPointer.Reset();
+            }
+            // accumulate
+            windowPointer.numSamples++;
+            windowPointer.x += x;
+            windowPointer.y += y;
+            windowPointer.z += z;
+            windowPointer.accelMagnitude += accelMagnitude;
+        }
+
+        public void AverageGyro(ref int x, ref int y, ref int z, ref double accelMagnitude)
+        {
+            double weight = 0.0;
+            double totalX = 0.0;
+            double totalY = 0.0;
+            double totalZ = 0.0;
+            double totalAccelMagnitude = 0.0;
+
+            int wantedMs = 5000;
+            for (int i = 0; i < num_gyro_average_windows && wantedMs > 0; i++)
+            {
+                int cycledIndex = (i + gyro_average_window_front_index) % num_gyro_average_windows;
+                GyroAverageWindow windowPointer = gyro_average_window[cycledIndex];
+                if (windowPointer.numSamples == 0 || windowPointer.DurationMs == 0) continue;
+
+                double thisWeight;
+                double fNumSamples = windowPointer.numSamples;
+                if (wantedMs < windowPointer.DurationMs)
+                {
+                    thisWeight = (float)wantedMs / windowPointer.DurationMs;
+                    wantedMs = 0;
+                }
+                else
+                {
+                    thisWeight = windowPointer.GetWeight(gyro_average_window_ms);
+                    wantedMs -= windowPointer.DurationMs;
+                }
+
+                totalX += (windowPointer.x / fNumSamples) * thisWeight;
+                totalY += (windowPointer.y / fNumSamples) * thisWeight;
+                totalZ += (windowPointer.z / fNumSamples) * thisWeight;
+                totalAccelMagnitude += (windowPointer.accelMagnitude / fNumSamples) * thisWeight;
+                weight += thisWeight;
+            }
+
+            if (weight > 0.0)
+            {
+                x = (int)(totalX / weight);
+                y = (int)(totalY / weight);
+                z = (int)(totalZ / weight);
+                accelMagnitude = totalAccelMagnitude / weight;
+            }
         }
     }
 }

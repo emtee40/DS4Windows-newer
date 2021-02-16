@@ -31,6 +31,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private Dictionary<DS4Controls, MappedControl> controlMap = new Dictionary<DS4Controls, MappedControl>();
         public Dictionary<DS4Controls, MappedControl> ControlMap { get => controlMap; }
 
+        private MappedControl l2FullPullControl;
+        public MappedControl L2FullPullControl { get => l2FullPullControl; }
+
+        private MappedControl r2FullPullControl;
+        public MappedControl R2FullPullControl { get => r2FullPullControl; }
+
+        private MappedControl gyroSwipeLeftControl;
+        private MappedControl gyroSwipeRightControl;
+        private MappedControl gyroSwipeUpControl;
+        private MappedControl gyroSwipeDownControl;
+
+        private List<MappedControl> extraControls = new List<MappedControl>();
+
         public MappingListViewModel(int devIndex, OutContType devType)
         {
             mappings.Add(new MappedControl(devIndex, DS4Controls.Cross, "Cross",  devType));
@@ -80,6 +93,28 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 controlMap.Add(mapped.Control, mapped);
             }
+
+            l2FullPullControl = new MappedControl(devIndex, DS4Controls.L2FullPull, "L2 Full Pull", devType);
+            r2FullPullControl = new MappedControl(devIndex, DS4Controls.R2FullPull, "R2 Full Pull", devType);
+
+            gyroSwipeLeftControl = new MappedControl(devIndex, DS4Controls.GyroSwipeLeft, "Gyro Swipe Left", devType);
+            gyroSwipeRightControl = new MappedControl(devIndex, DS4Controls.GyroSwipeRight, "Gyro Swipe Right", devType);
+            gyroSwipeUpControl = new MappedControl(devIndex, DS4Controls.GyroSwipeUp, "Gyro Swipe Up", devType);
+            gyroSwipeDownControl = new MappedControl(devIndex, DS4Controls.GyroSwipeDown, "Gyro Swipe Down", devType);
+
+            extraControls.Add(l2FullPullControl);
+            extraControls.Add(r2FullPullControl);
+            extraControls.Add(gyroSwipeLeftControl);
+            extraControls.Add(gyroSwipeRightControl);
+            extraControls.Add(gyroSwipeUpControl);
+            extraControls.Add(gyroSwipeDownControl);
+
+            controlMap.Add(DS4Controls.L2FullPull, l2FullPullControl);
+            controlMap.Add(DS4Controls.R2FullPull, r2FullPullControl);
+            controlMap.Add(DS4Controls.GyroSwipeLeft, gyroSwipeLeftControl);
+            controlMap.Add(DS4Controls.GyroSwipeRight, gyroSwipeRightControl);
+            controlMap.Add(DS4Controls.GyroSwipeUp, gyroSwipeUpControl);
+            controlMap.Add(DS4Controls.GyroSwipeDown, gyroSwipeDownControl);
         }
 
         public void UpdateMappingDevType(OutContType devType)
@@ -88,11 +123,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 mapped.DevType = devType;
             }
+
+            foreach(MappedControl mapped in extraControls)
+            {
+                mapped.DevType = devType;
+            }
         }
 
         public void UpdateMappings()
         {
             foreach (MappedControl mapped in mappings)
+            {
+                mapped.UpdateMappingName();
+            }
+
+            foreach (MappedControl mapped in extraControls)
             {
                 mapped.UpdateMappingName();
             }
@@ -137,7 +182,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             this.devType = devType;
             this.control = control;
             this.controlName = controlName;
-            setting = Global.getDS4CSetting(devIndex, control);
+            setting = Global.GetDS4CSetting(devIndex, control);
             //mappingName = "?";
             if (initMap)
             {
@@ -174,31 +219,26 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         public string GetMappingString(bool shift = false)
         {
             string temp = Properties.Resources.Unassigned;
-            object action = !shift ? setting.action : setting.shiftAction;
+            ControlActionData action = !shift ? setting.action : setting.shiftAction;
             bool sc = !shift ? setting.keyType.HasFlag(DS4KeyType.ScanCode) :
                 setting.shiftKeyType.HasFlag(DS4KeyType.ScanCode);
             bool extra = control >= DS4Controls.GyroXPos && control <= DS4Controls.SwipeDown;
-            if (action != null)
+            DS4ControlSettings.ActionType actionType = !shift ? setting.actionType : setting.shiftActionType;
+            if (actionType != DS4ControlSettings.ActionType.Default)
             {
-                if (action is int || action is ushort)
+                if (actionType == DS4ControlSettings.ActionType.Key)
                 {
                     //return (Keys)int.Parse(action.ToString()) + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
-                    temp = KeyInterop.KeyFromVirtualKey(Convert.ToInt32(action)) + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
+                    temp = KeyInterop.KeyFromVirtualKey(action.actionKey) + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
                 }
-                else if (action is int[])
+                else if (actionType == DS4ControlSettings.ActionType.Macro)
                 {
                     temp = Properties.Resources.Macro + (sc ? " (" + Properties.Resources.ScanCode + ")" : "");
                 }
-                else if (action is X360Controls)
+                else if (actionType == DS4ControlSettings.ActionType.Button)
                 {
                     string tag;
-                    tag = Global.getX360ControlString((X360Controls)action, devType);
-                    temp = tag;
-                }
-                else if (action is string)
-                {
-                    string tag;
-                    tag = action.ToString();
+                    tag = Global.getX360ControlString((X360Controls)action.actionBtn, devType);
                     temp = tag;
                 }
                 else
@@ -222,7 +262,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public bool HasShiftAction()
         {
-            return setting.shiftAction != null;
+            return setting.shiftActionType != DS4ControlSettings.ActionType.Default;
         }
 
         private static string ShiftTrigger(int trigger)

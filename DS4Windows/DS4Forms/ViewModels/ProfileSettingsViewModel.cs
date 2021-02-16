@@ -439,7 +439,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 int temp = Global.ButtonMouseInfos[device].buttonSensitivity;
                 if (temp == value) return;
-                Global.ButtonMouseInfos[device].buttonSensitivity = value;
+                Global.ButtonMouseInfos[device].ButtonSensitivity = value;
                 ButtonMouseSensitivityChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -678,6 +678,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         index = 1; break;
                     case GyroOutMode.MouseJoystick:
                         index = 2; break;
+                    case GyroOutMode.DirectionalSwipe:
+                        index = 3; break;
+                    case GyroOutMode.Passthru:
+                        index = 4; break;
                     default: break;
                 }
 
@@ -693,6 +697,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         temp = GyroOutMode.Mouse; break;
                     case 2:
                         temp = GyroOutMode.MouseJoystick; break;
+                    case 3:
+                        temp = GyroOutMode.DirectionalSwipe; break;
+                    case 4:
+                        temp = GyroOutMode.Passthru; break;
                     default: break;
                 }
 
@@ -1253,6 +1261,95 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set => Global.r2OutBezierCurveObj[device].InitBezierCurve(value, BezierCurve.AxisType.L2R2, true);
         }
 
+        private List<TriggerModeChoice> triggerModeChoices = new List<TriggerModeChoice>()
+        {
+            new TriggerModeChoice("Normal", TriggerMode.Normal),
+        };
+
+        private List<TwoStageChoice> twoStageModeChoices = new List<TwoStageChoice>()
+        {
+            new TwoStageChoice("Disabled", TwoStageTriggerMode.Disabled),
+            new TwoStageChoice("Normal", TwoStageTriggerMode.Normal),
+            new TwoStageChoice("Exclusive", TwoStageTriggerMode.ExclusiveButtons),
+            new TwoStageChoice("Hair Trigger", TwoStageTriggerMode.HairTrigger),
+            new TwoStageChoice("Hip Fire", TwoStageTriggerMode.HipFire),
+            new TwoStageChoice("Hip Fire Exclusive", TwoStageTriggerMode.HipFireExclusiveButtons),
+        };
+        public List<TwoStageChoice> TwoStageModeChoices { get => twoStageModeChoices; }
+
+        public TwoStageTriggerMode L2TriggerMode
+        {
+            get => Global.L2OutputSettings[device].twoStageMode;
+            set
+            {
+                TwoStageTriggerMode temp = Global.L2OutputSettings[device].TwoStageMode;
+                if (temp == value) return;
+
+                Global.L2OutputSettings[device].TwoStageMode = value;
+                L2TriggerModeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler L2TriggerModeChanged;
+
+        public TwoStageTriggerMode R2TriggerMode
+        {
+            get => Global.R2OutputSettings[device].TwoStageMode;
+            set
+            {
+                TwoStageTriggerMode temp = Global.R2OutputSettings[device].TwoStageMode;
+                if (temp == value) return;
+
+                Global.R2OutputSettings[device].twoStageMode = value;
+                R2TriggerModeChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler R2TriggerModeChanged;
+
+        public int L2HipFireTime
+        {
+            get => Global.L2OutputSettings[device].hipFireMS;
+            set => Global.L2OutputSettings[device].hipFireMS = value;
+        }
+
+        public int R2HipFireTime
+        {
+            get => Global.R2OutputSettings[device].hipFireMS;
+            set => Global.R2OutputSettings[device].hipFireMS = value;
+        }
+
+        private List<TriggerEffectChoice> triggerEffectChoices = new List<TriggerEffectChoice>()
+        {
+            new TriggerEffectChoice("None", DS4Windows.InputDevices.TriggerEffects.None),
+            new TriggerEffectChoice("Full Click", DS4Windows.InputDevices.TriggerEffects.FullClick),
+            new TriggerEffectChoice("Rigid", DS4Windows.InputDevices.TriggerEffects.Rigid),
+            new TriggerEffectChoice("Pulse", DS4Windows.InputDevices.TriggerEffects.Pulse),
+        };
+        public List<TriggerEffectChoice> TriggerEffectChoices { get => triggerEffectChoices; }
+
+        public DS4Windows.InputDevices.TriggerEffects L2TriggerEffect
+        {
+            get => Global.L2OutputSettings[device].triggerEffect;
+            set
+            {
+                DS4Windows.InputDevices.TriggerEffects temp = Global.L2OutputSettings[device].TriggerEffect;
+                if (temp == value) return;
+
+                Global.L2OutputSettings[device].TriggerEffect = value;
+            }
+        }
+
+        public DS4Windows.InputDevices.TriggerEffects R2TriggerEffect
+        {
+            get => Global.R2OutputSettings[device].triggerEffect;
+            set
+            {
+                DS4Windows.InputDevices.TriggerEffects temp = Global.R2OutputSettings[device].TriggerEffect;
+                if (temp == value) return;
+
+                Global.R2OutputSettings[device].TriggerEffect = value;
+            }
+        }
+
         public double SXDeadZone
         {
             get => Global.SXDeadzone[device];
@@ -1372,6 +1469,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         index = 1; break;
                     case TouchpadOutMode.AbsoluteMouse:
                         index = 2; break;
+                    case TouchpadOutMode.Passthru:
+                        index = 3; break;
                     default: break;
                 }
                 return index;
@@ -1386,6 +1485,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         temp = TouchpadOutMode.Controls; break;
                     case 2:
                         temp = TouchpadOutMode.AbsoluteMouse; break;
+                    case 3:
+                        temp = TouchpadOutMode.Passthru; break;
                     default: break;
                 }
 
@@ -1512,6 +1613,15 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             set
             {
                 Global.LowerRCOn[device] = value;
+            }
+        }
+
+        public bool TouchpadClickPassthru
+        {
+            get => Global.TouchClickPassthru[device];
+            set
+            {
+                Global.TouchClickPassthru[device] = value;
             }
         }
 
@@ -1699,6 +1809,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         break;
                 }
 
+                gyroMouseSmoothMethodIndex = value;
                 GyroMouseSmoothMethodIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -1706,13 +1817,42 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public Visibility GyroMouseWeightAvgPanelVisibility
         {
-            get => Global.GyroMouseInfo[device].smoothingMethod == GyroMouseInfo.SmoothingMethod.WeightedAverage ? Visibility.Visible : Visibility.Collapsed;
+            get
+            {
+                Visibility result = Visibility.Collapsed;
+                switch (Global.GyroMouseInfo[device].smoothingMethod)
+                {
+                    case GyroMouseInfo.SmoothingMethod.WeightedAverage:
+                        result = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+
+                return result;
+            }
+
         }
         public event EventHandler GyroMouseWeightAvgPanelVisibilityChanged;
 
         public Visibility GyroMouseOneEuroPanelVisibility
         {
-            get => Global.GyroMouseInfo[device].smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro ? Visibility.Visible : Visibility.Collapsed;
+            get
+            {
+                Visibility result = Visibility.Collapsed;
+                switch(Global.GyroMouseInfo[device].smoothingMethod)
+                {
+                    case GyroMouseInfo.SmoothingMethod.OneEuro:
+                    case GyroMouseInfo.SmoothingMethod.None:
+                        result = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+
+                return result;
+            }
+
         }
         public event EventHandler GyroMouseOneEuroPanelVisibilityChanged;
 
@@ -1762,6 +1902,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         break;
                 }
 
+                gyroMouseStickSmoothMethodIndex = value;
                 GyroMouseStickSmoothMethodIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -1769,15 +1910,40 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public Visibility GyroMouseStickWeightAvgPanelVisibility
         {
-            get => Global.GyroMouseStickInf[device].smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage
-                ? Visibility.Visible : Visibility.Collapsed;
+            get
+            {
+                Visibility result = Visibility.Collapsed;
+                switch (Global.GyroMouseStickInf[device].smoothingMethod)
+                {
+                    case GyroMouseStickInfo.SmoothingMethod.WeightedAverage:
+                        result = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+
+                return result;
+            }
         }
         public event EventHandler GyroMouseStickWeightAvgPanelVisibilityChanged;
 
         public Visibility GyroMouseStickOneEuroPanelVisibility
         {
-            get => Global.GyroMouseStickInf[device].smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro
-                ? Visibility.Visible : Visibility.Collapsed;
+            get
+            {
+                Visibility result = Visibility.Collapsed;
+                switch (Global.GyroMouseStickInf[device].smoothingMethod)
+                {
+                    case GyroMouseStickInfo.SmoothingMethod.OneEuro:
+                    case GyroMouseStickInfo.SmoothingMethod.None:
+                        result = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+
+                return result;
+            }
         }
         public event EventHandler GyroMouseStickOneEuroPanelVisibilityChanged;
 
@@ -1954,9 +2120,42 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 TouchDisInvertStringChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-
-        
         public event EventHandler TouchDisInvertStringChanged;
+
+
+        private string gyroControlsTrigDisplay = "Always On";
+        public string GyroControlsTrigDisplay
+        {
+            get => gyroControlsTrigDisplay;
+            set
+            {
+                gyroControlsTrigDisplay = value;
+                GyroControlsTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroControlsTrigDisplayChanged;
+
+        public bool GyroControlsTurns
+        {
+            get => Global.GyroControlsInf[device].triggerTurns;
+            set => Global.GyroControlsInf[device].triggerTurns = value;
+        }
+
+        public int GyroControlsEvalCondIndex
+        {
+            get => Global.GyroControlsInf[device].triggerCond ? 0 : 1;
+            set => Global.GyroControlsInf[device].triggerCond = value == 0 ? true : false;
+        }
+
+        public bool GyroControlsToggle
+        {
+            get => Global.GyroControlsInf[device].triggerToggle;
+            set
+            {
+                Global.SetGyroControlsToggle(device, value, App.rootHub);
+            }
+        }
+
 
         private string gyroMouseTrigDisplay = "Always On";
         public string GyroMouseTrigDisplay
@@ -1983,6 +2182,63 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         public event EventHandler GyroMouseStickTrigDisplayChanged;
 
+        private string gyroSwipeTrigDisplay = "Always On";
+        public string GyroSwipeTrigDisplay
+        {
+            get => gyroSwipeTrigDisplay;
+            set
+            {
+                gyroSwipeTrigDisplay = value;
+                GyroSwipeTrigDisplayChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public event EventHandler GyroSwipeTrigDisplayChanged;
+
+        public bool GyroSwipeTurns
+        {
+            get => Global.GyroSwipeInf[device].triggerTurns;
+            set => Global.GyroSwipeInf[device].triggerTurns = value;
+        }
+
+        public int GyroSwipeEvalCondIndex
+        {
+            get => Global.GyroSwipeInf[device].triggerCond ? 0 : 1;
+            set => Global.GyroSwipeInf[device].triggerCond =  value == 0 ? true : false;
+        }
+
+        public int GyroSwipeXAxis
+        {
+            get => (int)Global.GyroSwipeInf[device].xAxis;
+            set => Global.GyroSwipeInf[device].xAxis = (GyroDirectionalSwipeInfo.XAxisSwipe)value;
+        }
+
+        public int GyroSwipeDeadZoneX
+        {
+            get => Global.GyroSwipeInf[device].deadzoneX;
+            set
+            {
+                Global.GyroSwipeInf[device].deadzoneX = value;
+            }
+        }
+
+        public int GyroSwipeDeadZoneY
+        {
+            get => Global.GyroSwipeInf[device].deadzoneY;
+            set
+            {
+                Global.GyroSwipeInf[device].deadzoneY = value;
+            }
+        }
+
+        public int GyroSwipeDelayTime
+        {
+            get => Global.GyroSwipeInf[device].delayTime;
+            set
+            {
+                Global.GyroSwipeInf[device].delayTime = value;
+            }
+        }
+
         private PresetMenuHelper presetMenuUtil;
         public PresetMenuHelper PresetMenuUtil
         {
@@ -2001,10 +2257,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
             mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
 
-            ImageSourceConverter sourceConverter = new ImageSourceConverter();
+            /*ImageSourceConverter sourceConverter = new ImageSourceConverter();
             ImageSource temp = sourceConverter.
                 ConvertFromString($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/rainbowCCrop.png") as ImageSource;
             lightbarImgBrush.ImageSource = temp.Clone();
+            */
+            Uri tempResourceUri = new Uri($"{Global.ASSEMBLY_RESOURCE_PREFIX}component/Resources/rainbowCCrop.png");
+            BitmapImage tempBitmap = new BitmapImage();
+            tempBitmap.BeginInit();
+            // Needed for some systems not using the System default color profile
+            tempBitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+            tempBitmap.UriSource = tempResourceUri;
+            tempBitmap.EndInit();
+            lightbarImgBrush.ImageSource = tempBitmap.Clone();
 
             presetMenuUtil = new PresetMenuHelper(device);
             gyroMouseSmoothMethodIndex = FindGyroMouseSmoothMethodIndex();
@@ -2017,7 +2282,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             int result = 0;
             GyroMouseInfo tempInfo = Global.GyroMouseInfo[device];
-            if (tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro)
+            if (tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro ||
+                tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.None)
             {
                 result = 0;
             }
@@ -2036,6 +2302,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             switch (tempInfo.smoothingMethod)
             {
                 case GyroMouseStickInfo.SmoothingMethod.OneEuro:
+                case GyroMouseStickInfo.SmoothingMethod.None:
                     result = 0;
                     break;
                 case GyroMouseStickInfo.SmoothingMethod.WeightedAverage:
@@ -2419,6 +2686,157 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             GyroMouseStickTrigDisplay = string.Join(", ", triggerName.ToArray());
         }
 
+        public void UpdateGyroSwipeTrig(ContextMenu menu, bool alwaysOnChecked)
+        {
+            int index = 0;
+            List<int> triggerList = new List<int>();
+            List<string> triggerName = new List<string>();
+
+            int itemCount = menu.Items.Count;
+            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
+            if (alwaysOnChecked)
+            {
+                for (int i = 0; i < itemCount - 1; i++)
+                {
+                    MenuItem item = menu.Items[i] as MenuItem;
+                    item.IsChecked = false;
+                }
+            }
+            else
+            {
+                alwaysOnItem.IsChecked = false;
+                foreach (MenuItem item in menu.Items)
+                {
+                    if (item.IsChecked)
+                    {
+                        triggerList.Add(index);
+                        triggerName.Add(item.Header.ToString());
+                    }
+
+                    index++;
+                }
+            }
+
+            if (triggerList.Count == 0)
+            {
+                triggerList.Add(-1);
+                triggerName.Add("Always On");
+                alwaysOnItem.IsChecked = true;
+            }
+
+            Global.GyroSwipeInf[device].triggers = string.Join(",", triggerList.ToArray());
+            GyroSwipeTrigDisplay = string.Join(", ", triggerName.ToArray());
+        }
+
+        public void PopulateGyroSwipeTrig(ContextMenu menu)
+        {
+            string[] triggers = Global.GyroSwipeInf[device].triggers.Split(',');
+            int itemCount = menu.Items.Count;
+            List<string> triggerName = new List<string>();
+            foreach (string trig in triggers)
+            {
+                bool valid = int.TryParse(trig, out int trigid);
+                if (valid && trigid >= 0 && trigid < itemCount - 1)
+                {
+                    MenuItem current = menu.Items[trigid] as MenuItem;
+                    current.IsChecked = true;
+                    triggerName.Add(current.Header.ToString());
+                }
+                else if (valid && trigid == -1)
+                {
+                    MenuItem current = menu.Items[itemCount - 1] as MenuItem;
+                    current.IsChecked = true;
+                    triggerName.Add("Always On");
+                    break;
+                }
+            }
+
+            if (triggerName.Count == 0)
+            {
+                MenuItem current = menu.Items[itemCount - 1] as MenuItem;
+                current.IsChecked = true;
+                triggerName.Add("Always On");
+            }
+
+            GyroSwipeTrigDisplay = string.Join(", ", triggerName.ToArray());
+        }
+
+
+        public void UpdateGyroControlsTrig(ContextMenu menu, bool alwaysOnChecked)
+        {
+            int index = 0;
+            List<int> triggerList = new List<int>();
+            List<string> triggerName = new List<string>();
+
+            int itemCount = menu.Items.Count;
+            MenuItem alwaysOnItem = menu.Items[itemCount - 1] as MenuItem;
+            if (alwaysOnChecked)
+            {
+                for (int i = 0; i < itemCount - 1; i++)
+                {
+                    MenuItem item = menu.Items[i] as MenuItem;
+                    item.IsChecked = false;
+                }
+            }
+            else
+            {
+                alwaysOnItem.IsChecked = false;
+                foreach (MenuItem item in menu.Items)
+                {
+                    if (item.IsChecked)
+                    {
+                        triggerList.Add(index);
+                        triggerName.Add(item.Header.ToString());
+                    }
+
+                    index++;
+                }
+            }
+
+            if (triggerList.Count == 0)
+            {
+                triggerList.Add(-1);
+                triggerName.Add("Always On");
+                alwaysOnItem.IsChecked = true;
+            }
+
+            Global.GyroControlsInf[device].triggers = string.Join(",", triggerList.ToArray());
+            GyroControlsTrigDisplay = string.Join(", ", triggerName.ToArray());
+        }
+
+        public void PopulateGyroControlsTrig(ContextMenu menu)
+        {
+            string[] triggers = Global.GyroControlsInf[device].triggers.Split(',');
+            int itemCount = menu.Items.Count;
+            List<string> triggerName = new List<string>();
+            foreach (string trig in triggers)
+            {
+                bool valid = int.TryParse(trig, out int trigid);
+                if (valid && trigid >= 0 && trigid < itemCount - 1)
+                {
+                    MenuItem current = menu.Items[trigid] as MenuItem;
+                    current.IsChecked = true;
+                    triggerName.Add(current.Header.ToString());
+                }
+                else if (valid && trigid == -1)
+                {
+                    MenuItem current = menu.Items[itemCount - 1] as MenuItem;
+                    current.IsChecked = true;
+                    triggerName.Add("Always On");
+                    break;
+                }
+            }
+
+            if (triggerName.Count == 0)
+            {
+                MenuItem current = menu.Items[itemCount - 1] as MenuItem;
+                current.IsChecked = true;
+                triggerName.Add("Always On");
+            }
+
+            GyroControlsTrigDisplay = string.Join(", ", triggerName.ToArray());
+        }
+
         private int CalculateOutputMouseSpeed(int mouseSpeed)
         {
             int result = mouseSpeed * Mapping.MOUSESPEEDFACTOR;
@@ -2484,6 +2902,8 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             tempBtPollRate = Global.BTPollRate[device];
             outputMouseSpeed = CalculateOutputMouseSpeed(ButtonMouseSensitivity);
             mouseOffsetSpeed = RawButtonMouseOffset * outputMouseSpeed;
+            gyroMouseSmoothMethodIndex = FindGyroMouseSmoothMethodIndex();
+            gyroMouseStickSmoothMethodIndex = FindGyroMouseStickSmoothMethodIndex();
         }
     }
 
@@ -2935,7 +3355,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             int idx = 0;
             foreach(DS4Controls dsControl in inputControls)
             {
-                DS4ControlSettings setting = Global.getDS4CSetting(deviceNum, dsControl);
+                DS4ControlSettings setting = Global.GetDS4CSetting(deviceNum, dsControl);
                 setting.Reset();
                 if (idx < actionBtns.Count && actionBtns[idx] != null)
                 {
@@ -2951,6 +3371,58 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
 
             return inputControls;
+        }
+    }
+
+    public class TriggerModeChoice
+    {
+        private string displayName;
+        public string DisplayName { get => displayName; set => displayName = value; }
+
+        public TriggerMode mode;
+        public TriggerMode Mode { get => mode; set => mode = value; }
+
+        public TriggerModeChoice(string name, TriggerMode mode)
+        {
+            this.displayName = name;
+            this.mode = mode;
+        }
+
+        public override string ToString()
+        {
+            return displayName;
+        }
+    }
+
+    public class TwoStageChoice
+    {
+        private string displayName;
+        public string DisplayName { get => displayName; set => displayName = value; }
+
+
+        private TwoStageTriggerMode mode;
+        public TwoStageTriggerMode Mode { get => mode; set => mode = value; }
+
+        public TwoStageChoice(string name, TwoStageTriggerMode mode)
+        {
+            this.displayName = name;
+            this.mode = mode;
+        }
+    }
+
+    public class TriggerEffectChoice
+    {
+        private string displayName;
+        public string DisplayName { get => displayName; set => displayName = value; }
+
+
+        private DS4Windows.InputDevices.TriggerEffects mode;
+        public DS4Windows.InputDevices.TriggerEffects Mode { get => mode; set => mode = value; }
+
+        public TriggerEffectChoice(string name, DS4Windows.InputDevices.TriggerEffects mode)
+        {
+            this.displayName = name;
+            this.mode = mode;
         }
     }
 }

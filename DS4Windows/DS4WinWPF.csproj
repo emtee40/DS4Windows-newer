@@ -21,9 +21,9 @@
     <AssemblyName>DS4Windows</AssemblyName>
     <Authors>DS4Windows</Authors>
     <Product>DS4Windows</Product>
-    <Copyright>Copyright © Scarlet.Crush Productions 2012, 2013; InhexSTER, HecticSeptic, electrobrains 2013, 2014; Jays2Kings 2013, 2014, 2015, 2016; Ryochan7 2017, 2018, 2019, 2020</Copyright>
+    <Copyright>Copyright © Scarlet.Crush Productions 2012, 2013; InhexSTER, HecticSeptic, electrobrains 2013, 2014; Jays2Kings 2013, 2014, 2015, 2016; Ryochan7 2017, 2018, 2019, 2020, 2021</Copyright>
     <Description>Sony DualShock 4 to Microsoft Xinput controller mapper</Description>
-    <Version>2.1.22</Version>
+    <Version>2.2.6</Version>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
@@ -68,6 +68,13 @@
     <Resource Include="Resources\delete.png" />
     <Resource Include="Resources\export.png" />
     <Resource Include="Resources\import.png" />
+    <Resource Include="Resources\DS4 Config_white.png" />
+    <Resource Include="Resources\newprofile_white.png" />
+    <Resource Include="Resources\copy_white.png" />
+    <Resource Include="Resources\delete_white.png" />
+    <Resource Include="Resources\edit_white.png" />
+    <Resource Include="Resources\export_white.png" />
+    <Resource Include="Resources\import_white.png" />
     <Resource Include="Resources\clock_white.png" />
     <Resource Include="Resources\BT_white.png" />
     <Resource Include="Resources\cancel_white.png" />

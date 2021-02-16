@@ -150,6 +150,13 @@ namespace DS4Windows
 
     public class DS4Device
     {
+        public class GyroMouseSens
+        {
+            public double mouseOffset = 0.2;
+            public double mouseCoefficient = 0.012;
+            public double mouseSmoothOffset = 0.2;
+        }
+
         public enum ExclusiveStatus : byte
         {
             Shared = 0,
@@ -159,6 +166,8 @@ namespace DS4Windows
 
         //internal const int BT_OUTPUT_REPORT_LENGTH = 78;
         protected const int BT_OUTPUT_REPORT_LENGTH = 334;
+        private const int BT_OUTPUT_REPORT_0x15_LENGTH = BT_OUTPUT_REPORT_LENGTH;
+        private const int BT_OUTPUT_REPORT_0x11_LENGTH = 78;
         internal const int BT_INPUT_REPORT_LENGTH = 547;
         internal const int BT_OUTPUT_CHANGE_LENGTH = 13;
         internal const int USB_OUTPUT_CHANGE_LENGTH = 11;
@@ -208,6 +217,9 @@ namespace DS4Windows
             get => readyQuickChargeDisconnect;
             set => readyQuickChargeDisconnect = value;
         }
+
+        public ControllerOptionsStore optionsStore;
+        private DS4ControllerOptions nativeOptionsStore;
 
         public Int32 wheelPrevPhysicalAngle = 0;
         public Int32 wheelPrevFullAngle = 0;
@@ -371,6 +383,16 @@ namespace DS4Windows
             return featureSet;
         }
 
+        private const byte DEFAULT_BT_REPORT_TYPE = 0x15;
+        private byte knownGoodBTOutputReportType = DEFAULT_BT_REPORT_TYPE;
+
+        private const byte DEFAULT_OUTPUT_FEATURES = 0xF7;
+        private const byte COPYCAT_OUTPUT_FEATURES = 0xF3; // Remove flash flag
+        private byte outputFeaturesByte = DEFAULT_OUTPUT_FEATURES;
+
+        protected bool useRumble = true;
+        public bool UseRumble { get => useRumble; set => useRumble = value; }
+
         public int Battery => battery;
         public delegate void BatteryUpdateHandler(object sender, EventArgs e);
         public virtual event EventHandler BatteryChanged;
@@ -527,6 +549,35 @@ namespace DS4Windows
 
         public virtual byte SerialReportID { get => SERIAL_FEATURE_ID; }
 
+        public enum BTOutputReportMethod : uint
+        {
+            WriteFile,
+            HidD_SetOutputReport,
+        }
+
+        private BTOutputReportMethod btOutputMethod;
+        public BTOutputReportMethod BTOutputMethod { get => btOutputMethod; set => btOutputMethod = value; }
+
+        protected InputDevices.InputDeviceType deviceType;
+        public InputDevices.InputDeviceType DeviceType { get => deviceType; }
+
+        protected GyroMouseSens gyroMouseSensSettings;
+        public virtual GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
+
+        protected int deviceSlotNumber = -1;
+        public int DeviceSlotNumber
+        {
+            get => deviceSlotNumber;
+            set
+            {
+                if (deviceSlotNumber == value) return;
+                deviceSlotNumber = value;
+                DeviceSlotNumberChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        protected event EventHandler DeviceSlotNumberChanged;
+        protected byte deviceSlotMask = 0x00;
+
         public DS4Device(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
         {
             hDevice = hidDevice;
@@ -553,6 +604,10 @@ namespace DS4Windows
         public virtual void PostInit()
         {
             HidDevice hidDevice = hDevice;
+            deviceType = InputDevices.InputDeviceType.DS4;
+            gyroMouseSensSettings = new GyroMouseSens();
+            optionsStore = nativeOptionsStore = new DS4ControllerOptions(deviceType);
+            SetupOptionsEvents();
 
             if (conType == ConnectionType.USB || conType == ConnectionType.SONYWA)
             {
@@ -566,10 +621,17 @@ namespace DS4Windows
                     if (tempAttr.VendorId == 0x054C && tempAttr.ProductId == 0x09CC)
                     {
                         audio = new DS4Audio(searchDeviceInstance: hidDevice.ParentPath);
-                        micAudio = new DS4Audio(DS4Library.CoreAudio.DataFlow.Capture, searchDeviceInstance: hidDevice.ParentPath);
+                        micAudio = new DS4Audio(DS4Library.CoreAudio.DataFlow.Capture,
+                            searchDeviceInstance: hidDevice.ParentPath);
                     }
                     else if (tempAttr.VendorId == DS4Devices.RAZER_VID &&
                         tempAttr.ProductId == 0x1007)
+                    {
+                        audio = new DS4Audio(searchDeviceInstance: hidDevice.ParentPath);
+                        micAudio = new DS4Audio(DS4Library.CoreAudio.DataFlow.Capture,
+                            searchDeviceInstance: hidDevice.ParentPath);
+                    }
+                    else if (featureSet.HasFlag(VidPidFeatureSet.MonitorAudio))
                     {
                         audio = new DS4Audio(searchDeviceInstance: hidDevice.ParentPath);
                         micAudio = new DS4Audio(DS4Library.CoreAudio.DataFlow.Capture,
@@ -616,7 +678,55 @@ namespace DS4Windows
                 hDevice.OpenFileStream(outputReport.Length);
             }
 
+            if (conType == ConnectionType.BT &&
+                !featureSet.HasFlag(VidPidFeatureSet.NoOutputData) && !featureSet.HasFlag(VidPidFeatureSet.OnlyOutputData0x05))
+            {
+                CheckOutputReportTypes();
+            }
+
             sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
+        }
+
+        private void CheckOutputReportTypes()
+        {
+            // Use Tuple here for convenience
+            var reportIds = new (byte Id, int Length)[]
+            {
+                (0x15, BT_OUTPUT_REPORT_0x15_LENGTH),
+                (0x11, BT_OUTPUT_REPORT_0x11_LENGTH),
+            };
+
+            byte finalReport = 0x00;
+            foreach(var element in reportIds)
+            {
+                int len = element.Length;
+                byte[] outputBuffer = new byte[element.Length];
+                outputBuffer[0] = element.Id;
+                //outputBuffer[1] = (byte)(0xC0 | 0x04);
+                outputBuffer[2] = 0xA0;
+
+                // Need to calculate and populate CRC-32 data so controller will accept the report
+                uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
+                calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputBuffer, 0, len - 4);
+                outputBuffer[len - 4] = (byte)calcCrc32;
+                outputBuffer[len - 3] = (byte)(calcCrc32 >> 8);
+                outputBuffer[len - 2] = (byte)(calcCrc32 >> 16);
+                outputBuffer[len - 1] = (byte)(calcCrc32 >> 24);
+
+                if (WriteOutput(outputBuffer))
+                {
+                    finalReport = element.Id;
+                    knownGoodBTOutputReportType = element.Id;
+                    outputReport = new byte[len];
+                    outReportBuffer = new byte[len];
+                    break;
+                }
+            }
+
+            if (finalReport == 0x00)
+            {
+                ModifyFeatureSetFlag(VidPidFeatureSet.NoOutputData, true);
+            }
         }
 
         private void TimeoutTestThread()
@@ -689,12 +799,14 @@ namespace DS4Windows
             {
                 if (conType == ConnectionType.BT)
                 {
-                    /*ds4Output = new Thread(performDs4Output);
-                    ds4Output.Priority = ThreadPriority.Normal;
-                    ds4Output.Name = "DS4 Output thread: " + Mac;
-                    ds4Output.IsBackground = true;
-                    ds4Output.Start();
-                    */
+                    if (btOutputMethod == BTOutputReportMethod.HidD_SetOutputReport)
+                    {
+                        ds4Output = new Thread(performDs4Output);
+                        ds4Output.Priority = ThreadPriority.Normal;
+                        ds4Output.Name = "DS4 Output thread: " + Mac;
+                        ds4Output.IsBackground = true;
+                        ds4Output.Start();
+                    }
 
                     timeoutCheckThread = new Thread(TimeoutTestThread);
                     timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
@@ -765,15 +877,47 @@ namespace DS4Windows
             }
         }
 
+        protected bool WriteOutput(byte[] outputBuffer)
+        {
+            if (conType == ConnectionType.BT)
+            {
+                //if ((this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
+                //    return hDevice.WriteOutputReportViaControl(outputReport);
+
+                if (btOutputMethod == BTOutputReportMethod.WriteFile)
+                {
+                    // Use Interrupt endpoint for almost BT DS4 connected devices now
+                    return hDevice.WriteOutputReportViaInterrupt(outputBuffer, READ_STREAM_TIMEOUT);
+                }
+                else
+                {
+                    // Mainly needed for Windows 7 support
+                    return hDevice.WriteOutputReportViaControl(outputBuffer);
+                }
+            }
+            else
+            {
+                return hDevice.WriteOutputReportViaInterrupt(outputBuffer, READ_STREAM_TIMEOUT);
+            }
+        }
+
         protected bool writeOutput()
         {
             if (conType == ConnectionType.BT)
             {
                 //if ((this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
                 //    return hDevice.WriteOutputReportViaControl(outputReport);
-                //else
-                // Use Interrupt endpoint for all BT DS4 connected devices now
-                return hDevice.WriteOutputReportViaInterrupt(outputReport, READ_STREAM_TIMEOUT);
+
+                if (btOutputMethod == BTOutputReportMethod.WriteFile)
+                {
+                    // Use Interrupt endpoint for almost BT DS4 connected devices now
+                    return hDevice.WriteOutputReportViaInterrupt(outputReport, READ_STREAM_TIMEOUT);
+                }
+                else
+                {
+                    // Mainly needed for Windows 7 support
+                    return hDevice.WriteOutputReportViaControl(outputReport);
+                }
             }
             else
             {
@@ -783,11 +927,11 @@ namespace DS4Windows
 
         private readonly Stopwatch rumbleAutostopTimer = new Stopwatch(); // Autostop timer to stop rumble motors if those are stuck in a rumble state
 
-        //private byte outputPendCount = 0;
-        //private const int OUTPUT_MIN_COUNT_BT = 3;
+        private byte outputPendCount = 0;
+        private const int OUTPUT_MIN_COUNT_BT = 3;
         private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
         protected readonly Stopwatch standbySw = new Stopwatch();
-        /*private unsafe void performDs4Output()
+        private unsafe void performDs4Output()
         {
             try
             {
@@ -845,7 +989,7 @@ namespace DS4Windows
                 }
             }
             catch (ThreadInterruptedException) { }
-        }*/
+        }
 
         /** Is the device alive and receiving valid sensor input reports? */
         public virtual bool IsAlive()
@@ -905,8 +1049,9 @@ namespace DS4Windows
                 timeoutEvent = false;
                 ds4InactiveFrame = true;
                 idleInput = true;
-                //bool syncWriteReport = conType != ConnectionType.BT;
-                bool syncWriteReport = true;
+                bool syncWriteReport = conType != ConnectionType.BT ||
+                    btOutputMethod == BTOutputReportMethod.WriteFile;
+                //bool syncWriteReport = true;
                 bool forceWrite = false;
 
                 int maxBatteryValue = 0;
@@ -1112,6 +1257,7 @@ namespace DS4Windows
                     tempByte = inputReport[7];
                     cState.PS = (tempByte & (1 << 0)) != 0;
                     cState.TouchButton = (tempByte & 0x02) != 0;
+                    cState.OutputTouchButton = cState.TouchButton;
                     cState.FrameCounter = (byte)(tempByte >> 2);
 
                     if ((this.featureSet & VidPidFeatureSet.NoBatteryReading) == 0)
@@ -1180,14 +1326,17 @@ namespace DS4Windows
                     }
 
                     cState.elapsedTime = elapsedDeltaTime;
+                    cState.ds4Timestamp = (ushort)tempStamp;
                     timeStampPrevious = tempStamp;
 
                     //Simpler touch storing
+                    cState.TrackPadTouch0.RawTrackingNum = inputReport[35];
                     cState.TrackPadTouch0.Id = (byte)(inputReport[35] & 0x7f);
                     cState.TrackPadTouch0.IsActive = (inputReport[35] & 0x80) == 0;
                     cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[37] & 0x0f) << 8) | (ushort)(inputReport[36]));
                     cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[38]) << 4) | ((ushort)(inputReport[37] & 0xf0) >> 4));
 
+                    cState.TrackPadTouch1.RawTrackingNum = inputReport[39];
                     cState.TrackPadTouch1.Id = (byte)(inputReport[39] & 0x7f);
                     cState.TrackPadTouch1.IsActive = (inputReport[39] & 0x80) == 0;
                     cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[41] & 0x0f) << 8) | (ushort)(inputReport[40]));
@@ -1364,7 +1513,77 @@ namespace DS4Windows
             timeoutExecuted = true;
         }
 
-        private unsafe void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
+        private unsafe void PrepareOutputReportInner(ref bool change, ref bool haptime)
+        {
+            bool usingBT = conType == ConnectionType.BT;
+
+            if (usingBT && (this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
+            {
+                outReportBuffer[0] = knownGoodBTOutputReportType;
+                //outReportBuffer[0] = 0x15;
+                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
+                outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
+                outReportBuffer[2] = 0xA0;
+
+                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0xF7
+                outReportBuffer[3] = outputFeaturesByte;
+                outReportBuffer[4] = 0x04;
+
+                outReportBuffer[6] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
+                outReportBuffer[7] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
+                outReportBuffer[8] = currentHap.lightbarState.LightBarColor.red; // red
+                outReportBuffer[9] = currentHap.lightbarState.LightBarColor.green; // green
+                outReportBuffer[10] = currentHap.lightbarState.LightBarColor.blue; // blue
+                outReportBuffer[11] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
+                outReportBuffer[12] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
+
+                fixed (byte* byteR = outputReport, byteB = outReportBuffer)
+                {
+                    for (int i = 0, arlen = BT_OUTPUT_CHANGE_LENGTH; !change && i < arlen; i++)
+                        change = byteR[i] != byteB[i];
+                }
+
+                /*if (change)
+                {
+                    Console.WriteLine("CHANGE: {0} {1} {2} {3} {4} {5}", currentHap.LightBarColor.red, currentHap.LightBarColor.green, currentHap.LightBarColor.blue, currentHap.RumbleMotorStrengthRightLightFast, currentHap.RumbleMotorStrengthLeftHeavySlow, DateTime.Now.ToString());
+                }
+                */
+
+                haptime = haptime || change;
+            }
+            else
+            {
+                outReportBuffer[0] = 0x05;
+                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0xF7
+                outReportBuffer[1] = outputFeaturesByte;
+                outReportBuffer[2] = 0x04;
+                outReportBuffer[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
+                outReportBuffer[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow  motor
+                outReportBuffer[6] = currentHap.lightbarState.LightBarColor.red; // red
+                outReportBuffer[7] = currentHap.lightbarState.LightBarColor.green; // green
+                outReportBuffer[8] = currentHap.lightbarState.LightBarColor.blue; // blue
+                outReportBuffer[9] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
+                outReportBuffer[10] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
+
+                fixed (byte* byteR = outputReport, byteB = outReportBuffer)
+                {
+                    for (int i = 0, arlen = USB_OUTPUT_CHANGE_LENGTH; !change && i < arlen; i++)
+                        change = byteR[i] != byteB[i];
+                }
+
+                haptime = haptime || change;
+                if (haptime && audio != null)
+                {
+                    // Headphone volume levels
+                    outReportBuffer[19] = outReportBuffer[20] =
+                        Convert.ToByte(audio.getVolume());
+                    // Microphone volume level
+                    outReportBuffer[21] = Convert.ToByte(micAudio.getVolume());
+                }
+            }
+        }
+
+        private void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
         {
             MergeStates();
             //setTestRumble();
@@ -1387,125 +1606,125 @@ namespace DS4Windows
                 return;
             }
 
-            //lock (outReportBuffer)
+            //bool output = outputPendCount > 0, change = force;
+            bool output = outputPendCount > 0, change = force;
+            //bool output = false, change = force;
+            bool haptime = output || standbySw.ElapsedMilliseconds >= 4000L;
+
+            if (usingBT &&
+                btOutputMethod == BTOutputReportMethod.HidD_SetOutputReport)
             {
-                //bool output = outputPendCount > 0, change = force;
-                bool output = false, change = force;
-                bool haptime = output || standbySw.ElapsedMilliseconds >= 4000L;
+                Monitor.Enter(outReportBuffer);
+            }
 
-                if (usingBT && (this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
+            PrepareOutputReportInner(ref change, ref haptime);
+
+            if (rumbleAutostopTimer.IsRunning)
+            {
+                // Workaround to a bug in ViGem driver. Force stop potentially stuck rumble motor on the next output report if there haven't been new rumble events within X seconds
+                if (rumbleAutostopTimer.ElapsedMilliseconds >= rumbleAutostopTime)
+                    setRumble(0, 0);
+            }
+
+            if (synchronous)
+            {
+                if (output || haptime)
                 {
-                    outReportBuffer[0] = 0x15;
-                    //outReportBuffer[0] = 0x11;
-                    //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
-                    outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
-                    // enable rumble (0x01), lightbar (0x02), flash (0x04)
-                    outReportBuffer[2] = 0xA0;
-                    outReportBuffer[3] = 0xf7;
-                    outReportBuffer[4] = 0x04;
-                    outReportBuffer[6] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                    outReportBuffer[7] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
-                    outReportBuffer[8] = currentHap.lightbarState.LightBarColor.red; // red
-                    outReportBuffer[9] = currentHap.lightbarState.LightBarColor.green; // green
-                    outReportBuffer[10] = currentHap.lightbarState.LightBarColor.blue; // blue
-                    outReportBuffer[11] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
-                    outReportBuffer[12] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
-
-                    fixed (byte* byteR = outputReport, byteB = outReportBuffer)
+                    if (change)
                     {
-                        for (int i = 0, arlen = BT_OUTPUT_CHANGE_LENGTH; !change && i < arlen; i++)
-                            change = byteR[i] != byteB[i];
+                        outputPendCount = OUTPUT_MIN_COUNT_BT;
+                        standbySw.Reset();
                     }
-
-                    /*if (change)
+                    else if (outputPendCount > 1)
+                        outputPendCount--;
+                    else if (outputPendCount == 1)
                     {
-                        Console.WriteLine("CHANGE: {0} {1} {2} {3} {4} {5}", currentHap.LightBarColor.red, currentHap.LightBarColor.green, currentHap.LightBarColor.blue, currentHap.RumbleMotorStrengthRightLightFast, currentHap.RumbleMotorStrengthLeftHeavySlow, DateTime.Now.ToString());
-                    }
-                    */
-
-                    haptime = haptime || change;
-                }
-                else
-                {
-                    outReportBuffer[0] = 0x05;
-                    // enable rumble (0x01), lightbar (0x02), flash (0x04)
-                    outReportBuffer[1] = 0xf7;
-                    outReportBuffer[2] = 0x04;
-                    outReportBuffer[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                    outReportBuffer[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow  motor
-                    outReportBuffer[6] = currentHap.lightbarState.LightBarColor.red; // red
-                    outReportBuffer[7] = currentHap.lightbarState.LightBarColor.green; // green
-                    outReportBuffer[8] = currentHap.lightbarState.LightBarColor.blue; // blue
-                    outReportBuffer[9] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
-                    outReportBuffer[10] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
-
-                    fixed (byte* byteR = outputReport, byteB = outReportBuffer)
-                    {
-                        for (int i = 0, arlen = USB_OUTPUT_CHANGE_LENGTH; !change && i < arlen; i++)
-                            change = byteR[i] != byteB[i];
-                    }
-
-                    haptime = haptime || change;
-                    if (haptime && audio != null)
-                    {
-                        // Headphone volume levels
-                        outReportBuffer[19] = outReportBuffer[20] =
-                            Convert.ToByte(audio.getVolume());
-                        // Microphone volume level
-                        outReportBuffer[21] = Convert.ToByte(micAudio.getVolume());
-                    }
-                }
-
-                if (rumbleAutostopTimer.IsRunning)
-                {
-                    // Workaround to a bug in ViGem driver. Force stop potentially stuck rumble motor on the next output report if there haven't been new rumble events within X seconds
-                    if (rumbleAutostopTimer.ElapsedMilliseconds >= rumbleAutostopTime)
-                        setRumble(0, 0);
-                }
-
-                if (synchronous)
-                {
-                    if (output || haptime)
-                    {
+                        outputPendCount--;
                         standbySw.Restart();
+                    }
+                    else
+                        standbySw.Restart();
+                    //standbySw.Restart();
 
-                        if (usingBT)
+                    if (usingBT)
+                    {
+                        if (btOutputMethod == BTOutputReportMethod.HidD_SetOutputReport)
                         {
-                            outReportBuffer.CopyTo(outputReport, 0);
-
-                            if ((this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
-                            {
-                                // Need to calculate and populate CRC-32 data so controller will accept the report
-                                uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
-                                calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputReport, 0, BT_OUTPUT_REPORT_LENGTH - 4);
-                                outputReport[BT_OUTPUT_REPORT_LENGTH - 4] = (byte)calcCrc32;
-                                outputReport[BT_OUTPUT_REPORT_LENGTH - 3] = (byte)(calcCrc32 >> 8);
-                                outputReport[BT_OUTPUT_REPORT_LENGTH - 2] = (byte)(calcCrc32 >> 16);
-                                outputReport[BT_OUTPUT_REPORT_LENGTH - 1] = (byte)(calcCrc32 >> 24);
-
-                                //Console.WriteLine("Write CRC-32 to output report");
-                            }
+                            Monitor.Enter(outputReport);
                         }
 
-                        try
+                        outReportBuffer.CopyTo(outputReport, 0);
+
+                        if ((this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
                         {
-                            if (!writeOutput())
+                            // Need to calculate and populate CRC-32 data so controller will accept the report
+                            int len = outputReport.Length;
+                            uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
+                            calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputReport, 0, len - 4);
+                            outputReport[len - 4] = (byte)calcCrc32;
+                            outputReport[len - 3] = (byte)(calcCrc32 >> 8);
+                            outputReport[len - 2] = (byte)(calcCrc32 >> 16);
+                            outputReport[len - 1] = (byte)(calcCrc32 >> 24);
+
+                            //Console.WriteLine("Write CRC-32 to output report");
+                        }
+                    }
+
+                    try
+                    {
+                        if (!writeOutput())
+                        {
+                            if (quitOutputThreadOnError)
                             {
-                                if (quitOutputThreadOnError)
-                                {
-                                    int winError = Marshal.GetLastWin32Error();
+                                int winError = Marshal.GetLastWin32Error();
 
-                                    // Logfile notification that the gamepad is force disconnected because of writeOutput failed
-                                    if (quitOutputThread == false)
-                                        AppLogger.LogToGui($"Gamepad data write connection is lost. Disconnecting the gamepad. LastErrorCode={winError}", false);
+                                // Logfile notification that the gamepad is force disconnected because of writeOutput failed
+                                if (quitOutputThread == false && !isDisconnecting)
+                                    AppLogger.LogToGui($"Gamepad data write connection is lost. Disconnecting the gamepad. LastErrorCode={winError}", false);
 
-                                    quitOutputThread = true;
-                                }
+                                quitOutputThread = true;
                             }
                         }
-                        catch { } // If it's dead already, don't worry about it.
+                    }
+                    catch { } // If it's dead already, don't worry about it.
+
+                    if (usingBT)
+                    {
+                        if (btOutputMethod == BTOutputReportMethod.HidD_SetOutputReport)
+                        {
+                            Monitor.Exit(outputReport);
+                        }
+                    }
+                    else
+                    {
+                        lock(outReportBuffer)
+                        {
+                            Monitor.Pulse(outReportBuffer);
+                        }
                     }
                 }
+            }
+            else
+            {
+                //for (int i = 0, arlen = outputReport.Length; !change && i < arlen; i++)
+                //    change = outputReport[i] != outReportBuffer[i];
+
+                if (output || haptime)
+                {
+                    if (change)
+                    {
+                        outputPendCount = OUTPUT_MIN_COUNT_BT;
+                        standbySw.Reset();
+                    }
+
+                    Monitor.Pulse(outReportBuffer);
+                }
+            }
+
+            if (usingBT &&
+                btOutputMethod == BTOutputReportMethod.HidD_SetOutputReport)
+            {
+                Monitor.Exit(outReportBuffer);
             }
 
             if (quitOutputThread)
@@ -1515,6 +1734,8 @@ namespace DS4Windows
             }
         }
 
+        // Perform outReportBuffer copy on a separate thread to save
+        // time on main input thread
         private void OutReportCopy()
         {
             try
@@ -1790,6 +2011,49 @@ namespace DS4Windows
         public void PrepareAbort()
         {
             abortInputThread = true;
+        }
+
+        private void PrepareOutputFeaturesByte()
+        {
+            if (nativeOptionsStore != null)
+            {
+                if (nativeOptionsStore.IsCopyCat)
+                {
+                    outputFeaturesByte = COPYCAT_OUTPUT_FEATURES;
+                }
+                else
+                {
+                    outputFeaturesByte = DEFAULT_OUTPUT_FEATURES;
+                }
+            }
+        }
+
+        private void SetupOptionsEvents()
+        {
+            if (nativeOptionsStore != null)
+            {
+                nativeOptionsStore.IsCopyCatChanged += (sender, e) =>
+                {
+                    PrepareOutputFeaturesByte();
+                };
+            }
+        }
+
+        public virtual void PrepareTriggerEffect(InputDevices.TriggerId trigger,
+            InputDevices.TriggerEffects effect)
+        {
+        }
+
+        public virtual void CheckControllerNumDeviceSettings(int numControllers)
+        {
+        }
+
+        public virtual void LoadStoreSettings()
+        {
+            if (nativeOptionsStore != null)
+            {
+                PrepareOutputFeaturesByte();
+            }
         }
     }
 }

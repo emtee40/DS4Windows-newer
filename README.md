@@ -1,9 +1,9 @@
 # DS4Windows
 
-Like those other ds4tools, but sexier.
+Like those other DS4 tools, but sexier.
 
 DS4Windows is an extract anywhere program that allows you to get the best
-DualShock 4 experience on your PC. By emulating a Xbox 360 controller, many
+DualShock 4 experience on your PC. By emulating an Xbox 360 controller, many
 more games are accessible.
 
 This project is a fork of the work of Jays2Kings. You can find the old project
@@ -17,7 +17,7 @@ website at [ds4windows.com](http://ds4windows.com).
 
 ## Requirements
 
-- Windows 8.1 or newer
+- Windows 10 or newer (Thanks Microsoft)
 - [Microsoft .NET 4.8 or higher (needed to unzip the driver and for macros to
 work properly)](https://support.microsoft.com/en-us/office/microsoft-net-framework-4-8-offline-installer-for-windows-9d23f658-3b97-68ab-d013-aa3c3e7495e0)
 - Visual C++ 2015-2019 Redistributable. [x64](https://aka.ms/vs/16/release/vc_redist.x64.exe) or [x86](https://aka.ms/vs/16/release/vc_redist.x86.exe)
@@ -45,8 +45,7 @@ using Microsoft BT stack. Toshiba's adapters currently do not work.
 [BitChute](https://www.bitchute.com/channel/uE2CbiV96u1k/)  
 [BitTube.tv](https://bittube.tv/profile/ds4windows)  
 [Mastodon @ds4windows@fosstodon.org](https://fosstodon.org/@ds4windows)  
-[Minds @ds4windows](https://www.minds.com/ds4windows/)  
-Gab Social: @ds4windows
+[Minds @ds4windows](https://www.minds.com/ds4windows/)
 
 ### Other
 
@@ -69,10 +68,9 @@ under the path "Human Interface Devices\HID-compliant game controller".
 ![Disabled Device Example](https://i.imgur.com/KI3QX2i.png)
 
 If the icon shown for a device has a down arrow icon then you should
-check the device's device instance path and see if the device is a
-DualShock 4 device. Right click the device item and select "Enable device"
-from the menu. That will re-enable the device and be seen by applications
-again.
+check the device's instance path and see if the device is a DualShock 4 device.
+Right click the device item and select "Enable device" from the menu.
+That will re-enable the device so it can be seen by applications again.
 
 ## Disable Steam Controller Mapping Support
 
@@ -91,13 +89,12 @@ Support** along with **PlayStation Configuration Support**.
 
 My PC game library is not that expansive so there are likely games
 that will be tested by users that I will not have access to
-playing. There are likely going to be times when I cannot directly test
+play. There are likely going to be times when I cannot directly test
 against a game since I will not have access to play it. Most free to play
 games or games that include a playable demo should be fine for testing.
 For other games, it might be better if people could test against any game
-that I have in my game library and try to reproduce a problem. Here are
-links to my Steam and GOG profiles so that people can see what games I have
-access to play.
+that I have in my library and try to reproduce a problem. Here are
+links to my Steam and GOG profiles so that people can see what games I have.
 
 https://steamcommunity.com/id/Ryochan7/games/?tab=all  
 https://www.gog.com/u/Ryochan7/games

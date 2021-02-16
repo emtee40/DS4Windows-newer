@@ -1,9 +1,228 @@
 {
-  "latest_version": "2.1.22",
-  "latest_version_number_info": {"majorPart": 2, "minorPart": 1, "buildPart": 22},
-  "updated_at": "2020-12-13T15:42:18+0000",
+  "latest_version": "2.2.6",
+  "latest_version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 6},
+  "updated_at": "2021-02-10T03:07:55+0000",
   "changelog": {
     "versions": [
+      {
+        "version_str": "2.2.6",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 6},
+        "base_header": "Version 2.2.6",
+        "release_date": "2021-02-11T03:50:45+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.6",
+            "log_text": ["* Fixed Gyro Mouse Joystick trigger selection",
+              "* Corrected Gyro Mouse and Gyro Mouse Joystick toggle flags",
+              "* Put Gyro Calibration button in other Gyro mode panels",
+              "* Added Mute LED mode for DualSense device options",
+              "* Fixed default virtual Touchpad button bindings",
+              "* Corrected Special Action regression"],
+            "editor": "ryochan7",
+            "editors_note": ["None"],
+            "updated_at": "2021-02-11T03:50:45+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.5",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 5},
+        "base_header": "Version 2.2.5",
+        "release_date": "2021-02-10T03:07:55+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.5",
+            "log_text": ["* Fixed sync between button mouse sens and active mouse sens in Profile Editor",
+              "* Changed DualSense blanking flags used for initial connection and detach",
+              "* Now use defined ControlActionData for mapped actions rather than unboxing object references. Speeds up the mapping routine a good amount.",
+              "* Hebrew translation added to project file. Translation was never added in",
+              "* Allow Gyro triggers for Gyro Controls mode",
+              "* Reset Gyro Controls output accel values to 0 for each poll",
+              "* Driver installer window now takes arch into account when downloading the latest ViGEm installer. It uses a different setup file for each arch",
+              "* Disable Xbox 360 installer button in Welcome Dialog if running on Win8 or greater",
+              "* Added toggle mode to Gyro Controls",
+              "* Added ScrollViewer for Gyro tab",
+              "* Increased Full Click trigger effect resistance a bit",
+              "* Use fake HW serial to index SonyWA connections. Should allow multiple Sony dongles to work",
+              "* Allow audio volume searching for Nacon Rev Pro v.2 controller.",
+              "* Added DS4 setting to attempt to change output report features for copycat controllers"],
+            "editor": "ryochan7",
+            "editors_note": ["None"],
+            "updated_at": "2021-02-10T03:07:55+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.4",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 4},
+        "base_header": "Version 2.2.4",
+        "release_date": "2021-02-02T22:25:55+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.4",
+            "log_text": ["* Fixed SelectedValue display in Dark theme for some dynamic ComboBox controls",
+              "* Added Gyro Directional Swipe output mode"],
+            "editor": "ryochan7",
+            "editors_note": ["None"],
+            "updated_at": "2021-02-02T22:25:55+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.3",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 3},
+        "base_header": "Version 2.2.3",
+        "release_date": "2021-02-01T21:09:33+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.3",
+            "log_text": ["* Added an extra precaution to unplug any permanent output devices upon service stop. ViGEmBus should handle this already but just want to make sure.",
+              "* Updated Polish translation. Contribution by **gregory678**",
+              "* Changed locking strategy for ControllerSlotManager collection",
+              "* Fixed right click disconnect slot index for new sorted list",
+              "* Implemented a variant of Two Stage Triggers",
+              "* Added Trigger effects presets. Currently only useful for the DualSense controller",
+              "* Added averaging gyro calibration upon device connection. Contribution by **firodj**",
+              "* Skip unknown DS4Controls names while loading a profile",
+              "* Fixed issue with missingSettings being set for fallback value lookup on Profile load. Constantly re-saved profiles",
+              "* Only reset outDevTypeTemp on full profile save. Ensured proper controller image is used in Binding window after clicking Apply in Profile Editor",
+              "* Change arrangement of lit LED lights for DualSense controller",
+              "* Allow Touchpad Click button passthru with Mouse and Controls mode",
+              "* Changed device type settings. Now use device specific (serial) settings. Now saved to ControllerConfigs.xml",
+              "* Added check for valid output report types upon DS4 BT device connection. Can revert to using output report 0x11 if needed. Not sure if it will matter",
+              "* Ignore output plugin routine and other calls if requested profile file does not exist"],
+            "editor": "ryochan7",
+            "editors_note": ["None"],
+            "updated_at": "2021-02-01T21:09:33+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.2",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 2},
+        "base_header": "Version 2.2.2",
+        "release_date": "2021-01-19T17:17:09+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.2",
+            "log_text": ["* Have app ignore embedded color profile for rainbowCCrop image. Fixes Profile Editor crashing app on some systems",
+              "* Supports .BAT/.CMD batch scripts in specAction LaunchProgram. Contribution by **mika-n**",
+              "* Added Hebrew translation. Contribution by **avsha114**",
+              "* Corrected Touchpad Resolution Y Max for DS4 and DualSense",
+              "* Fixed crash when right click disconnect is done twice and GUI has not changed yet. More of a pre-caution than anything",
+              "* Gioteck VX4 gamepad support. Contribution by **mika-n**",
+              "* Fixed passthru panels showing up properly for Touchpad and Gyro",
+              "* Pushing half-baked controller options window",
+              "* Change DupBox placeholder text behavior",
+              "* Removed Parler link from About window for now. RIP Parler",
+              "* Now use device specific Gyro Mouse sensitivity values",
+              "* Decreased sensitivity of DualSense Gyro Mouse slightly",
+              "* Added placeholder help text for window title auto profile field",
+              "* Fixed window style for Updater window",
+              "* Allow Home LED to be disabled for Switch Pro and JoyCon",
+              "* Fixed app config loading. Stopped extra config saves on program launch from missingSetting being set unintentionally",
+              "* Added more white variation of images for use in Dark theme",
+              "* Make custom Bezier curve perform circular interpolation rather than per axis",
+              "* Use ControlService event dispatcher for synchronization on device unplug",
+              "* Fixed Gyro Mouse and Mouse Joystick Smoothing panels visibility in Profile Editor under certain scenarios",
+              "* Fixed a bug in autoProfile set Path handler. Contribution by **mika-n**",
+              "* Lowered default rumble emulation strength of DualSense controller",
+              "* Allow configurable rumble strength setting for DualSense controllers. Will likely change later",
+              "* Now use player LEDs on Switch Pro, JoyCon, and DualSense controllers. Used to display input device slot number",
+              "* Display input slot number in controller list",
+              "* Now sort main controller list by device index",
+              "* Changed output device pluging routine. Stop DS4Windows service if ViGEm device connect call fails",
+              "* Changed default dead zone for KBM profile templates",
+              "* Only output DS4 touchpad button click when in Passthru mode",
+              "* Make sure to refresh gyro mouse smoothing combobox indexes after loading from a preset",
+              "* Bundled DS4Updater 1.4.5"],
+            "editor": "ryochan7",
+            "editors_note": ["Burnout"],
+            "updated_at": "2021-01-19T17:17:09+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.1",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 1},
+        "base_header": "Version 2.2.1",
+        "release_date": "2020-12-31T05:22:47+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.1",
+            "log_text": ["* Put lock block in for DS4 USB output routine"],
+            "editor": "ryochan7",
+            "editors_note": ["Too many cases to test and my dying PC"],
+            "updated_at": "2020-12-31T05:22:47+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.2.0",
+        "version_number_info": {"majorPart": 2, "minorPart": 2, "buildPart": 0},
+        "base_header": "Version 2.2.0",
+        "release_date": "2020-12-31T03:22:07+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.2.0",
+            "log_text": ["* Import newer ViGEm.NET libraries for ViGEmBus 1.17.333.0 extended support",
+              "* Allow passthru of Touchpad and Gyro to output virtual DS4. Requires ViGEmBus 1.17.333.0 and Windows 10",
+              "* Put note about DS4Windows assembly architecture in Log. Needed to diagnose Exclusive mode problems.",
+              "* No longer reset X360 report data each gamepad poll",
+              "* Fixed Touchpad Swipe and Gyro Tilt controls index values for Profile Editor controls",
+              "* Fixed some 8 controller bugs. Make sure to save set profile and load setting",
+              "* Don't reset auto profile flags on device removal",
+              "* Sort auto profile list by app file name",
+              "* Allow binding to Mute button in Special Action editor",
+              "* Added DualSense Mute button to Gyro and Touchpad triggers",
+              "* Allow Mute button as a Shift Trigger",
+              "* Use a WrapPanel for Utils section",
+              "* Fixed crash on Windows 7 when attempting to download ViGEm installer. Side effect of targeting .NET Framework 4.8",
+              "* Remove Aero2 assembly reference",
+              "* Changed output method used for Windows 7 BT DS4 devices. Forced to use Control endpoint on Windows 7",
+              "* Have driver installer window choose different ViGEmBus installer depending on detected Windows OS install"],
+            "editor": "ryochan7",
+            "editors_note": ["Windows 7 EOL seriously this time"],
+            "updated_at": "2020-12-31T03:22:07+0000"
+          }
+        ]
+      },
+      {
+        "version_str": "2.1.23",
+        "version_number_info": {"majorPart": 2, "minorPart": 1, "buildPart": 23},
+        "base_header": "Version 2.1.23",
+        "release_date": "2020-12-25T15:51:12+0000",
+        "locales": [
+          {
+            "code": "en",
+            "header": "Version 2.1.23",
+            "log_text": ["* Updated App.config file with proper .NET Framework version",
+              "* Added support for mapping DualSense Mute button",
+              "* Fixed Dark theme crashing app in Windows 7. Removed Aero2 elements from Dark theme.",
+              "* Disable apply button when creating a new profile. Further enforce current flow",
+              "* Added feature set check before generating CRC-32 output data",
+              "* Fixed theme style for SaveWhere window",
+              "* Corrected KeyDown and KeyUp images in Macro editor",
+              "* Split DS4HapticState to two structs. Separate force feedback data from lightbar color",
+              "* Added -command cycle cmd flag. Allows for an easy on/off shortcut without having to set any conditions. Contribution by **wingfixer**",
+              "* Changed AutoProfile EXE file extension check to be case-sensitive. Contribution by **mika-n**",
+              "* Added MinWidth back in Dark theme for combobox. Was removed with Aero2 tags.",
+              "* Updated Russian translation file. Contribution by **shikulja**",
+              "* Don't display data write failure if device is known to be disconnecting. Hopefully eliminates excessive gamepad write failure log messages when Idle Disconnect is executed.",
+              "* Tweaked axis scaling to output Xbox 360 axis. Low end now can scale to 0 properly."],
+            "editor": "ryochan7",
+            "editors_note": ["Not much"],
+            "updated_at": "2020-12-25T15:51:12+0000"
+          }
+        ]
+      },
       {
         "version_str": "2.1.22",
         "version_number_info": {"majorPart": 2, "minorPart": 1, "buildPart": 22},

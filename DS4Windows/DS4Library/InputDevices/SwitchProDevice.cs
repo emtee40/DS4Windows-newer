@@ -1,5 +1,4 @@
-﻿using DS4Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DS4WinWPF.DS4Library.InputDevices
+namespace DS4Windows.InputDevices
 {
     public class SwitchProDevice : DS4Device
     {
@@ -192,6 +191,11 @@ namespace DS4WinWPF.DS4Library.InputDevices
         private double combLatency;
         public double CombLatency { get => combLatency; set => combLatency = value; }
 
+        private bool enableHomeLED = true;
+        public bool EnableHomeLED { get => enableHomeLED; set => enableHomeLED = value; }
+
+        private SwitchProControllerOptions nativeOptionsStore;
+
         public override event ReportHandler<EventArgs> Report = null;
         public override event EventHandler<EventArgs> Removal = null;
 
@@ -218,11 +222,19 @@ namespace DS4WinWPF.DS4Library.InputDevices
             rightStickYData.mid = SAMPLE_STICK_MID;
 
             warnInterval = WARN_INTERVAL_BT;
+
+            DeviceSlotNumberChanged += (sender, e) => {
+                CalculateDeviceSlotMask();
+            };
         }
 
         public override void PostInit()
         {
+            deviceType = InputDeviceType.SwitchPro;
+            gyroMouseSensSettings = new GyroMouseSens();
             conType = DetermineConnectionType(hDevice);
+            optionsStore = nativeOptionsStore = new SwitchProControllerOptions(deviceType);
+            SetupOptionsEvents();
 
             if (conType == ConnectionType.BT)
             {
@@ -517,16 +529,19 @@ namespace DS4WinWPF.DS4Library.InputDevices
                     //Console.WriteLine("GyroYaw: {0}", gyroYaw);
                     SixAxis tempMotion = cState.Motion;
                     tempMotion.gyroYawFull = gyroYaw; tempMotion.gyroPitchFull = -gyroPitch; tempMotion.gyroRollFull = gyroRoll;
-                    tempMotion.accelXFull = accelX * 2; tempMotion.accelYFull = accelZ * 2; tempMotion.accelZFull = -accelY * 2;
+                    tempMotion.accelXFull = accelX * 2; tempMotion.accelYFull = -accelZ * 2; tempMotion.accelZFull = -accelY * 2;
                     
                     tempMotion.elapsed = elapsedDeltaTime;
                     tempMotion.previousAxis = pState.Motion;
                     tempMotion.gyroYaw = gyroYaw / 256; tempMotion.gyroPitch = -gyroPitch / 256; tempMotion.gyroRoll = gyroRoll / 256;
-                    tempMotion.accelX = accelX / 31; tempMotion.accelY = accelZ / 31; tempMotion.accelZ = -accelY / 31;
-                    tempMotion.outputAccelX = tempMotion.accelX; tempMotion.outputAccelY = tempMotion.accelY; tempMotion.outputAccelZ = tempMotion.accelZ;
-                    tempMotion.accelXG = (accelX * 2) / DS4Windows.SixAxis.ACC_RES_PER_G;
-                    tempMotion.accelYG = (accelZ * 2) / DS4Windows.SixAxis.ACC_RES_PER_G;
-                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.SixAxis.ACC_RES_PER_G;
+                    tempMotion.accelX = accelX / 31; tempMotion.accelY = -accelZ / 31; tempMotion.accelZ = -accelY / 31;
+                    //tempMotion.outputAccelX = tempMotion.accelX; tempMotion.outputAccelY = tempMotion.accelY; tempMotion.outputAccelZ = tempMotion.accelZ;
+                    tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
+                    tempMotion.outputGyroControls = false;
+                    //Console.WriteLine(gyroRoll);
+                    tempMotion.accelXG = (accelX * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
+                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.SixAxis.F_ACC_RES_PER_G;
 
                     tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
                     tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;
@@ -647,14 +662,17 @@ namespace DS4WinWPF.DS4Library.InputDevices
             byte[] powerChoiceArray = new byte[] { 0x00 };
             Subcommand(SwitchProSubCmd.SET_LOW_POWER_STATE, powerChoiceArray, 1, checkResponse: true);
 
-            // Turn on Home light (Solid)
-            byte[] light = Enumerable.Repeat((byte)0xFF, 25).ToArray();
-            light[0] = 0x1F; light[1] = 0xF0;
-            //Thread.Sleep(1000);
-            Subcommand(0x38, light, 25, checkResponse: true);
+            if (enableHomeLED)
+            {
+                // Turn on Home light (Solid)
+                byte[] light = Enumerable.Repeat((byte)0xFF, 25).ToArray();
+                light[0] = 0x1F; light[1] = 0xF0;
+                //Thread.Sleep(1000);
+                Subcommand(0x38, light, 25, checkResponse: true);
+            }
 
             // Turn on bottom LEDs
-            byte[] leds = new byte[] { 0x01 };
+            byte[] leds = new byte[] { deviceSlotMask };
             //Thread.Sleep(1000);
             Subcommand(0x30, leds, 1, checkResponse: true);
 
@@ -1194,6 +1212,76 @@ namespace DS4WinWPF.DS4Library.InputDevices
         public override bool IsAlive()
         {
             return !isDisconnecting;
+        }
+
+        private void CalculateDeviceSlotMask()
+        {
+            // Map 1-15 as a set of 4 LED lights
+            switch (deviceSlotNumber)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    deviceSlotMask = (byte)(1 << deviceSlotNumber);
+                    break;
+                case 4:
+                    deviceSlotMask = 0x01 | 0x02;
+                    break;
+                case 5:
+                    deviceSlotMask = 0x01 | 0x04;
+                    break;
+                case 6:
+                    deviceSlotMask = 0x01 | 0x08;
+                    break;
+
+                case 7:
+                    deviceSlotMask = 0x02 | 0x04;
+                    break;
+                case 8:
+                    deviceSlotMask = 0x02 | 0x08;
+                    break;
+
+                case 9:
+                    deviceSlotMask = 0x04 | 0x08;
+                    break;
+
+                case 10:
+                    deviceSlotMask = 0x01 | 0x02 | 0x04;
+                    break;
+                case 11:
+                    deviceSlotMask = 0x01 | 0x02 | 0x08;
+                    break;
+                case 12:
+                    deviceSlotMask = 0x01 | 0x04 | 0x08;
+                    break;
+
+                case 13:
+                    deviceSlotMask = 0x02 | 0x04 | 0x08;
+                    break;
+
+                case 14:
+                    deviceSlotMask = 0x01 | 0x02 | 0x04 | 0x08;
+                    break;
+                default:
+                    deviceSlotMask = 0x00;
+                    break;
+            }
+        }
+
+        private void SetupOptionsEvents()
+        {
+            if (nativeOptionsStore != null)
+            {
+            }
+        }
+
+        public override void LoadStoreSettings()
+        {
+            if (nativeOptionsStore != null)
+            {
+                enableHomeLED = nativeOptionsStore.EnableHomeLED;
+            }
         }
     }
 }

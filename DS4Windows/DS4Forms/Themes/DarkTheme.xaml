@@ -17,6 +17,14 @@
     <system:String x:Key="KeyUpImg">keyup_white.png</system:String>
     <system:String x:Key="KeyDownImg">keydown_white.png</system:String>
     <system:String x:Key="ClockImg">clock_white.png</system:String>
+    <system:String x:Key="DS4ConfigImg">DS4 Config_white.png</system:String>
+
+    <system:String x:Key="CopyImg">copy_white.png</system:String>
+    <system:String x:Key="DeleteImg">delete_white.png</system:String>
+    <system:String x:Key="EditImg">edit_white.png</system:String>
+    <system:String x:Key="ExportImg">export_white.png</system:String>
+    <system:String x:Key="ImportImg">import_white.png</system:String>
+    <system:String x:Key="NewProfileImg">newprofile_white.png</system:String>
 
     <!-- Window Style -->
     <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
@@ -483,7 +491,7 @@
                 <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
             </Grid.ColumnDefinitions>
             <Popup x:Name="PART_Popup" AllowsTransparency="True" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
-                <Border x:Name="DropDownBorder" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1" Background="{StaticResource BackgroundColor}">
+                <Border x:Name="DropDownBorder" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1" Background="{StaticResource BackgroundColor}" MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
                     <ScrollViewer x:Name="DropDownScrollViewer">
                         <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                             <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
@@ -614,7 +622,7 @@
                     </Style>
                 </ToggleButton.Style>
             </ToggleButton>
-            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="HasItems" Value="False">

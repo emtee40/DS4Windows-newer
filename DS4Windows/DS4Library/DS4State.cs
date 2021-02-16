@@ -10,7 +10,7 @@ namespace DS4Windows
         public bool DpadUp, DpadDown, DpadLeft, DpadRight;
         public bool L1, L2Btn, L3, R1, R2Btn, R3;
         public bool Share, Options, PS, Mute, Touch1, Touch2, TouchButton, TouchRight,
-            TouchLeft, Touch1Finger, Touch2Fingers;
+            TouchLeft, Touch1Finger, Touch2Fingers, OutputTouchButton;
         public byte Touch1Identifier, Touch2Identifier;
         public byte LX, RX, LY, RY, L2, R2;
         public byte FrameCounter; // 0, 1, 2...62, 63, 0....
@@ -26,6 +26,7 @@ namespace DS4Windows
         public double RYUnit;
         public double elapsedTime = 0.0;
         public ulong totalMicroSec = 0;
+        public ushort ds4Timestamp = 0;
         public SixAxis Motion = null;
         public static readonly int DEFAULT_AXISDIR_VALUE = 127;
         public Int32 SASteeringWheelEmulationUnit;
@@ -36,6 +37,7 @@ namespace DS4Windows
             public byte Id;
             public short X;
             public short Y;
+            public byte RawTrackingNum;
         }
 
         public TrackPadTouch TrackPadTouch0;
@@ -47,7 +49,7 @@ namespace DS4Windows
             Square = Triangle = Circle = Cross = false;
             DpadUp = DpadDown = DpadLeft = DpadRight = false;
             L1 = L2Btn = L3 = R1 = R2Btn = R3 = false;
-            Share = Options = PS = Mute = Touch1 = Touch2 = TouchButton = TouchRight = TouchLeft = false;
+            Share = Options = PS = Mute = Touch1 = Touch2 = TouchButton = OutputTouchButton = TouchRight = TouchLeft = false;
             Touch1Finger = Touch2Fingers = false;
             LX = RX = LY = RY = 128;
             L2 = R2 = 0;
@@ -64,6 +66,7 @@ namespace DS4Windows
             RYUnit = 0.0;
             elapsedTime = 0.0;
             totalMicroSec = 0;
+            ds4Timestamp = 0;
             Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             TrackPadTouch0.IsActive = false;
             TrackPadTouch1.IsActive = false;
@@ -101,6 +104,7 @@ namespace DS4Windows
             Touch2 = state.Touch2;
             Touch2Identifier = state.Touch2Identifier;
             TouchButton = state.TouchButton;
+            OutputTouchButton = state.OutputTouchButton;
             TouchPacketCounter = state.TouchPacketCounter;
             Touch1Finger = state.Touch1Finger;
             Touch2Fingers = state.Touch2Fingers;
@@ -120,6 +124,7 @@ namespace DS4Windows
             RYUnit = state.RYUnit;
             elapsedTime = state.elapsedTime;
             totalMicroSec = state.totalMicroSec;
+            ds4Timestamp = state.ds4Timestamp;
             Motion = state.Motion;
             TrackPadTouch0 = state.TrackPadTouch0;
             TrackPadTouch1 = state.TrackPadTouch1;
@@ -162,6 +167,7 @@ namespace DS4Windows
             state.TouchLeft = TouchLeft;
             state.TouchRight = TouchRight;
             state.TouchButton = TouchButton;
+            state.OutputTouchButton = OutputTouchButton;
             state.TouchPacketCounter = TouchPacketCounter;
             state.Touch1Finger = Touch1Finger;
             state.Touch2Fingers = Touch2Fingers;
@@ -181,6 +187,7 @@ namespace DS4Windows
             state.RYUnit = RYUnit;
             state.elapsedTime = elapsedTime;
             state.totalMicroSec = totalMicroSec;
+            state.ds4Timestamp = ds4Timestamp;
             state.Motion = Motion;
             state.TrackPadTouch0 = TrackPadTouch0;
             state.TrackPadTouch1 = TrackPadTouch1;

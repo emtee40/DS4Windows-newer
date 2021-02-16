@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -60,6 +61,8 @@ namespace DS4Windows
             int slotNum, OutSlotDevice outSlotDev);
         public event SlotUnassignedDelegate SlotUnassigned;
 
+        public event EventHandler ViGEmFailure;
+
         public OutputSlotManager()
         {
             outputSlots = new OutSlotDevice[ControlService.CURRENT_DS4_CONTROLLER_LIMIT];
@@ -94,6 +97,13 @@ namespace DS4Windows
             eventDispatchThread = null;
         }
 
+        public void Stop()
+        {
+            UnplugRemainingControllers();
+            deviceDict.Clear();
+            revDeviceDict.Clear();
+        }
+
         public OutputDevice AllocateController(OutContType contType, ViGEmClient client)
         {
             OutputDevice outputDevice = null;
@@ -103,7 +113,7 @@ namespace DS4Windows
                     outputDevice = new Xbox360OutDevice(client);
                     break;
                 case OutContType.DS4:
-                    outputDevice = new DS4OutDevice(client);
+                    outputDevice = DS4OutDeviceFactory.CreateDS4Device(client, Global.vigemBusVersionInfo);
                     break;
                 case OutContType.None:
                 default:
@@ -135,7 +145,17 @@ namespace DS4Windows
                 int slot = FindEmptySlot();
                 if (slot != -1)
                 {
-                    outputDevice.Connect();
+                    try
+                    {
+                        outputDevice.Connect();
+                    }
+                    catch (Win32Exception)
+                    {
+                        // Leave task immediately if connect call failed
+                        ViGEmFailure?.Invoke(this, EventArgs.Empty);
+                        return;
+                    }
+
                     outputDevices[slot] = outputDevice;
                     deviceDict.Add(slot, outputDevice);
                     revDeviceDict.Add(outputDevice, slot);
@@ -164,7 +184,8 @@ namespace DS4Windows
             }));
         }
 
-        public void DeferredRemoval(OutputDevice outputDevice, int inIdx, OutputDevice[] outdevs, bool immediate = false)
+        public void DeferredRemoval(OutputDevice outputDevice, int inIdx,
+            OutputDevice[] outdevs, bool immediate = false)
         {
             Action tempAction = new Action(() =>
             {
@@ -275,6 +296,34 @@ namespace DS4Windows
             }
 
             return temp;
+        }
+
+        public void UnplugRemainingControllers()
+        {
+            Action tempAction = new Action(() =>
+            {
+                foreach (OutSlotDevice device in outputSlots)
+                {
+                    if (device.CurrentAttachedStatus ==
+                        OutSlotDevice.AttachedStatus.Attached)
+                    {
+                        device.DetachDevice();
+                        Task.Delay(DELAY_TIME).Wait();
+                    }
+                }
+            });
+
+            queueLocker.EnterWriteLock();
+            queuedTasks++;
+            queueLocker.ExitWriteLock();
+
+            eventDispatcher.BeginInvoke((Action)(() =>
+            {
+                tempAction.Invoke();
+                queueLocker.EnterWriteLock();
+                queuedTasks--;
+                queueLocker.ExitWriteLock();
+            }));
         }
     }
 }

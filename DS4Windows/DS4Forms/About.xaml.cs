@@ -96,10 +96,5 @@ namespace DS4WinWPF.DS4Forms
         {
             Process.Start(new ProcessStartInfo("https://discord.gg/zrpPgyN") { UseShellExecute = true });
         }
-
-        private void ParlerSocialBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo("https://parler.com/profile/ds4windows/") { UseShellExecute = true });
-        }
     }
 }
