@@ -140,7 +140,8 @@ namespace DS4Windows.InputDevices
         private byte activePlayerLEDMask = 0x00;
 
         private byte hapticsIntensityByte = 0x02;
-        public HapticIntensity HapticChoice {
+        public HapticIntensity HapticChoice
+        {
             set
             {
                 switch (value)
@@ -177,6 +178,11 @@ namespace DS4Windows.InputDevices
             synced = true;
             DeviceSlotNumberChanged += (sender, e) => {
                 CalculateDeviceSlotMask();
+            };
+
+            BatteryChanged += (sender, e) =>
+            {
+                PreparePlayerLEDBarByte();
             };
         }
 
@@ -619,10 +625,10 @@ namespace DS4Windows.InputDevices
                         cState.Battery = 99;
                     }
 
-                    tempStamp = inputReport[28+reportOffset] |
-                                (uint)(inputReport[29+reportOffset] << 8) |
-                                (uint)(inputReport[30+reportOffset] << 16) |
-                                (uint)(inputReport[31+reportOffset] << 24);
+                    tempStamp = inputReport[28 + reportOffset] |
+                                (uint)(inputReport[29 + reportOffset] << 8) |
+                                (uint)(inputReport[30 + reportOffset] << 16) |
+                                (uint)(inputReport[31 + reportOffset] << 24);
 
                     if (timeStampInit == false)
                     {
@@ -669,17 +675,17 @@ namespace DS4Windows.InputDevices
                     //cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
 
                     // Simpler touch storing
-                    cState.TrackPadTouch0.RawTrackingNum = inputReport[33+reportOffset];
-                    cState.TrackPadTouch0.Id = (byte)(inputReport[33+reportOffset] & 0x7f);
-                    cState.TrackPadTouch0.IsActive = (inputReport[33+reportOffset] & 0x80) == 0;
-                    cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[35+reportOffset] & 0x0f) << 8) | (ushort)(inputReport[34+reportOffset]));
-                    cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[36+reportOffset]) << 4) | ((ushort)(inputReport[35+reportOffset] & 0xf0) >> 4));
+                    cState.TrackPadTouch0.RawTrackingNum = inputReport[33 + reportOffset];
+                    cState.TrackPadTouch0.Id = (byte)(inputReport[33 + reportOffset] & 0x7f);
+                    cState.TrackPadTouch0.IsActive = (inputReport[33 + reportOffset] & 0x80) == 0;
+                    cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[35 + reportOffset] & 0x0f) << 8) | (ushort)(inputReport[34 + reportOffset]));
+                    cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[36 + reportOffset]) << 4) | ((ushort)(inputReport[35 + reportOffset] & 0xf0) >> 4));
 
-                    cState.TrackPadTouch0.RawTrackingNum = inputReport[37+reportOffset];
-                    cState.TrackPadTouch1.Id = (byte)(inputReport[37+reportOffset] & 0x7f);
-                    cState.TrackPadTouch1.IsActive = (inputReport[37+reportOffset] & 0x80) == 0;
-                    cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[39+reportOffset] & 0x0f) << 8) | (ushort)(inputReport[38+reportOffset]));
-                    cState.TrackPadTouch1.Y = (short)(((ushort)(inputReport[40+reportOffset]) << 4) | ((ushort)(inputReport[39+reportOffset] & 0xf0) >> 4));
+                    cState.TrackPadTouch0.RawTrackingNum = inputReport[37 + reportOffset];
+                    cState.TrackPadTouch1.Id = (byte)(inputReport[37 + reportOffset] & 0x7f);
+                    cState.TrackPadTouch1.IsActive = (inputReport[37 + reportOffset] & 0x80) == 0;
+                    cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[39 + reportOffset] & 0x0f) << 8) | (ushort)(inputReport[38 + reportOffset]));
+                    cState.TrackPadTouch1.Y = (short)(((ushort)(inputReport[40 + reportOffset]) << 4) | ((ushort)(inputReport[39 + reportOffset] & 0xf0) >> 4));
 
                     // XXX DS4State mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
                     try
@@ -706,7 +712,7 @@ namespace DS4Windows.InputDevices
                     }
                     catch (Exception ex) { currerror = $"Touchpad: {ex.Message}"; }
 
-                    fixed (byte* pbInput = &inputReport[16+reportOffset], pbGyro = gyro, pbAccel = accel)
+                    fixed (byte* pbInput = &inputReport[16 + reportOffset], pbGyro = gyro, pbAccel = accel)
                     {
                         for (int i = 0; i < 6; i++)
                         {
@@ -938,9 +944,9 @@ namespace DS4Windows.InputDevices
                 outputReport[11] = r2EffectData.triggerMotorMode; // right trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
                 outputReport[12] = r2EffectData.triggerStartResistance; // right trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
                 outputReport[13] = r2EffectData.triggerEffectForce; // right trigger
-                                         // (mode1) amount of force exerted; 0-255
-                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                                                                    // (mode1) amount of force exerted; 0-255
+                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
                 outputReport[14] = r2EffectData.triggerRangeForce; // right trigger force exerted in range (mode2), 0-255
                 outputReport[15] = r2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
                 outputReport[16] = r2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
@@ -952,9 +958,9 @@ namespace DS4Windows.InputDevices
                 outputReport[22] = l2EffectData.triggerMotorMode; // left trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
                 outputReport[23] = l2EffectData.triggerStartResistance; // left trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
                 outputReport[24] = l2EffectData.triggerEffectForce; // left trigger
-                                         // (mode1) amount of force exerted; 0-255
-                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
+                                                                    // (mode1) amount of force exerted; 0-255
+                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
+                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
                 outputReport[25] = l2EffectData.triggerRangeForce; // left trigger: (mode2) amount of force exerted within range; 0-255
                 outputReport[26] = l2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
                 outputReport[27] = l2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
