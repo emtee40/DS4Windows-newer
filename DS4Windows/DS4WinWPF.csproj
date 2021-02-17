@@ -440,6 +440,10 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.ar.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.cs.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
@@ -460,11 +464,23 @@
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.he.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.hu-HU.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.it.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.ja.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.pl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
@@ -476,27 +492,15 @@
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Translations\Strings.uk-UA.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.zh-CN.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Translations\Strings.zh-TW.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Translations\Strings.uk-UA.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Translations\Strings.hu-HU.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Translations\Strings.pl.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Translations\Strings.ar.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Strings.resx</DependentUpon>
     </EmbeddedResource>
@@ -567,7 +571,6 @@
     <Resource Include="Resources\social\twitter_logo_initial.png" />
     <Resource Include="Resources\social\minds.png" />
     <Resource Include="Resources\social\mastodon.png" />
-    <Resource Include="Resources\social\frog_site_logo.png" />
     <Resource Include="Resources\social\discord.png" />
     <Resource Include="Resources\social\bittube.png" />
     <Resource Include="Resources\rainbowCCrop.png" />
