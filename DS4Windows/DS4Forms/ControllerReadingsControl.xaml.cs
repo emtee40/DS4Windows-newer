@@ -340,5 +340,10 @@ namespace DS4WinWPF.DS4Forms
             r2InValLb.Content = inState.R2;
             r2OutValLb.Content = mapState.R2;
         }
+
+        private void inputContNum_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            UseDevice(deviceNum + 1 >= Program.rootHub.DS4Controllers.Where(i => i != null).Count() ? 0 : deviceNum + 1, profileDeviceNum);
+        }
     }
 }
