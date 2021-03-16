@@ -119,7 +119,7 @@ namespace DS4WinWPF.DS4Forms
         public ControllerReadingsControl()
         {
             InitializeComponent();
-            inputContNum.Content = $"#{deviceNum+1}";
+            inputContNum.Text = $"#{deviceNum+1}";
             exposeState = new DS4StateExposed(baseState);
 
             readingTimer = new NonFormTimer();
@@ -134,7 +134,7 @@ namespace DS4WinWPF.DS4Forms
 
         private void ControllerReadingsControl_DeviceNumChanged(object sender, EventArgs e)
         {
-            inputContNum.Content = $"#{deviceNum+1}";
+            inputContNum.Text = $"#{deviceNum+1}";
         }
 
         private void ChangeSixAxisDeadControls(object sender, EventArgs e)
