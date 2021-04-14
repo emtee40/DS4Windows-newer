@@ -1228,7 +1228,7 @@ Suspend support not enabled.", true);
                                     {
                                         // Name of the property to query from a profile or DS4Windows app engine
                                         propName = strData[2].ToLower();
-
+                   
                                             if (propName == "profilename")
                                             {
                                                 if (Global.useTempProfile[tdevice])
@@ -1267,6 +1267,15 @@ Suspend support not enabled.", true);
                                                 propValue = App.rootHub.OutputslotMan.OutputSlots[tdevice].CurrentAttachedStatus.ToString();
                                             else if (propName == "outputslotinputbound")
                                                 propValue = App.rootHub.OutputslotMan.OutputSlots[tdevice].CurrentInputBound.ToString();
+                                            else if (propName == "outputxinputindex")
+                                            {
+                                                    var xboxOutput = (App.rootHub.OutputslotMan.OutputSlots[tdevice].OutputDevice as Xbox360OutDevice);
+                                                    if(xboxOutput == null)
+                                                        propValue = (-1).ToString();
+                                                    else
+                                                        propValue = xboxOutput.cont.UserIndex.ToString();
+                                            }
+                                           
 
                                             else if (propName == "apprunning")
                                                 propValue = App.rootHub.running.ToString(); // Controller idx value is ignored, but it still needs to be in 1..4 range in a cmdline call
