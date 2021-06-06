@@ -404,13 +404,13 @@ Example: whyme_DS4Windows</value>
     <value>Gamepad with High Precision Camera</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>Description</value>
+    <value>Popis</value>
   </data>
   <data name="PresetIntroText" xml:space="preserve">
     <value>Do you want to use a preset option? Choosing No will cause the Profile Editor to use an empty Gamepad profile.</value>
   </data>
   <data name="Presets" xml:space="preserve">
-    <value>Presets</value>
+    <value>Předvolby</value>
   </data>
   <data name="Changelog" xml:space="preserve">
     <value>Changelog</value>
