@@ -931,7 +931,7 @@ Example: whyme_DS4Windows</value>
 	<data name="MinimizeToTaskbar" xml:space="preserve">
 		<value>Minimize to Taskbar</value>
 	</data>
-	<data name="MinimizeToTaskbarInsteadOfSystemTray" xml:space="preserve">
+	<data name="MinimizeToTaskbarTip" xml:space="preserve">
 		<value>Minimize to Taskbar instead of System Tray</value>
 	</data>
 	<data name="IconChoice" xml:space="preserve">
@@ -1209,9 +1209,6 @@ Example: whyme_DS4Windows</value>
 	</data>
 	<data name="SixAxis" xml:space="preserve">
 		<value>SixAxis</value>
-	</data>
-	<data name="MaxZone_" xml:space="preserve">
-		<value>Max Zone:</value>
 	</data>
 	<data name="Lightbar" xml:space="preserve">
 		<value>Lightbar</value>

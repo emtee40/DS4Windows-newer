@@ -288,7 +288,7 @@
                         <CheckBox Content="{lex:Loc StartMinimized}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding StartMinimize}" />
                         <CheckBox Content="{lex:Loc MinimizeToTaskbar}"
-                                  ToolTip="{lex:Loc MinimizeToTaskbarInsteadOfSystemTray}"
+                                  ToolTip="{lex:Loc MinimizeToTaskbarTip}"
                                   IsChecked="{Binding MinimizeToTaskbar}" Margin="{StaticResource spaceMargin}" />
                         <CheckBox Content="{lex:Loc CloseMinimizes}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding CloseMinimizes}"

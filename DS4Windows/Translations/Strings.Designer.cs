@@ -2127,9 +2127,9 @@ namespace DS4WinWPF.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Minimize to Taskbar instead of System Tray.
         /// </summary>
-        public static string MinimizeToTaskbarInsteadOfSystemTray {
+        public static string MinimizeToTaskbarTip {
             get {
-                return ResourceManager.GetString("MinimizeToTaskbarInsteadOfSystemTray", resourceCulture);
+                return ResourceManager.GetString("MinimizeToTaskbarTip", resourceCulture);
             }
         }
         
