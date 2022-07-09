@@ -76,17 +76,6 @@ namespace DS4WinWPF
 
         public event EventHandler ThemeChanged;
 
-        private static EventWaitHandle CreateAndReplaceHandle(SafeWaitHandle replacementHandle)
-        {
-            EventWaitHandle eventWaitHandle = new EventWaitHandle(default, default);
-
-            SafeWaitHandle old = eventWaitHandle.SafeWaitHandle;
-            eventWaitHandle.SafeWaitHandle = replacementHandle;
-            old.Dispose();
-
-            return eventWaitHandle;
-        }
-
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             runShutdown = true;
@@ -120,13 +109,10 @@ namespace DS4WinWPF
 
             try
             {
-                // https://github.com/dotnet/runtime/issues/2117
                 // another instance is already running if OpenExisting succeeds.
-                //threadComEvent = EventWaitHandle.OpenExisting(SingleAppComEventName,
-                //    System.Security.AccessControl.EventWaitHandleRights.Synchronize |
-                //    System.Security.AccessControl.EventWaitHandleRights.Modify);
-                // Use this for now
-                threadComEvent = CreateAndReplaceHandle(OpenEvent((uint)(System.Security.AccessControl.EventWaitHandleRights.Synchronize | System.Security.AccessControl.EventWaitHandleRights.Modify), false, SingleAppComEventName));
+                threadComEvent = EventWaitHandleAcl.OpenExisting(SingleAppComEventName,
+                    System.Security.AccessControl.EventWaitHandleRights.Synchronize |
+                    System.Security.AccessControl.EventWaitHandleRights.Modify);
                 threadComEvent.Set();  // signal the other instance.
                 threadComEvent.Close();
                 Current.Shutdown();    // Quit temp instance
