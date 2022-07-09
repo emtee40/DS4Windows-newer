@@ -373,9 +373,12 @@ namespace DS4WinWPF.DS4Forms
                 if (!IsActive && (Global.Notifications == 2 ||
                     (Global.Notifications == 1 && e.Warning)))
                 {
-                    notifyIcon.ShowBalloonTip(TrayIconViewModel.ballonTitle,
-                    e.Data, !e.Warning ? Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info :
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Warning);
+                    notifyIcon.ShowNotification(
+                        title: TrayIconViewModel.ballonTitle,
+                        message: e.Data,
+                        icon: !e.Warning
+                            ? H.NotifyIcon.Core.NotificationIcon.Info
+                            : H.NotifyIcon.Core.NotificationIcon.Warning);
                 }
             }));
         }
@@ -638,8 +641,10 @@ Suspend support not enabled.", true);
         {
             if (!IsActive && (Global.Notifications == 2))
             {
-                notifyIcon.ShowBalloonTip(TrayIconViewModel.ballonTitle,
-                message, Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
+                notifyIcon.ShowNotification(
+                    title: TrayIconViewModel.ballonTitle,
+                    message: message,
+                    icon: H.NotifyIcon.Core.NotificationIcon.Info);
             }
         }
 
