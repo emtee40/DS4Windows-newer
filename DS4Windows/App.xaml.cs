@@ -37,9 +37,6 @@ namespace DS4WinWPF
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
 
-        [DllImport("kernel32", EntryPoint = "OpenEventW", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern SafeWaitHandle OpenEvent(uint desiredAccess, bool inheritHandle, string name);
-
         [StructLayout(LayoutKind.Sequential)]
         public struct COPYDATASTRUCT
         {
