@@ -85,8 +85,8 @@ namespace DS4Windows
 
         private byte[][] udpOutBuffers = new byte[UdpServer.NUMBER_SLOTS][]
         {
-            new byte[100], new byte[100],
-            new byte[100], new byte[100],
+            new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
+            new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
         };
 
         void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
@@ -2255,6 +2255,33 @@ namespace DS4Windows
 
                 if (!device.PrimaryDevice)
                 {
+                    // Make sure a joined device is still linked
+                    int jointInd = device.JointDeviceSlotNumber;
+                    if (device.OutputMapGyro &&
+                        jointInd != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
+                    {
+                        // Output changes from Gyro data early. Seems better to ME... REE
+                        GyroOutMode imuOutMode = Global.GetGyroOutMode(device.JointDeviceSlotNumber);
+                        if (imuOutMode != GyroOutMode.None)
+                        {
+                            if (imuOutMode == GyroOutMode.Mouse)
+                            {
+                                outputKBMHandler.Sync();
+                            }
+                            else if (imuOutMode == GyroOutMode.MouseJoystick)
+                            {
+                                // Add new Mapping method and add data to
+                                // parent device state
+                                DS4State tempMapState = MappedState[jointInd];
+                                Mapping.TempMouseJoystick(jointInd, tempMapState);
+                                if (!useDInputOnly[jointInd])
+                                {
+                                    outputDevices[jointInd]?.ConvertandSendReport(tempMapState, jointInd);
+                                }
+                            }
+                        }
+                    }
+
                     // Skip mapping routine if part of a joined device
                     return;
                 }
