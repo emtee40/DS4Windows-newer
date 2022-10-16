@@ -542,17 +542,18 @@ namespace DS4Windows
         {
             if (Global.hidHideInstalled)
             {
-                LogDebug("HidHide control device found");
+                LogDebug("HIDHide: HidHide control device found");
                 using (HidHideAPIDevice hidHideDevice = new HidHideAPIDevice())
                 {
                     if (!hidHideDevice.IsOpen())
                     {
+                        LogDebug("HIDHide: Failed to open handle to HidHide Control Device. Another process is using it at the moment.");
                         return;
                     }
                     // Catch Blank Values and initialize for Startup. Also catches empty Values.
                     // Also Catches Empty values in auto-profiler, and defaults to trying to re-add D4W. Will fail harmlessly later.
-                    if (ExePath == "") { ExePath = Global.exelocation; ExeName = "DS4Windows"; AddExe = true; } 
-                    
+                    if (ExePath == "") { ExePath = Global.exelocation; ExeName = "DS4Windows"; AddExe = true; }
+
                     List<string> dosPaths = hidHideDevice.GetWhitelist();
 
                     int maxPathCheckLength = 512;
@@ -572,21 +573,32 @@ namespace DS4Windows
                     // Need to trim starting '\\' from path2 or Path.Combine will
                     // treat it as an absolute path and only return path2
                     string realPath = Path.Combine(dosDrivePath, partial.TrimStart('\\'));
+
                     bool exists = dosPaths.Contains(realPath);
                     if (!exists && AddExe)
                     {
-                        LogDebug($"{ExeName} not found in HidHide whitelist. Adding to list");
+                        LogDebug($"HIDHide: {ExeName} not found in HidHide list. Adding to list");
                         dosPaths.Add(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }
                     if (exists && !AddExe)
                     {
-                        LogDebug($"{ExeName} found in HidHide whitelist. Removing from list");
+                        LogDebug($"HIDHide: {ExeName} found in HidHide list. Removing from list");
                         dosPaths.Remove(realPath);
                         hidHideDevice.SetWhitelist(dosPaths);
                     }
+
+                    //Update Lists. Report if EXE is in list or not.
+                    dosPaths = hidHideDevice.GetWhitelist();
+                    exists = dosPaths.Contains(realPath);
+                    if (exists)
+                    { LogDebug($"HIDHide: {ExeName} found in current HidHide list."); return; }
+                    LogDebug($"HIDHide: {ExeName} not found in current HidHide list.");
+
                 }
-            }
+
+            }//Reccommend installing HidHide.
+            else { LogDebug("HIDHide: HidHide Not installed. HidHide is highly recommended, but not required."); }
         }
 
         public void LoadPermanentSlotsConfig()
