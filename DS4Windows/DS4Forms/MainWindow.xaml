@@ -399,7 +399,79 @@
                             </Button>
                             <TextBox x:Name="fakeExeNameTxt" Text="{Binding FakeExeName, UpdateSourceTrigger=LostFocus}" MinWidth="200" />
                         </DockPanel>
-
+                        <!--=Stealth Settings=-->
+                        <GroupBox Header="Hide Physical Controllers" Margin="4,0,0,8" ToolTip="These options hide your physical controller. (Prevents &quot;Double Input&quot; errors)">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
+                                    <Button Name="hidHideStatusRefreshbtn" Content="Check" Height="26" Margin="0,0,0,4" ToolTip="Refresh HidHide Status." Click="hidHideStatusRefresh_Click"/>
+                                    <Label x:Name="HidHideStatusIndicator" Content="HidHide Status:&#xD;&#xA;Unknown" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Padding="5,0,5,0">
+                                        <Label.ToolTip>
+                                            <StackPanel>
+                                                <TextBlock>Shows the status of HidHide Driver.</TextBlock>
+                                                <TextBlock></TextBlock>
+                                                <TextBlock>WhiteList (Active) - HidHide is currently active and granting access to apps in it's list.</TextBlock>
+                                                <TextBlock>Blacklist (Active) - HidHide is currently active and blocking access to apps in it's list.</TextBlock>
+                                                <TextBlock>Disabled - HidHide is currently inactive and not blocking access to any apps.</TextBlock>
+                                                <TextBlock>Unknown - And error has occured. Please re-check status.</TextBlock>
+                                            </StackPanel>
+                                        </Label.ToolTip>
+                                    </Label>
+                                </StackPanel>
+                                <CheckBox x:Name="HidHideEnableCheckBox" Content="Enable HidHide" Margin="0,0,0,4" ToolTip="Enables use of the HIDHide Driver. (Recommended)" Click="HidHideEnableCheckBox_Click"/>
+                                <CheckBox x:Name="hidHideInvertWhitelistCheckbox" Content="Use Blacklist" Margin="0,0,0,4" IsEnabled="False">
+                                    <CheckBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock>TODO: Not Yet Implimented!</TextBlock>
+                                            <TextBlock>Changes HidHide's Whitelist to a blacklist.</TextBlock>
+                                            <TextBlock>Apps listed in the black list will no longer access your controller.</TextBlock>
+                                            <TextBlock>All other apps will have access.</TextBlock>
+                                        </StackPanel>
+                                    </CheckBox.ToolTip>
+                                </CheckBox>
+                                <CheckBox x:Name="hidHideAutoAddDevicesCheckbox" Content="Add devices to HidHide" Margin="0,0,0,4" IsEnabled="False">
+                                    <CheckBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock>TODO: Not Yet Implimented!</TextBlock>
+                                            <TextBlock>Automatically adds connected devices to HidHide's device list</TextBlock>
+                                        </StackPanel>
+                                    </CheckBox.ToolTip>
+                                </CheckBox>
+                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Auto-clear Device List" Margin="0,0,0,4" IsEnabled="False">
+                                    <CheckBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock>Tries to reduce cluttered device lists in HidHide</TextBlock>
+                                            <TextBlock></TextBlock>
+                                            <TextBlock>Will automatically clear HidHide's device list periodically.</TextBlock>
+                                            <TextBlock>Do not use if DS4Windowes is not automatically adding devices</TextBlock>
+                                            <TextBlock>or if another program is also adding devices.</TextBlock>
+                                        </StackPanel>
+                                    </CheckBox.ToolTip>
+                                </CheckBox>
+                                <GroupBox Header="Clear HidHide Lists" Margin="0,0,0,4" IsEnabled="False">
+                                    <GroupBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock>These options will eat your cat.</TextBlock>
+                                            <TextBlock>Do NOT click unless instructed by a trusted source.</TextBlock>
+                                        </StackPanel>
+                                    </GroupBox.ToolTip>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button x:Name="hidHideClearDeviceListButton" Content="Device list" Margin="2,2,4,2" HorizontalAlignment="Center"/>
+                                        <Button x:Name="hidHideClearWhitelistButton" Content="App list" Margin="4,2,2,2" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                <Separator Height="10" Margin="8,0,8,4"/>
+                                <CheckBox x:Name="hideDS4ContCk" Content="Hide DS4 (Legacy)" x:Uid="hideDS4Checkbox" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" Margin="0,0,0,4">
+                                    <CheckBox.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock>Tries to gain "Exclusive Access" to the physical controller, blocking all other programs from using it's inputs</TextBlock>
+                                            <TextBlock></TextBlock>
+                                            <TextBlock>This is a legacy option</TextBlock>
+                                            <TextBlock>If you don't know why you need it, don't use it.</TextBlock>
+                                        </StackPanel>
+                                    </CheckBox.ToolTip>
+                                </CheckBox>
+                            </StackPanel>
+                        </GroupBox>
                         <GroupBox Header="Utils" BorderThickness="2" Margin="{StaticResource spaceMargin}"
                               Padding="8" HorizontalAlignment="Left">
                             <WrapPanel HorizontalAlignment="Left" Orientation="Vertical">
@@ -439,77 +511,7 @@
                                 </Button>
                             </WrapPanel>
                         </GroupBox>
-                        <GroupBox Header="Hide Physical Controllers" Margin="4,0,0,8" ToolTip="These options hide your physical controller. (Prevents &quot;Double Input&quot; errors)">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,4,0,4">
-                                    <Button Content="Check" Height="26" Margin="0,0,0,4" ToolTip="Refresh HidHide Status."/>
-                                    <Label x:Name="HidHideStatusIndicator" Content="HidHide: Status Unknown" HorizontalAlignment="Left" Margin="0,0,0,4">
-                                        <Label.ToolTip>
-                                            <StackPanel>
-                                                <TextBlock>Shows the status of HidHide Driver.</TextBlock>
-                                                <TextBlock></TextBlock>
-                                                <TextBlock>WhiteList (Active) - HidHide is currently active and granting access to apps in it's list.</TextBlock>
-                                                <TextBlock>Blacklist (Active) - HidHide is currently active and blocking access to apps in it's list.</TextBlock>
-                                                <TextBlock>Disabled - HidHide is currently inactive and not blocking access to any apps.</TextBlock>
-                                                <TextBlock>Unknown - And error has occured. Please re-check status.</TextBlock>
-                                            </StackPanel>
-                                        </Label.ToolTip>
-                                    </Label>
-                                </StackPanel>
-                                <CheckBox x:Name="HidHideEnableCheckBox" Content="Enable HidHide" Margin="0,0,0,4" ToolTip="Enables use of the HIDHide Driver. (Recommended)"/>
-                                <CheckBox x:Name="hidHideAutoAddDevicesCheckbox" Content="Add devices to HidHide" Margin="0,0,0,4">
-                                    <CheckBox.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>Automatically adds connected devices to HidHide's device list</TextBlock>
-                                        </StackPanel>
-                                    </CheckBox.ToolTip>
-                                </CheckBox>
-                                <CheckBox x:Name="hidHideInvertWhitelistCheckbox" Content="Use Blacklist" Margin="0,0,0,4">
-                                    <CheckBox.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>Changes HidHide's Whitelist to a blacklist.</TextBlock>
-                                            <TextBlock>Apps listed in the black list will no longer access your controller.</TextBlock>
-                                            <TextBlock>All other apps will have access.</TextBlock>
-                                        </StackPanel>
-                                    </CheckBox.ToolTip>
-                                </CheckBox>
-                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Auto-clear Device List" Margin="0,0,0,4">
-                                    <CheckBox.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>Tries to reduce cluttered device lists in HidHide</TextBlock>
-                                            <TextBlock></TextBlock>
-                                            <TextBlock>Will automatically clear HidHide's device list periodically.</TextBlock>
-                                            <TextBlock>Do not use if DS4Windowes is not automatically adding devices</TextBlock>
-                                            <TextBlock>or if another program is also adding devices.</TextBlock>
-                                        </StackPanel>
-                                    </CheckBox.ToolTip>
-                                </CheckBox>
-                                <GroupBox Header="Clear HidHide Lists" Margin="0,0,0,4">
-                                    <GroupBox.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>These options will eat your cat.</TextBlock>
-                                            <TextBlock>Do NOT click unless instructed by a trusted source.</TextBlock>
-                                        </StackPanel>
-                                    </GroupBox.ToolTip>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button x:Name="hidHideClearDeviceListButton" Content="Device list" Margin="2,2,4,2" HorizontalAlignment="Center"/>
-                                        <Button x:Name="hidHideClearWhitelistButton" Content="App list" Margin="4,2,2,2" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                </GroupBox>
-                                <Separator Height="10" Margin="8,0,8,4"/>
-                                <CheckBox x:Name="hideDS4ContCk" Content="Hide DS4 (Legacy)" x:Uid="hideDS4Checkbox" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" Margin="0,0,0,4">
-                                    <CheckBox.ToolTip>
-                                        <StackPanel>
-                                            <TextBlock>Tries to gain "Exclusive Access" to the physical controller, blocking all other programs from using it's inputs</TextBlock>
-                                            <TextBlock></TextBlock>
-                                            <TextBlock>This is a legacy option</TextBlock>
-                                            <TextBlock>If you don't know why you need it, don't use it.</TextBlock>
-                                        </StackPanel>
-                                    </CheckBox.ToolTip>
-                                </CheckBox>
-                            </StackPanel>
-                        </GroupBox>
-
+                        
                         <Button x:Name="deviceOptionSettingsBtn" MaxWidth="100" HorizontalAlignment="Left" Content="Device Options" Click="DeviceOptionSettingsBtn_Click" Margin="12,0,0,0" />
                     </WrapPanel>
                 </ScrollViewer>
