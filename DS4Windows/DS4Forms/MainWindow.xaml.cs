@@ -24,6 +24,7 @@ using DS4Windows;
 using DS4WinWPF.Translations;
 using H.NotifyIcon.Core;
 using DS4WinWPF.DS4Control;
+using Nefarius.Utilities.DeviceManagement.PnP;
 
 namespace DS4WinWPF.DS4Forms
 {
@@ -1836,49 +1837,30 @@ Suspend support not enabled.", true);
 
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
-            if (!Global.AutoAddToHH) { return; } // Skip if not on.
-            
+            if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; } // Skip if not on or not installed
+
             List<string> Blacklist = new();
-            
-            if (Global.hidHideInstalled)
+
+            using (HidHideAPIDevice hidHideDevice = new())
             {
-                using (HidHideAPIDevice hidHideDevice = new())
+                if (!hidHideDevice.IsOpen()) { return; }
+
+                Blacklist.AddRange(hidHideDevice.GetBlacklist());
+
+                //Needs to also add current connected devices when first turned on.
+                foreach (var controller in conLvViewModel.ControllerCol)
                 {
-                    if (hidHideDevice.IsOpen())
-                    { Blacklist.AddRange(hidHideDevice.GetBlacklist()); }
+                    string Parent = controller.Device.HidDevice.ParentPath.ToUpper();
+                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(controller.Device.HidDevice.DevicePath);
+
+                    if (!Blacklist.Contains(Parent)) { Blacklist.Add(Parent); }
+                    if (!Blacklist.Contains(DevHid)) { Blacklist.Add(DevHid); }
+                    Blacklist.Remove("");
+
+                    hidHideDevice.SetBlacklist(Blacklist);
                 }
             }
-            
-            //Needs to also add current connected devices when first turned on.
-            //TODO
-            foreach (var controller in conLvViewModel.ControllerCol)
-            {
-                string temp = controller.Device.HidDevice.ParentPath.ToUpper();
 
-                //Parent Devices get added fine. Ther're ready to be pushed.
-                if (temp.StartsWith("BTHENUM") || temp.StartsWith("USB"))
-                {
-                    if (!Blacklist.Contains(temp))
-                    {
-                        Blacklist.Add(controller.Device.HidDevice.ParentPath.ToUpper());
-                    }
-                }
-
-                //Devices themselves need work.
-                Blacklist.Add(controller.Device.HidDevice.DevicePath.ToUpper() + " - DEV AUTO");
-
-                continue;
-            }
-            Blacklist.Remove("");
-            foreach (string s in Blacklist)
-            {
-                App.rootHub.LogDebug(s);
-            }
-            //Needs to add any new devices on connect.
-            //TODO - add code to controller plug-in events.
-
-            
-            return;
         }
     }
 

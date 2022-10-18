@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
 using DS4Windows.InputDevices;
+using DS4WinWPF.DS4Control;
 using Nefarius.Utilities.DeviceManagement.PnP;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace DS4Windows
 {
@@ -328,6 +330,26 @@ namespace DS4Windows
 
                             PrepareDS4Init?.Invoke(ds4Device);
                             ds4Device.PostInit();
+
+                            // Add device to HH
+                            if (Global.hidHideInstalled && Global.AutoAddToHH)
+                            {
+                                using (HidHideAPIDevice hidHideDevice = new())
+                                {
+                                    if (!hidHideDevice.IsOpen()) { return; }
+
+                                    List<string> Blacklist = (hidHideDevice.GetBlacklist());
+
+                                    string Parent = ds4Device.HidDevice.ParentPath.ToUpper();
+                                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(ds4Device.HidDevice.DevicePath);
+
+                                    if (!Blacklist.Contains(Parent)) { Blacklist.Add(Parent); }
+                                    if (!Blacklist.Contains(DevHid)) { Blacklist.Add(DevHid); }
+
+                                    hidHideDevice.SetBlacklist(Blacklist);
+                                }
+                            }
+
                             PostDS4Init?.Invoke(ds4Device);
                             //ds4Device.Removal += On_Removal;
                             if (!ds4Device.ExitOutputThread)
