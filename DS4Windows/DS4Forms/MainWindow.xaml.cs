@@ -166,7 +166,7 @@ namespace DS4WinWPF.DS4Forms
             // Wait for thread tasks to finish before continuing
             timerThread.Join();
 
-            hidHideStatusRefresh_Click(null, null);
+            RefreshHidHideStatus();
         }
 
         public void LateChecks(ArgumentParser parser)
@@ -1771,6 +1771,62 @@ Suspend support not enabled.", true);
                 }
             }//Refresh Status
             RefreshHidHideStatus();
+        }
+
+        private void hidHideClearWhitelistButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Global.hidHideInstalled)
+            {
+                using (HidHideAPIDevice hidHideDevice = new())
+                {
+                    if (hidHideDevice.IsOpen())
+                    {
+                        List<string> whiteList = hidHideDevice.GetWhitelist();
+                        for (int i = 0; i < whiteList.Count; i++)
+                        {
+                            if (    whiteList[i].ToLower().EndsWith("hidhideclient.exe")
+                                ||  whiteList[i].ToLower().EndsWith("hidhidecli.exe")
+                                ||  whiteList[i].ToLower().EndsWith("ds4windows.exe") )
+                            { continue; } //Skip HidHide/DS4Windows.
+
+                            if (    whiteList[i].ToLower().EndsWith($"{fakeExeNameTxt.Text.ToLower()}.exe")
+                                &&  !string.IsNullOrEmpty(fakeExeNameTxt.Text))
+                            { continue; } //Skip Custom EXE if used.
+
+                            whiteList.RemoveAt(i);
+                            i--; //Redo this number, since the list has shifted down.
+                        }
+                        hidHideDevice.SetWhitelist(whiteList);
+                        App.rootHub.LogDebug("HidHide: Application list has been Reset to default.");
+                    }
+                    else
+                    {
+                        //Client busy. Throw Log. 
+                        App.rootHub.LogDebug("HidHide: Client busy.");
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void hidHideClearDeviceListButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Global.hidHideInstalled)
+            {
+                using (HidHideAPIDevice hidHideDevice = new())
+                {
+                    if (hidHideDevice.IsOpen())
+                    {
+                        hidHideDevice.SetBlacklist(new List<string>());
+                        App.rootHub.LogDebug("HidHide: Your Device list has been cleared. Controllers are no longer hidden.");
+                    }
+                    else
+                    {
+                        //Client busy. Throw Log. 
+                        App.rootHub.LogDebug("HidHide: Client busy.");
+                    }
+                }
+            }
         }
     }
 

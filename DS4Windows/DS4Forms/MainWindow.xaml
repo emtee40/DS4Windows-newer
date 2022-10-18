@@ -446,7 +446,7 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <GroupBox Header="Clear HidHide Lists" Margin="0,0,0,4" IsEnabled="False">
+                                <GroupBox Header="Clear HidHide Lists" Margin="0,0,0,4">
                                     <GroupBox.ToolTip>
                                         <StackPanel>
                                             <TextBlock>These options will eat your cat.</TextBlock>
@@ -454,8 +454,8 @@
                                         </StackPanel>
                                     </GroupBox.ToolTip>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button x:Name="hidHideClearDeviceListButton" Content="Device list" Margin="2,2,4,2" HorizontalAlignment="Center"/>
-                                        <Button x:Name="hidHideClearWhitelistButton" Content="App list" Margin="4,2,2,2" HorizontalAlignment="Center"/>
+                                        <Button x:Name="hidHideClearDeviceListButton" Content="Device list" Margin="2,2,4,2" HorizontalAlignment="Center" Click="hidHideClearDeviceListButton_Click"/>
+                                        <Button x:Name="hidHideClearWhitelistButton" Content="App list" Margin="4,2,2,2" HorizontalAlignment="Center" Click="hidHideClearWhitelistButton_Click"/>
                                     </StackPanel>
                                 </GroupBox>
                                 <Separator Height="10" Margin="8,0,8,4"/>
