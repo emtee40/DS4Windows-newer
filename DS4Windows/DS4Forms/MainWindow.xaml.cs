@@ -1707,15 +1707,20 @@ Suspend support not enabled.", true);
                 {
                     if (hidHideDevice.IsOpen())
                     {
-                        bool state = hidHideDevice.GetActiveState();
+                        bool aState = hidHideDevice.GetActiveState();
+                        bool iState = hidHideDevice.GetInverseState();
                         //HidHideStatusIndicator.Content = "HidHide STatus:\nActive";
-                        HidHideStatusIndicator.Content = state == true
+                        HidHideStatusIndicator.Content = aState == true
                             ? "HidHide Status:\nActive"
                             : "HidHide Status:\nDisabled";
-                        HidHideEnableCheckBox.IsChecked = state;//Check success of Enable/Disable
-                        App.rootHub.LogDebug(state == true
+                        HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
+                        App.rootHub.LogDebug(aState == true
                         ? "HidHide: Device hiding is Enabled."
                         : "HidHide: Device hiding is Disabled.");
+                        hidHideInvertWhitelistCheckbox.IsChecked = iState;//Check success of Enable/Disable Blacklist
+                        App.rootHub.LogDebug(iState == true
+                        ? "HidHide: Blacklist Mode is Enabled."
+                        : "HidHide: Blacklist is Disabled.");
 
                     }
                     else { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client busy"); }
@@ -1739,6 +1744,28 @@ Suspend support not enabled.", true);
                         //Client busy. Throw Log. Undo Checkbox change. Skip refreshing activity because probably busy still. 
                         App.rootHub.LogDebug("HidHide: Client busy.");
                         HidHideEnableCheckBox.IsChecked = !HidHideEnableCheckBox.IsChecked; 
+                        return;
+                    }
+                }
+            }//Refresh Status
+            RefreshHidHideStatus();
+        }
+
+        private void hidHideInvertWhitelistCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+            if (Global.hidHideInstalled)
+            {
+                using (HidHideAPIDevice hidHideDevice = new())
+                {
+                    if (hidHideDevice.IsOpen())
+                    {
+                        hidHideDevice.SetInverseState(!hidHideDevice.GetInverseState());
+                    }
+                    else
+                    {
+                        //Client busy. Throw Log. Undo Checkbox change. Skip refreshing activity because probably busy still. 
+                        App.rootHub.LogDebug("HidHide: Client busy.");
+                        hidHideInvertWhitelistCheckbox.IsChecked = !hidHideInvertWhitelistCheckbox.IsChecked;
                         return;
                     }
                 }

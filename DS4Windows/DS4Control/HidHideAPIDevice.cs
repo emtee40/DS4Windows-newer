@@ -13,8 +13,10 @@ namespace DS4WinWPF.DS4Control
         private const uint IOCTL_SET_WHITELIST = 0x80016004;
         private const uint IOCTL_GET_BLACKLIST = 0x80016008;
         private const uint IOCTL_SET_BLACKLIST = 0x8001600C;
-        private const uint IOCTL_GET_ACTIVE = 0x80016010;
-        private const uint IOCTL_SET_ACTIVE = 0x80016014;
+        private const uint IOCTL_GET_ACTIVE    = 0x80016010;
+        private const uint IOCTL_SET_ACTIVE    = 0x80016014;
+        private const uint IOCTL_GET_WLINVERSE = 0x80016018;
+        private const uint IOCTL_SET_WLINVERSE = 0x8001601C;
 
         private const string CONTROL_DEVICE_FILENAME = "\\\\.\\HidHide";
 
@@ -61,6 +63,50 @@ namespace DS4WinWPF.DS4Control
                 int bytesReturned = 0;
                 NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
                     HidHideAPIDevice.IOCTL_SET_ACTIVE,
+                    new IntPtr(&state),
+                    1,
+                    IntPtr.Zero,
+                    0,
+                    ref bytesReturned,
+                    IntPtr.Zero);
+
+                //int error = Marshal.GetLastWin32Error();
+            }
+
+            return result;
+        }
+
+        public bool GetInverseState()
+        {
+            bool result = false;
+
+            unsafe
+            {
+                int bytesReturned = 0;
+                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                    HidHideAPIDevice.IOCTL_GET_WLINVERSE,
+                    IntPtr.Zero,
+                    0,
+                    new IntPtr(&result),
+                    1,
+                    ref bytesReturned,
+                    IntPtr.Zero);
+
+                //int error = Marshal.GetLastWin32Error();
+            }
+
+            return result;
+        }
+
+        public bool SetInverseState(bool state)
+        {
+            bool result = false;
+
+            unsafe
+            {
+                int bytesReturned = 0;
+                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                    HidHideAPIDevice.IOCTL_SET_WLINVERSE,
                     new IntPtr(&state),
                     1,
                     IntPtr.Zero,

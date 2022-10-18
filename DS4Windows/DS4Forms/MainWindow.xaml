@@ -418,10 +418,9 @@
                                     </Label>
                                 </StackPanel>
                                 <CheckBox x:Name="HidHideEnableCheckBox" Content="Enable HidHide" Margin="0,0,0,4" ToolTip="Enables use of the HIDHide Driver. (Recommended)" Click="HidHideEnableCheckBox_Click"/>
-                                <CheckBox x:Name="hidHideInvertWhitelistCheckbox" Content="Use Blacklist" Margin="0,0,0,4" IsEnabled="False">
+                                <CheckBox x:Name="hidHideInvertWhitelistCheckbox" Content="Use Blacklist" Margin="0,0,0,4" Click="hidHideInvertWhitelistCheckbox_Click">
                                     <CheckBox.ToolTip>
                                         <StackPanel>
-                                            <TextBlock>TODO: Not Yet Implimented!</TextBlock>
                                             <TextBlock>Changes HidHide's Whitelist to a blacklist.</TextBlock>
                                             <TextBlock>Apps listed in the black list will no longer access your controller.</TextBlock>
                                             <TextBlock>All other apps will have access.</TextBlock>
