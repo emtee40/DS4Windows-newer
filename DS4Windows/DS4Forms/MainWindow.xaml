@@ -469,9 +469,6 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <!--Temp Debug Button-->
-                                <Button Content="Debug"></Button>
-                                <!--Temp Debug Button-->
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Utils" BorderThickness="2" Margin="{StaticResource spaceMargin}"

@@ -1836,7 +1836,49 @@ Suspend support not enabled.", true);
 
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            if (!Global.AutoAddToHH) { return; } // Skip if not on.
+            
+            List<string> Blacklist = new();
+            
+            if (Global.hidHideInstalled)
+            {
+                using (HidHideAPIDevice hidHideDevice = new())
+                {
+                    if (hidHideDevice.IsOpen())
+                    { Blacklist.AddRange(hidHideDevice.GetBlacklist()); }
+                }
+            }
+            
+            //Needs to also add current connected devices when first turned on.
+            //TODO
+            foreach (var controller in conLvViewModel.ControllerCol)
+            {
+                string temp = controller.Device.HidDevice.ParentPath.ToUpper();
 
+                //Parent Devices get added fine. Ther're ready to be pushed.
+                if (temp.StartsWith("BTHENUM") || temp.StartsWith("USB"))
+                {
+                    if (!Blacklist.Contains(temp))
+                    {
+                        Blacklist.Add(controller.Device.HidDevice.ParentPath.ToUpper());
+                    }
+                }
+
+                //Devices themselves need work.
+                Blacklist.Add(controller.Device.HidDevice.DevicePath.ToUpper() + " - DEV AUTO");
+
+                continue;
+            }
+            Blacklist.Remove("");
+            foreach (string s in Blacklist)
+            {
+                App.rootHub.LogDebug(s);
+            }
+            //Needs to add any new devices on connect.
+            //TODO - add code to controller plug-in events.
+
+            
+            return;
         }
     }
 
