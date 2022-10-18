@@ -1705,25 +1705,30 @@ Suspend support not enabled.", true);
             {
                 using (HidHideAPIDevice hidHideDevice = new())
                 {
-                    if (hidHideDevice.IsOpen())
-                    {
-                        bool aState = hidHideDevice.GetActiveState();
-                        bool iState = hidHideDevice.GetInverseState();
-                        //HidHideStatusIndicator.Content = "HidHide STatus:\nActive";
-                        HidHideStatusIndicator.Content = aState == true
-                            ? "HidHide Status:\nActive"
-                            : "HidHide Status:\nDisabled";
-                        HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
-                        App.rootHub.LogDebug(aState == true
-                        ? "HidHide: Device hiding is Enabled."
-                        : "HidHide: Device hiding is Disabled.");
-                        hidHideInvertWhitelistCheckbox.IsChecked = iState;//Check success of Enable/Disable Blacklist
-                        App.rootHub.LogDebug(iState == true
-                        ? "HidHide: Blacklist Mode is Enabled."
-                        : "HidHide: Blacklist is Disabled.");
+                    if (!hidHideDevice.IsOpen())
+                    { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client busy"); }
 
+                    bool aState = hidHideDevice.GetActiveState();
+                    bool iState = hidHideDevice.GetInverseState();
+                    //HidHideStatusIndicator.Content = "HidHide STatus:\nActive";
+                    HidHideStatusIndicator.Content = aState == true
+                        ? "HidHide Status:\nActive"
+                        : "HidHide Status:\nDisabled";
+                    HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
+                    App.rootHub.LogDebug(aState == true
+                    ? "HidHide: Device hiding is Enabled."
+                    : "HidHide: Device hiding is Disabled.");
+                    hidHideInvertWhitelistCheckbox.IsChecked = iState;//Check success of Enable/Disable Blacklist
+                    App.rootHub.LogDebug(iState == true
+                    ? "HidHide: Blacklist Mode is Enabled."
+                    : "HidHide: Blacklist is Disabled.");
+
+                    if (Global.AutoClearHHDevList && hidHideDevice.GetBlacklist().Count >= 50)
+                    {
+                        hidHideDevice.SetBlacklist(new());
+                        App.rootHub.LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
                     }
-                    else { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client busy"); }
+
                 }
             }// Handle is not open
             else { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client not installed"); }
@@ -1818,7 +1823,7 @@ Suspend support not enabled.", true);
                     if (hidHideDevice.IsOpen())
                     {
                         hidHideDevice.SetBlacklist(new List<string>());
-                        App.rootHub.LogDebug("HidHide: Your Device list has been cleared. Controllers are no longer hidden.");
+                        App.rootHub.LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
                     }
                     else
                     {

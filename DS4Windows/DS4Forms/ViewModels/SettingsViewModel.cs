@@ -15,7 +15,6 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 {
     public class SettingsViewModel
     {
-        // Re-Enable Ex Mode
         public bool HideDS4Controller
         {
             get => DS4Windows.Global.UseExclusiveMode;

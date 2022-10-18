@@ -435,10 +435,10 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Auto-clear Device List" IsChecked="{Binding AutoClearHidHideDevList}" Click="hidHideAutoAddDevicesCheckbox_Click" Margin="0,0,0,4">
+                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Keep Dev List Clean" IsChecked="{Binding AutoClearHidHideDevList}" Click="hidHideAutoAddDevicesCheckbox_Click" Margin="0,0,0,4">
                                     <CheckBox.ToolTip>
                                         <StackPanel>
-                                            <TextBlock>Tries to reduce cluttered device lists in HidHide</TextBlock>
+                                            <TextBlock>Tries to keep stale controllers out of HidHide's Device list</TextBlock>
                                             <TextBlock></TextBlock>
                                             <TextBlock>Will automatically clear HidHide's device list periodically.</TextBlock>
                                             <TextBlock>Do not use if DS4Windowes is not automatically adding devices</TextBlock>
