@@ -21,6 +21,16 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get => DS4Windows.Global.UseExclusiveMode;
             set => DS4Windows.Global.UseExclusiveMode = value;
         }
+        public bool AddDevicesToHidHide
+        {
+            get => DS4Windows.Global.AutoAddToHH;
+            set => DS4Windows.Global.AutoAddToHH = value;
+        }
+        public bool AutoClearHidHideDevList
+        {
+            get => DS4Windows.Global.AutoClearHHDevList;
+            set => DS4Windows.Global.AutoClearHHDevList = value;
+        }
 
 
         public bool SwipeTouchSwitchProfile { get => DS4Windows.Global.SwipeProfiles;

@@ -427,7 +427,7 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <CheckBox x:Name="hidHideAutoAddDevicesCheckbox" Content="Add devices to HidHide" Margin="0,0,0,4" IsEnabled="False">
+                                <CheckBox x:Name="hidHideAutoAddDevicesCheckbox" Content="Hide New Devices" IsChecked="{Binding AddDevicesToHidHide}" Click="hidHideAutoAddDevicesCheckbox_Click" Margin="0,0,0,4">
                                     <CheckBox.ToolTip>
                                         <StackPanel>
                                             <TextBlock>TODO: Not Yet Implimented!</TextBlock>
@@ -435,7 +435,7 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Auto-clear Device List" Margin="0,0,0,4" IsEnabled="False">
+                                <CheckBox x:Name="HidHideAutoClearDeviceListCheckbox" Content="Auto-clear Device List" IsChecked="{Binding AutoClearHidHideDevList}" Click="hidHideAutoAddDevicesCheckbox_Click" Margin="0,0,0,4">
                                     <CheckBox.ToolTip>
                                         <StackPanel>
                                             <TextBlock>Tries to reduce cluttered device lists in HidHide</TextBlock>
@@ -469,6 +469,9 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
+                                <!--Temp Debug Button-->
+                                <Button Content="Debug"></Button>
+                                <!--Temp Debug Button-->
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Utils" BorderThickness="2" Margin="{StaticResource spaceMargin}"

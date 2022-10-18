@@ -1828,6 +1828,11 @@ Suspend support not enabled.", true);
                 }
             }
         }
+
+        private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     public class ImageLocationPaths
