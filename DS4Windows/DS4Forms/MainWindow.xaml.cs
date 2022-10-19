@@ -1796,13 +1796,13 @@ Suspend support not enabled.", true);
                         {
                             if (    whiteList[i].ToLower().EndsWith("hidhideclient.exe")
                                 ||  whiteList[i].ToLower().EndsWith("hidhidecli.exe")
-                                ||  whiteList[i].ToLower().EndsWith("ds4windows.exe") )
+                                /*||  whiteList[i].ToLower().EndsWith("ds4windows.exe")*/ )
                             { continue; } //Skip HidHide/DS4Windows.
 
-                            if (    whiteList[i].ToLower().EndsWith($"{fakeExeNameTxt.Text.ToLower()}.exe")
+                            /*if (    whiteList[i].ToLower().EndsWith($"{fakeExeNameTxt.Text.ToLower()}.exe")
                                 &&  !string.IsNullOrEmpty(fakeExeNameTxt.Text))
                             { continue; } //Skip Custom EXE if used.
-
+                            */
                             whiteList.RemoveAt(i);
                             i--; //Redo this number, since the list has shifted down.
                         }
@@ -1816,6 +1816,7 @@ Suspend support not enabled.", true);
                         return;
                     }
                 }
+                App.rootHub.CheckHidHidePresence();
             }
         }
 
