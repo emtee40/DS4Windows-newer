@@ -1744,6 +1744,8 @@ Suspend support not enabled.", true);
                 App.rootHub.LogDebug("HidHide: Client not installed");
                 HidHideUnKnownStatus();
             }
+            //var Test = DS4Devices.getDS4Controllers();
+            //return;
         }
 
         private void HidHideUnKnownStatus(bool status = true)
@@ -1857,23 +1859,24 @@ Suspend support not enabled.", true);
 
             using (HidHideAPIDevice hidHideDevice = new())
             {
-                if (!hidHideDevice.IsOpen()) { return; }
+                if (!hidHideDevice.IsOpen()) { App.rootHub.LogDebug("HideHide: Client busy"); return; }
 
                 Blacklist.AddRange(hidHideDevice.GetBlacklist());
 
                 //Needs to also add current connected devices when first turned on.
-                foreach (var controller in conLvViewModel.ControllerCol)
+                foreach (var device in DS4Devices.getDS4Controllers())
                 {
-                    string Parent = controller.Device.HidDevice.ParentPath.ToUpper();
-                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(controller.Device.HidDevice.DevicePath);
+                    string Parent = device.HidDevice.ParentPath.ToUpper();
+                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(device.HidDevice.DevicePath);
+
 
                     if (!Blacklist.Contains(Parent)) { Blacklist.Add(Parent); }
                     if (!Blacklist.Contains(DevHid)) { Blacklist.Add(DevHid); }
                     Blacklist.Remove("");
-
-                    hidHideDevice.SetBlacklist(Blacklist);
                 }
+                hidHideDevice.SetBlacklist(Blacklist);
             }
+            App.rootHub.LogDebug("HidHide: Added Devices to HidHide Device List");
         }
     }
 

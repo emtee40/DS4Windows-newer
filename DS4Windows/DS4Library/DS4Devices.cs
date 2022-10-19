@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
 using DS4Windows.InputDevices;
+using DS4WinWPF;
 using DS4WinWPF.DS4Control;
 using Nefarius.Utilities.DeviceManagement.PnP;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
@@ -349,6 +350,7 @@ namespace DS4Windows
 
                                     hidHideDevice.SetBlacklist(Blacklist);
                                 }
+                                App.rootHub.LogDebug("HidHide: Added Devices to HidHide Device List");
                             }
 
                             PostDS4Init?.Invoke(ds4Device);
