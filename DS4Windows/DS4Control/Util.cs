@@ -270,7 +270,10 @@ namespace DS4Windows
         /// <returns></returns>
         public static string GetHidHideClientPath()
         {
-            string result = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Nefarius Software Solutions e.U.\HidHide", "Path", "").ToString() + "HidHideClient.exe";
+            string x64 = Environment.Is64BitProcess == true ? @"x64\" : @"x86\";
+            string result = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Nefarius Software Solutions e.U.\HidHide", "Path", "").ToString()
+                                             + x64
+                                             + "HidHideClient.exe";
             return string.IsNullOrEmpty(result) ? "" : result;
 
             //Any particular reason why?
