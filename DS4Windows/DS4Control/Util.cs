@@ -270,7 +270,12 @@ namespace DS4Windows
         /// <returns></returns>
         public static string GetHidHideClientPath()
         {
-            string result = string.Empty;
+            string result = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Nefarius Software Solutions e.U.\HidHide", "Path", "").ToString() + "HidHideClient.exe";
+            return string.IsNullOrEmpty(result) ? "" : result;
+
+            //Any particular reason why?
+
+            /*string result = string.Empty;
             string driveLetter = Path.GetPathRoot(Global.exedirpath);
             string[] testPaths = new string[]
             {
@@ -296,7 +301,7 @@ namespace DS4Windows
                 }
             }
 
-            return result;
+            return result;*/
         }
     }
 }
