@@ -1712,9 +1712,9 @@ Suspend support not enabled.", true);
                     bool aState = hidHideDevice.GetActiveState();
                     bool iState = hidHideDevice.GetInverseState();
                     //HidHideStatusIndicator.Content = "HidHide STatus:\nActive";
-                    HidHideStatusIndicator.Content = aState == true
+                    /*HidHideStatusIndicator.Content = aState == true
                         ? "HidHide Status:\nActive"
-                        : "HidHide Status:\nDisabled";
+                        : "HidHide Status:\nDisabled";*/
                     HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
                     App.rootHub.LogDebug(aState == true
                     ? "HidHide: Device hiding is Enabled."
@@ -1723,6 +1723,9 @@ Suspend support not enabled.", true);
                     App.rootHub.LogDebug(iState == true
                     ? "HidHide: Blacklist Mode is Enabled."
                     : "HidHide: Blacklist is Disabled.");
+                    HidHideStatusIndicator.Content = aState == true
+                        ? iState == true ? "HidHide Status:\nBlacklist (Active)" : "HidHide Status:\nWhitelist (Active)"
+                        : "HidHide Status:\nDisabled";
 
                     if (Global.AutoClearHHDevList && hidHideDevice.GetBlacklist().Count >= 50)
                     {
