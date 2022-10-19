@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 using Microsoft.Win32;
+using System.Security.AccessControl;
+using System.Windows.Documents;
 
 namespace DS4Windows
 {
@@ -270,11 +272,16 @@ namespace DS4Windows
         /// <returns></returns>
         public static string GetHidHideClientPath()
         {
-            string x64 = Environment.Is64BitProcess == true ? @"x64\" : @"x86\";
-            string result = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Nefarius Software Solutions e.U.\HidHide", "Path", "").ToString()
-                                             + x64
-                                             + "HidHideClient.exe";
-            return string.IsNullOrEmpty(result) ? "" : result;
+            string x64 = Environment.Is64BitOperatingSystem == true ? @"x64\" : @"x86\";
+            string value;
+            if (Environment.Is64BitProcess == true) value = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Nefarius Software Solutions e.U.\HidHide").GetValue("Path").ToString();
+            else // catch 32bit porgram on x64bit system.
+            {
+                RegistryKey x86Path = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                value = x86Path.OpenSubKey(@"SOFTWARE\Nefarius Software Solutions e.U.\HidHide").GetValue("Path").ToString();
+            }
+            return value == null ? "" : value + x64 + "HidHideClient.exe";
+
 
             //Any particular reason why?
 
