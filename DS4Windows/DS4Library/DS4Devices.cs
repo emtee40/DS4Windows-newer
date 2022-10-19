@@ -345,6 +345,7 @@ namespace DS4Windows
 
                                     if (!Blacklist.Contains(Parent)) { Blacklist.Add(Parent); }
                                     if (!Blacklist.Contains(DevHid)) { Blacklist.Add(DevHid); }
+                                    Blacklist.Remove("");
 
                                     hidHideDevice.SetBlacklist(Blacklist);
                                 }
