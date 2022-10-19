@@ -272,46 +272,12 @@ namespace DS4Windows
         /// <returns></returns>
         public static string GetHidHideClientPath()
         {
-            string x64 = Environment.Is64BitOperatingSystem == true ? @"x64\" : @"x86\";
-            string value;
-            if (Environment.Is64BitProcess == true) value = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Nefarius Software Solutions e.U.\HidHide").GetValue("Path").ToString();
-            else // catch 32bit porgram on x64bit system.
-            {
-                RegistryKey x86Path = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-                value = x86Path.OpenSubKey(@"SOFTWARE\Nefarius Software Solutions e.U.\HidHide").GetValue("Path").ToString();
-            }
+            string x64 = Environment.Is64BitOperatingSystem ? @"x64\" : @"x86\";
+
+            RegistryKey x86Path = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            string value = x86Path.OpenSubKey(@"SOFTWARE\Nefarius Software Solutions e.U.\HidHide").GetValue("Path").ToString();
+
             return value == null ? "" : value + x64 + "HidHideClient.exe";
-
-
-            //Any particular reason why?
-
-            /*string result = string.Empty;
-            string driveLetter = Path.GetPathRoot(Global.exedirpath);
-            string[] testPaths = new string[]
-            {
-                Path.Combine(driveLetter, "Program Files",
-                    "Nefarius Software Solutions e.U", "HidHideClient", "HidHideClient.exe"),
-
-                Path.Combine(driveLetter, @"Program Files (x86)",
-                    "Nefarius Software Solutions e.U", "HidHideClient", "HidHideClient.exe"),
-
-                Path.Combine(driveLetter, @"Program Files",
-                    "Nefarius Software Solutions", "HidHide", "x64", "HidHideClient.exe"),
-
-                Path.Combine(driveLetter, @"Program Files",
-                    "Nefarius Software Solutions", "HidHide", "x86", "HidHideClient.exe"),
-            };
-
-            foreach(string testPath in testPaths)
-            {
-                if (File.Exists(testPath))
-                {
-                    result = testPath;
-                    break;
-                }
-            }
-
-            return result;*/
         }
     }
 }
