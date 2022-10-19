@@ -1792,20 +1792,10 @@ Suspend support not enabled.", true);
                     if (hidHideDevice.IsOpen())
                     {
                         List<string> whiteList = hidHideDevice.GetWhitelist();
-                        for (int i = 0; i < whiteList.Count; i++)
-                        {
-                            if (    whiteList[i].ToLower().EndsWith("hidhideclient.exe")
-                                ||  whiteList[i].ToLower().EndsWith("hidhidecli.exe")
-                                /*||  whiteList[i].ToLower().EndsWith("ds4windows.exe")*/ )
-                            { continue; } //Skip HidHide/DS4Windows.
 
-                            /*if (    whiteList[i].ToLower().EndsWith($"{fakeExeNameTxt.Text.ToLower()}.exe")
-                                &&  !string.IsNullOrEmpty(fakeExeNameTxt.Text))
-                            { continue; } //Skip Custom EXE if used.
-                            */
-                            whiteList.RemoveAt(i);
-                            i--; //Redo this number, since the list has shifted down.
-                        }
+                        whiteList.RemoveAll(app => !app.ToLower().EndsWith("hidhideclient.exe")
+                                                && !app.ToLower().EndsWith("hidhidecli.exe"));
+
                         hidHideDevice.SetWhitelist(whiteList);
                         App.rootHub.LogDebug("HidHide: Application list has been Reset to default.");
                     }
