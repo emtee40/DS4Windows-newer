@@ -1707,14 +1707,15 @@ Suspend support not enabled.", true);
                 using (HidHideAPIDevice hidHideDevice = new())
                 {
                     if (!hidHideDevice.IsOpen())
-                    { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client busy"); }
+                    {
+                        HidHideStatusIndicator.Content = "HidHide Status:\nUnknown";
+                        HidHideUnKnownStatus();
+                        App.rootHub.LogDebug("HidHide: Client busy");
+                        return;
+                    }
 
                     bool aState = hidHideDevice.GetActiveState();
                     bool iState = hidHideDevice.GetInverseState();
-                    //HidHideStatusIndicator.Content = "HidHide STatus:\nActive";
-                    /*HidHideStatusIndicator.Content = aState == true
-                        ? "HidHide Status:\nActive"
-                        : "HidHide Status:\nDisabled";*/
                     HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
                     App.rootHub.LogDebug(aState == true
                     ? "HidHide: Device hiding is Enabled."
@@ -1732,11 +1733,24 @@ Suspend support not enabled.", true);
                         hidHideDevice.SetBlacklist(new());
                         App.rootHub.LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
                     }
+                    HidHideUnKnownStatus(false);
 
                 }
                 if (Global.AutoAddToHH) { sendConnectedDevicesToHidHide(); }
             }// Handle is not open
-            else { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client not installed"); }
+            else
+            {
+                HidHideStatusIndicator.Content = "HidHide Status:\nUnknown";
+                App.rootHub.LogDebug("HidHide: Client not installed");
+                HidHideUnKnownStatus();
+            }
+        }
+
+        private void HidHideUnKnownStatus(bool status = true)
+        {
+            HidHideEnableCheckBox.IsEnabled = !status;
+            hidHideInvertWhitelistCheckbox.IsEnabled = !status;
+            HidHideClearBox.IsEnabled = !status;
         }
 
         private void HidHideEnableCheckBox_Click(object sender, RoutedEventArgs e)

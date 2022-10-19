@@ -446,7 +446,7 @@
                                         </StackPanel>
                                     </CheckBox.ToolTip>
                                 </CheckBox>
-                                <GroupBox Header="Clear HidHide Lists" Margin="0,0,0,4">
+                                <GroupBox x:Name="HidHideClearBox" Header="Clear HidHide Lists" Margin="0,0,0,4">
                                     <GroupBox.ToolTip>
                                         <StackPanel>
                                             <TextBlock>These options will eat your cat.</TextBlock>
