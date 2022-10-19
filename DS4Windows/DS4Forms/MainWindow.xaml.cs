@@ -1731,6 +1731,7 @@ Suspend support not enabled.", true);
                     }
 
                 }
+                if (Global.AutoAddToHH) { sendConnectedDevicesToHidHide(); }
             }// Handle is not open
             else { HidHideStatusIndicator.Content = "HidHide Status:\nUnknown"; App.rootHub.LogDebug("HidHide: Client not installed"); }
         }
@@ -1837,6 +1838,11 @@ Suspend support not enabled.", true);
 
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
+            sendConnectedDevicesToHidHide();
+        }
+
+        private void sendConnectedDevicesToHidHide()
+        {
             if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; } // Skip if not on or not installed
 
             List<string> Blacklist = new();
@@ -1860,7 +1866,6 @@ Suspend support not enabled.", true);
                     hidHideDevice.SetBlacklist(Blacklist);
                 }
             }
-
         }
     }
 
