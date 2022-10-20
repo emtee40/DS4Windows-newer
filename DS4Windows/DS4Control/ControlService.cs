@@ -688,7 +688,11 @@ namespace DS4Windows
         {
             if (Global.hidHideInstalled)
             {
-                dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHideAffected;
+                if (dev.CurrentExclusiveStatus == DS4Device.ExclusiveStatus.Exclusive)
+                {
+                    dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHidePlus;
+                }
+                else dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHideAffected;
             }
         }
 

@@ -264,17 +264,21 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         {
             get
             {
-                string imgName = (string)App.Current.FindResource("CancelImg");
+                string imgName = (string)App.Current.FindResource("UnLockedImg");
                 string source = $"/DS4Windows;component/Resources/{imgName}";
                 switch(device.CurrentExclusiveStatus)
                 {
                     case DS4Device.ExclusiveStatus.Exclusive:
-                        imgName = (string)App.Current.FindResource("CheckedImg");
+                        imgName = (string)App.Current.FindResource("LockedImg");
                         source = $"/DS4Windows;component/Resources/{imgName}";
                         break;
                     case DS4Device.ExclusiveStatus.HidHideAffected:
                     case DS4Device.ExclusiveStatus.HidGuardAffected:
-                        imgName = (string)App.Current.FindResource("KeyImageImg");
+                        imgName = (string)App.Current.FindResource("LockedImg");
+                        source = $"/DS4Windows;component/Resources/{imgName}";
+                        break;
+                    case DS4Device.ExclusiveStatus.HidHidePlus:
+                        imgName = (string)App.Current.FindResource("LockedPlusImg");
                         source = $"/DS4Windows;component/Resources/{imgName}";
                         break;
                     default:
@@ -341,6 +345,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         break;
                     case DS4Device.ExclusiveStatus.HidGuardAffected:
                         temp = Translations.Strings.HidGuardianAccess;
+                        break;
+                    case DS4Device.ExclusiveStatus.HidHidePlus:
+                        temp = Translations.Strings.HidHideAccess;
                         break;
                     default:
                         break;

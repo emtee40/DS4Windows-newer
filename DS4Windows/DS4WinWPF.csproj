@@ -119,6 +119,12 @@
     <Resource Include="Resources\USB_white.png" />
     <Resource Include="Resources\DS4W - Black.ico" />
     <Resource Include="Resources\key-solid.png" />
+    <Resource Include="Resources\UnLocked - Black.png" />
+    <Resource Include="Resources\Locked - Black.png" />
+    <Resource Include="Resources\LockedPlus - Black.png" />
+    <Resource Include="Resources\UnLocked - White.png" />
+    <Resource Include="Resources\Locked - White.png" />
+    <Resource Include="Resources\LockedPlus - White.png" />
     <Resource Include="Resources\rainbowCCrop.png" />
     <Resource Include="Resources\rainbowC.png" />
     <Resource Include="Resources\DS4 lightbar.png" />

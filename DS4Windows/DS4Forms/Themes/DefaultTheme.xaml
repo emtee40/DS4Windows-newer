@@ -9,6 +9,9 @@
     <SolidColorBrush x:Key="BackgroundColor" Color="{x:Static SystemColors.WindowColor}"/>
 
     <system:String x:Key="KeyImageImg">key-solid.png</system:String>
+    <system:String x:Key="UnLockedImg">UnLocked - Black.png</system:String>
+    <system:String x:Key="LockedImg">Locked - Black.png</system:String>
+    <system:String x:Key="LockedPlusImg">LockedPlus - Black.png</system:String>
     <system:String x:Key="CancelImg">cancel.png</system:String>
     <system:String x:Key="CheckedImg">checked.png</system:String>
     <system:String x:Key="BtImg">BT.png</system:String>

@@ -162,6 +162,7 @@ namespace DS4Windows
             Exclusive = 1,
             HidGuardAffected = 2,
             HidHideAffected = 3,
+            HidHidePlus = 4,
         }
 
         //internal const int BT_OUTPUT_REPORT_LENGTH = 78;

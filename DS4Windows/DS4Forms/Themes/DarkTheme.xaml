@@ -13,6 +13,9 @@
     <SolidColorBrush x:Key="AccentColor" Color="#FF007ACC" />
 
     <system:String x:Key="KeyImageImg">key-solid_white.png</system:String>
+    <system:String x:Key="UnLockedImg">UnLocked - White.png</system:String>
+    <system:String x:Key="LockedImg">Locked - White.png</system:String>
+    <system:String x:Key="LockedPlusImg">LockedPlus - White.png</system:String>
     <system:String x:Key="CancelImg">cancel_white.png</system:String>
     <system:String x:Key="CheckedImg">checked_white.png</system:String>
     <system:String x:Key="BtImg">BT_white.png</system:String>

@@ -76,11 +76,11 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn x:Name="exclusiveColumn" Header="Ex" Width="50">
+                                <GridViewColumn x:Name="exclusiveColumn" Header="Ex" Width="100">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Width="{Binding ElementName=exclusiveColumn, Path=Width}">
-                                                <Image Source="{Binding ExclusiveSource}" Stretch="Uniform" Width="20" Height="20" HorizontalAlignment="Center"
+                                                <Image Source="{Binding ExclusiveSource}" Stretch="Uniform" Width="60" Height="60" HorizontalAlignment="Center"
                                                        ToolTip="{Binding IsExclusiveText}" />
                                             </StackPanel>
                                         </DataTemplate>
