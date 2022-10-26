@@ -1712,7 +1712,7 @@ Suspend support not enabled.", true);
                 int state = 0;
                 try
                 {
-                    state = App.rootHub.UpdateHidHideStatus();
+                    state = Program.rootHub.UpdateHidHideStatus();
                 }
                 catch { return; }
                 switch (state)
@@ -1737,17 +1737,17 @@ Suspend support not enabled.", true);
                     HidHideEnableCheckBox.IsEnabled = true;
                     hidHideInvertWhitelistCheckbox.IsEnabled = true;
                 }
-                App.rootHub.ClearHidHideDeviceListAutomatically();
-                App.rootHub.SendConnectedDevicesToHidHide();
+                Program.rootHub.ClearHidHideDeviceListAutomatically();
+                Program.rootHub.SendConnectedDevicesToHidHide();
             }
         }
         private void HidHideEnableCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            try { App.rootHub.EnableHidHide(); }
+            try { Program.rootHub.EnableHidHide(); }
             catch
             {
                 HidHideEnableCheckBox.IsChecked = !HidHideEnableCheckBox.IsChecked;
-                App.rootHub.LogDebug("HidHide: Client busy.");
+                Program.rootHub.LogDebug("HidHide: Client busy.");
                 return;
             }
             RefreshHidHideStatus();
@@ -1756,10 +1756,10 @@ Suspend support not enabled.", true);
         {
             if (Global.hidHideInstalled)
             {
-                try { App.rootHub.InvertHidHide(); }
+                try { Program.rootHub.InvertHidHide(); }
                 catch
                 {
-                    App.rootHub.LogDebug("HidHide: Client busy.");
+                    Program.rootHub.LogDebug("HidHide: Client busy.");
                     hidHideInvertWhitelistCheckbox.IsChecked = !hidHideInvertWhitelistCheckbox.IsChecked;
                     return;
                 }
@@ -1770,19 +1770,19 @@ Suspend support not enabled.", true);
         {
             if (MessageBox.Show("This option will eat your cat, key your car and sleep with your wife. Do NOT press 'Yes' unless instructed to do so by a developer. You will not get help for any issues you receive from pressing this button.\n\nYou have been warned.", "Clear HidHide Application List?", MessageBoxButton.YesNo, MessageBoxImage.Stop)
                 == MessageBoxResult.Yes)
-            { App.rootHub.ClearHidHideApplicationList(); }
+            { Program.rootHub.ClearHidHideApplicationList(); }
             RefreshHidHideStatus();
         }
         private void hidHideClearDeviceListButton_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("This option will eat your cat, key your car and sleep with your wife. Do NOT press 'Yes' unless instructed to do so by a developer. You will not get help for any issues you receive from pressing this button.\n\nYou have been warned.", "Clear HidHide Device List?", MessageBoxButton.YesNo, MessageBoxImage.Stop)
                 == MessageBoxResult.Yes)
-            { App.rootHub.ClearHidHideDeviceList(); }
+            { Program.rootHub.ClearHidHideDeviceList(); }
             RefreshHidHideStatus();
         }
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.SendConnectedDevicesToHidHide();
+            Program.rootHub.SendConnectedDevicesToHidHide();
         }
     }
 

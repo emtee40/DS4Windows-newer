@@ -15,11 +15,7 @@ using DS4WinWPF.DS4Control;
 using DS4Windows.DS4Control;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.Utilities.DeviceManagement.PnP;
-using System.IO.IsolatedStorage;
 using Nefarius.Drivers.HidHide;
-using DS4WinWPF.DS4Forms;
-using DS4WinWPF;
-using System.Windows;
 
 namespace DS4Windows
 {
@@ -600,6 +596,7 @@ namespace DS4Windows
                     HHControlServ.IsActive = !HHControlServ.IsActive;
                 } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
+            UpdateHidHideAttributes();
         }
         public void InvertHidHide()
         {
@@ -611,6 +608,7 @@ namespace DS4Windows
                     HHCtrlServ.IsAppListInverted = !HHCtrlServ.IsAppListInverted;
                 } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
+            UpdateHidHideAttributes();
         }
         public int UpdateHidHideStatus()
         {
@@ -626,6 +624,14 @@ namespace DS4Windows
                     state = HHCtrlServ.IsAppListInverted ? state + 2 : state;
                     LogDebug("HidHide: Blacklist Mode is "
                         + (HHCtrlServ.IsAppListInverted ? "Enabled.": "Disabled."));
+
+                    UpdateHidHideAttributes();
+                    foreach (DS4Device device in DS4Devices.getDS4Controllers())
+                    {
+                        CheckAffected(device);
+                        ChangeExclusiveStatus(device);
+                    }
+
                     return state;
                 }
                 catch (HidHideException)
@@ -671,9 +677,9 @@ namespace DS4Windows
                     if (!HHCtrlServ.BlockedInstanceIds.Contains(Parent)) { HHCtrlServ.AddBlockedInstanceId(Parent); }
                     if (!HHCtrlServ.BlockedInstanceIds.Contains(DevHid)) { HHCtrlServ.AddBlockedInstanceId(DevHid); }
                 }
-
                 LogDebug("HidHide: Added Devices to HidHide Device List");
             } catch (HidHideException) { LogDebug("HideHide: Client busy"); return; }
+            UpdateHidHideStatus();
         }
 
         public void ClearHidHideDeviceListAutomatically()
@@ -731,7 +737,6 @@ namespace DS4Windows
                         hidDeviceHidingAffectedDevs, hidDeviceHidingExemptedDevs, hidDeviceHidingForced);
                 }
             }
-
             return result;
         }
 
