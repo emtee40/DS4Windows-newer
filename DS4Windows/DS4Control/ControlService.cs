@@ -554,31 +554,25 @@ namespace DS4Windows
                 {
                     // Catch Blank Values and initialize for Startup. Also catches empty Values.
                     // Also Catches Empty values in auto-profiler, and defaults to trying to re-add D4W. Will fail harmlessly later.
-                    if (path == "") { path = Global.exelocation; exeName = "DS4Windows"; addExe = true; }
+                    if (String.IsNullOrEmpty(path) || !path.EndsWith(".exe")) { path = Global.exelocation; exeName = "DS4Windows"; addExe = true; }
 
-                    if (addExe)
-                    {
-                        LogDebug($"HIDHide: Adding {exeName} to list");
-                        //DEBUG DISABLED
-                        //HHCtrlServ.AddApplicationPath(path);
-                        //HHCtrlServ.AddApplicationPath(@"c:\windows\system32\cmd.exe");
-                        HHCtrlServ.RemoveApplicationPath(path);
-                    }
-                    if (!addExe)
-                    {
-                        LogDebug($"HIDHide: Removing {exeName} from list");
-                        //HHCtrlServ.RemoveApplicationPath(path);
-                    }
+                    if (addExe) { HHCtrlServ.AddApplicationPath(path); }
+                    if (!addExe) { HHCtrlServ.RemoveApplicationPath(path); }
+                    LogDebug("HidHide: "
+                        + (addExe ? "Adding" : "Removing")
+                        + $" {exeName} in Applications list");
+
                     List<string> list = (List<string>)HHCtrlServ.ApplicationPaths;
-                    LogDebug(list.Contains(path, StringComparer.OrdinalIgnoreCase) == true
-                        ? $"HIDHide: {exeName} found in current HidHide list."
-                        : $"HIDHide: {exeName} not found in current HidHide list.");
+                    LogDebug($"HIDHide: {exeName}"
+                        + (list.Contains(path, StringComparer.OrdinalIgnoreCase) == true ? " " : " not ")
+                        + "found in current Applications list.");
                 }
-                catch (HidHideException ex) { LogDebug("HIDHide: HidHide control device found"); }
+                catch (HidHideException) { LogDebug("HIDHide: Client busy"); }
+                catch (ArgumentException) { LogDebug("HidHide: " + (String.IsNullOrEmpty(exeName)? "File":exeName) + " does not exist."); }
 
                 return;
             }
-            else { LogDebug("HIDHide: HidHide Not installed. HidHide is highly recommended, but not required."); }
+            else { LogDebug("HIDHide: HidHide not installed. HidHide is highly recommended, but not required."); }
         }
         public void ClearHidHideDeviceList()
         {
@@ -589,36 +583,33 @@ namespace DS4Windows
                 try
                 {
                     HHCtrlServ.ClearBlockedInstancesList();
+                    LogDebug("HidHide: Device List cleared.");
 
-                    if (!Global.AutoAddToHH)
-                    {
-                        LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
-                        return;
-                    }
-                }
-                catch (HidHideException)
-                {
-                    //Client busy. Throw Log. 
-                    LogDebug("HidHide: Client busy.");
-                }
-                SendConnectedDevicesToHidHide();
-                LogDebug("HidHide: Device list has been automatically cleared.");
+                    if (!Global.AutoAddToHH) { SendConnectedDevicesToHidHide(); }
+                } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
+            UpdateHidHideAttributes();
         }
         public void EnableHidHide()
         {
             if (Global.hidHideInstalled)
             {
-                HidHideControlService HHControlServ = new();
-                HHControlServ.IsActive = !HHControlServ.IsActive;
+                try
+                {
+                    HidHideControlService HHControlServ = new();
+                    HHControlServ.IsActive = !HHControlServ.IsActive;
+                } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
         }
         public void InvertHidHide()
         {
             if (Global.hidHideInstalled)
             {
-                HidHideControlService HHCtrlServ = new();
-                HHCtrlServ.IsAppListInverted = !HHCtrlServ.IsAppListInverted;
+                try
+                {
+                    HidHideControlService HHCtrlServ = new();
+                    HHCtrlServ.IsAppListInverted = !HHCtrlServ.IsAppListInverted;
+                } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
         }
         public int UpdateHidHideStatus()
@@ -630,18 +621,16 @@ namespace DS4Windows
                     int state = 0;
                     HidHideControlService HHCtrlServ = new();
                     state = HHCtrlServ.IsActive ? state + 1 : state;
-                    LogDebug(HHCtrlServ.IsActive
-                        ? "HidHide: Device Hiding is Active."
-                        : "HidHide: Device Hiding is Inactive.");
+                    LogDebug("HidHide: Device Hiding is "
+                        + (HHCtrlServ.IsActive ? "Enabled." : "Disabled."));
                     state = HHCtrlServ.IsAppListInverted ? state + 2 : state;
-                    LogDebug(HHCtrlServ.IsAppListInverted
-                        ? "HidHide: Blacklist Mode is Enabled."
-                        : "HidHide: Blacklist Mode is Disabled.");
+                    LogDebug("HidHide: Blacklist Mode is "
+                        + (HHCtrlServ.IsAppListInverted ? "Enabled.": "Disabled."));
                     return state;
                 }
-                catch (HidHideException ex)
+                catch (HidHideException)
                 {
-                    LogDebug("HidHide: Client is busy.");
+                    LogDebug("HidHide: Client busy.");
                     return 10;
                 }
             }
@@ -658,9 +647,8 @@ namespace DS4Windows
                     HHCtrlServ.ClearApplicationsList();
                     HHCtrlServ.AddApplicationPath(Environment.ProcessPath);
                 }
-                catch (HidHideException ex)
+                catch (HidHideException)
                 {
-                    //Client busy. Throw Log. 
                     LogDebug("HidHide: Client busy.");
                     return;
                 }
@@ -669,7 +657,7 @@ namespace DS4Windows
         }
         public void SendConnectedDevicesToHidHide()
         {
-            if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; } // Skip if not on or not installed
+            if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; }
 
             HidHideControlService HHCtrlServ = new();
 
@@ -685,20 +673,22 @@ namespace DS4Windows
                 }
 
                 LogDebug("HidHide: Added Devices to HidHide Device List");
-            }
-            catch (HidHideException ex) { LogDebug("HideHide: Client busy"); return; }
+            } catch (HidHideException) { LogDebug("HideHide: Client busy"); return; }
         }
 
         public void ClearHidHideDeviceListAutomatically()
         {
             if (!Global.hidHideInstalled) { return; }
 
-            HidHideControlService HHCtrlServ = new();
-            if (Global.AutoClearHHDevList && HHCtrlServ.BlockedInstanceIds.Count >= 50)
+            try
             {
-                HHCtrlServ.ClearBlockedInstancesList();
-                LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
-            }
+                HidHideControlService HHCtrlServ = new();
+                if (Global.AutoClearHHDevList && HHCtrlServ.BlockedInstanceIds.Count >= 50)
+                {
+                    HHCtrlServ.ClearBlockedInstancesList();
+                    LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
+                }
+            } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
         }
 
         public void LoadPermanentSlotsConfig()
@@ -715,30 +705,17 @@ namespace DS4Windows
                 hidDeviceHidingForced = false; // No known equivalent in HidHide
                 hidDeviceHidingEnabled = false;
 
-                using (HidHideAPIDevice hidHideDevice = new HidHideAPIDevice())
-                {
-                    if (!hidHideDevice.IsOpen())
-                    {
-                        return;
-                    }
-
-                    bool active = hidHideDevice.GetActiveState();
-                    List<string> instances = hidHideDevice.GetBlacklist();
+                HidHideControlService HHCtrlServ = new();
+                try {
+                    bool active = HHCtrlServ.IsActive;
+                    List<string> instances = (List<string>)HHCtrlServ.BlockedInstanceIds;
 
                     hidDeviceHidingEnabled = active;
                     foreach (string instance in instances)
                     {
                         hidDeviceHidingAffectedDevs.Add(instance.ToUpper());
                     }
-                }
-            }
-        }
-
-        public void UpdateHidHiddenAttributes()
-        {
-            if (Global.hidHideInstalled)
-            {
-                UpdateHidHideAttributes();
+                } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
         }
 
@@ -1554,12 +1531,9 @@ namespace DS4Windows
 
                 LogDebug($"Using output KB+M handler: {Global.outputKBMHandler.GetFullDisplayName()}");
                 LogDebug($"Connection to ViGEmBus {Global.vigembusVersion} established");
-
-                //Redundant?
-                //DS4Devices.isExclusiveMode = getUseExclusiveMode();
                 DS4Devices.isExclusiveMode = UseExclusiveMode;
 
-                UpdateHidHiddenAttributes();
+                UpdateHidHideAttributes();
 
                 if (showlog)
                 {

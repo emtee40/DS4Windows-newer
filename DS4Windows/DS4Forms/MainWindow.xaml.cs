@@ -22,14 +22,7 @@ using HttpProgress;
 using DS4WinWPF.DS4Forms.ViewModels;
 using DS4Windows;
 using DS4WinWPF.Translations;
-using H.NotifyIcon.Core;
-using DS4WinWPF.DS4Control;
-using Nefarius.Utilities.DeviceManagement.PnP;
-//using Nefarius.Drivers.HidHide;
-using System.Linq.Expressions;
-using System.Windows.Input.Manipulations;
-using System.Xml.Linq;
-using Nefarius.Drivers.HidHide;
+using System.Windows.Navigation;
 
 namespace DS4WinWPF.DS4Forms
 {
@@ -1213,7 +1206,7 @@ Suspend support not enabled.", true);
                 loopHotplug = hotplugCounter > 0;
             }
 
-            Program.rootHub.UpdateHidHiddenAttributes();
+            Program.rootHub.UpdateHidHideAttributes();
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY);
@@ -1775,11 +1768,17 @@ Suspend support not enabled.", true);
         }
         private void hidHideClearWhitelistButton_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.ClearHidHideApplicationList();
+            if (MessageBox.Show("This option will eat your cat, key your car and sleep with your wife. Do NOT press 'Yes' unless instructed to do so by a developer. You will not get help for any issues you receive from pressing this button.\n\nYou have been warned.", "Clear HidHide Application List?", MessageBoxButton.YesNo, MessageBoxImage.Stop)
+                == MessageBoxResult.Yes)
+            { App.rootHub.ClearHidHideApplicationList(); }
+            RefreshHidHideStatus();
         }
         private void hidHideClearDeviceListButton_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.ClearHidHideDeviceList();
+            if (MessageBox.Show("This option will eat your cat, key your car and sleep with your wife. Do NOT press 'Yes' unless instructed to do so by a developer. You will not get help for any issues you receive from pressing this button.\n\nYou have been warned.", "Clear HidHide Device List?", MessageBoxButton.YesNo, MessageBoxImage.Stop)
+                == MessageBoxResult.Yes)
+            { App.rootHub.ClearHidHideDeviceList(); }
+            RefreshHidHideStatus();
         }
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
