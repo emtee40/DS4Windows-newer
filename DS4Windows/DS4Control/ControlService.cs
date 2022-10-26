@@ -15,11 +15,6 @@ using DS4WinWPF.DS4Control;
 using DS4Windows.DS4Control;
 using Nefarius.ViGEm.Client.Targets.DualShock4;
 using Nefarius.Utilities.DeviceManagement.PnP;
-using System.IO.IsolatedStorage;
-using Nefarius.Drivers.HidHide;
-using DS4WinWPF.DS4Forms;
-using DS4WinWPF;
-using System.Windows;
 
 namespace DS4Windows
 {
@@ -543,162 +538,67 @@ namespace DS4Windows
             catch { }
         }
 
-        public void CheckHidHidePresence(string path = "", string exeName = "Autoprofile Exe", bool addExe = true) // Default value for D4W Startup
+        public void CheckHidHidePresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true) // Default value for D4W Startup
         {
             if (Global.hidHideInstalled)
             {
                 LogDebug("HIDHide: HidHide control device found");
-                HidHideControlService HHCtrlServ = new();
-
-                try
+                using (HidHideAPIDevice hidHideDevice = new HidHideAPIDevice())
                 {
-                    // Catch Blank Values and initialize for Startup. Also catches empty Values.
-                    // Also Catches Empty values in auto-profiler, and defaults to trying to re-add D4W. Will fail harmlessly later.
-                    if (path == "") { path = Global.exelocation; exeName = "DS4Windows"; addExe = true; }
-
-                    if (addExe)
+                    if (!hidHideDevice.IsOpen())
                     {
-                        LogDebug($"HIDHide: Adding {exeName} to list");
-                        //DEBUG DISABLED
-                        //HHCtrlServ.AddApplicationPath(path);
-                        //HHCtrlServ.AddApplicationPath(@"c:\windows\system32\cmd.exe");
-                        HHCtrlServ.RemoveApplicationPath(path);
-                    }
-                    if (!addExe)
-                    {
-                        LogDebug($"HIDHide: Removing {exeName} from list");
-                        //HHCtrlServ.RemoveApplicationPath(path);
-                    }
-                    List<string> list = (List<string>)HHCtrlServ.ApplicationPaths;
-                    LogDebug(list.Contains(path, StringComparer.OrdinalIgnoreCase) == true
-                        ? $"HIDHide: {exeName} found in current HidHide list."
-                        : $"HIDHide: {exeName} not found in current HidHide list.");
-                }
-                catch (HidHideException ex) { LogDebug("HIDHide: HidHide control device found"); }
-
-                return;
-            }
-            else { LogDebug("HIDHide: HidHide Not installed. HidHide is highly recommended, but not required."); }
-        }
-        public void ClearHidHideDeviceList()
-        {
-            if (Global.hidHideInstalled)
-            {
-                HidHideControlService HHCtrlServ = new();
-
-                try
-                {
-                    HHCtrlServ.ClearBlockedInstancesList();
-
-                    if (!Global.AutoAddToHH)
-                    {
-                        LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
+                        LogDebug("HIDHide: Failed to open handle to HidHide Control Device. Another process is using it at the moment.");
                         return;
                     }
-                }
-                catch (HidHideException)
-                {
-                    //Client busy. Throw Log. 
-                    LogDebug("HidHide: Client busy.");
-                }
-                SendConnectedDevicesToHidHide();
-                LogDebug("HidHide: Device list has been automatically cleared.");
-            }
-        }
-        public void EnableHidHide()
-        {
-            if (Global.hidHideInstalled)
-            {
-                HidHideControlService HHControlServ = new();
-                HHControlServ.IsActive = !HHControlServ.IsActive;
-            }
-        }
-        public void InvertHidHide()
-        {
-            if (Global.hidHideInstalled)
-            {
-                HidHideControlService HHCtrlServ = new();
-                HHCtrlServ.IsAppListInverted = !HHCtrlServ.IsAppListInverted;
-            }
-        }
-        public int UpdateHidHideStatus()
-        {
-            if (Global.hidHideInstalled)
-            {
-                try
-                {
-                    int state = 0;
-                    HidHideControlService HHCtrlServ = new();
-                    state = HHCtrlServ.IsActive ? state + 1 : state;
-                    LogDebug(HHCtrlServ.IsActive
-                        ? "HidHide: Device Hiding is Active."
-                        : "HidHide: Device Hiding is Inactive.");
-                    state = HHCtrlServ.IsAppListInverted ? state + 2 : state;
-                    LogDebug(HHCtrlServ.IsAppListInverted
-                        ? "HidHide: Blacklist Mode is Enabled."
-                        : "HidHide: Blacklist Mode is Disabled.");
-                    return state;
-                }
-                catch (HidHideException ex)
-                {
-                    LogDebug("HidHide: Client is busy.");
-                    return 10;
-                }
-            }
-            LogDebug("HidHide: Not Installed.");
-            return 10;
-        }
-        public void ClearHidHideApplicationList()
-        {
-            if (Global.hidHideInstalled)
-            {
-                HidHideControlService HHCtrlServ = new();
-                try
-                {
-                    HHCtrlServ.ClearApplicationsList();
-                    HHCtrlServ.AddApplicationPath(Environment.ProcessPath);
-                }
-                catch (HidHideException ex)
-                {
-                    //Client busy. Throw Log. 
-                    LogDebug("HidHide: Client busy.");
-                    return;
-                }
-                LogDebug("HidHide: Application List Cleared. DS4Windows has been re-added.");
-            }
-        }
-        public void SendConnectedDevicesToHidHide()
-        {
-            if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; } // Skip if not on or not installed
+                    // Catch Blank Values and initialize for Startup. Also catches empty Values.
+                    // Also Catches Empty values in auto-profiler, and defaults to trying to re-add D4W. Will fail harmlessly later.
+                    if (ExePath == "") { ExePath = Global.exelocation; ExeName = "DS4Windows"; AddExe = true; }
 
-            HidHideControlService HHCtrlServ = new();
+                    List<string> dosPaths = hidHideDevice.GetWhitelist();
 
-            try
-            {
-                foreach (var device in DS4Devices.getDS4Controllers())
-                {
-                    string Parent = device.HidDevice.ParentPath.ToUpper();
-                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(device.HidDevice.DevicePath);
+                    int maxPathCheckLength = 512;
+                    StringBuilder sb = new StringBuilder(maxPathCheckLength);
+                    string driveLetter = Path.GetPathRoot(ExePath).Replace("\\", "");
+                    uint _ = NativeMethods.QueryDosDevice(driveLetter, sb, maxPathCheckLength);
+                    //int error = Marshal.GetLastWin32Error();
 
-                    if (!HHCtrlServ.BlockedInstanceIds.Contains(Parent)) { HHCtrlServ.AddBlockedInstanceId(Parent); }
-                    if (!HHCtrlServ.BlockedInstanceIds.Contains(DevHid)) { HHCtrlServ.AddBlockedInstanceId(DevHid); }
+                    string dosDrivePath = sb.ToString();
+                    // Strip a possible \??\ prefix.
+                    if (dosDrivePath.StartsWith(@"\??\"))
+                    {
+                        dosDrivePath = dosDrivePath.Remove(0, 4);
+                    }
+
+                    string partial = ExePath.Replace(driveLetter, "");
+                    // Need to trim starting '\\' from path2 or Path.Combine will
+                    // treat it as an absolute path and only return path2
+                    string realPath = Path.Combine(dosDrivePath, partial.TrimStart('\\'));
+
+                    bool exists = dosPaths.Contains(realPath);
+                    if (!exists && AddExe)
+                    {
+                        LogDebug($"HIDHide: {ExeName} not found in HidHide list. Adding to list");
+                        dosPaths.Add(realPath);
+                        hidHideDevice.SetWhitelist(dosPaths);
+                    }
+                    if (exists && !AddExe)
+                    {
+                        LogDebug($"HIDHide: {ExeName} found in HidHide list. Removing from list");
+                        dosPaths.Remove(realPath);
+                        hidHideDevice.SetWhitelist(dosPaths);
+                    }
+
+                    //Update Lists. Report if EXE is in list or not.
+                    dosPaths = hidHideDevice.GetWhitelist();
+                    exists = dosPaths.Contains(realPath);
+                    if (exists)
+                    { LogDebug($"HIDHide: {ExeName} found in current HidHide list."); return; }
+                    LogDebug($"HIDHide: {ExeName} not found in current HidHide list.");
+
                 }
 
-                LogDebug("HidHide: Added Devices to HidHide Device List");
-            }
-            catch (HidHideException ex) { LogDebug("HideHide: Client busy"); return; }
-        }
-
-        public void ClearHidHideDeviceListAutomatically()
-        {
-            if (!Global.hidHideInstalled) { return; }
-
-            HidHideControlService HHCtrlServ = new();
-            if (Global.AutoClearHHDevList && HHCtrlServ.BlockedInstanceIds.Count >= 50)
-            {
-                HHCtrlServ.ClearBlockedInstancesList();
-                LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
-            }
+            }//Reccommend installing HidHide.
+            else { LogDebug("HIDHide: HidHide Not installed. HidHide is highly recommended, but not required."); }
         }
 
         public void LoadPermanentSlotsConfig()

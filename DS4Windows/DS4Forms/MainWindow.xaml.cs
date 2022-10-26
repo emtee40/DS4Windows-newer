@@ -25,11 +25,9 @@ using DS4WinWPF.Translations;
 using H.NotifyIcon.Core;
 using DS4WinWPF.DS4Control;
 using Nefarius.Utilities.DeviceManagement.PnP;
-//using Nefarius.Drivers.HidHide;
+using Nefarius.Drivers.HidHide;
 using System.Linq.Expressions;
 using System.Windows.Input.Manipulations;
-using System.Xml.Linq;
-using Nefarius.Drivers.HidHide;
 
 namespace DS4WinWPF.DS4Forms
 {
@@ -1709,63 +1707,85 @@ Suspend support not enabled.", true);
         {
             if (Global.hidHideInstalled)
             {
-
-                HidHideEnableCheckBox.IsChecked = false;
-                hidHideInvertWhitelistCheckbox.IsChecked = false;
-                HidHideEnableCheckBox.IsEnabled = false;
-                hidHideInvertWhitelistCheckbox.IsEnabled = false;
-                HidHideStatusIndicator.Content = "HidHide Status:\nDisabled";
-
-                int state = 0;
                 try
                 {
-                    state = App.rootHub.UpdateHidHideStatus();
+                    HidHideControlService HHCtrlServ = new();
+                    {
+                        bool aState = HHCtrlServ.IsActive;
+                        bool iState = HHCtrlServ.IsAppListInverted;
+                        HidHideEnableCheckBox.IsChecked = aState;//Check success of Enable/Disable HH
+                        App.rootHub.LogDebug(aState == true
+                        ? "HidHide: Device hiding is Enabled."
+                        : "HidHide: Device hiding is Disabled.");
+                        hidHideInvertWhitelistCheckbox.IsChecked = iState;//Check success of Enable/Disable Blacklist
+                        App.rootHub.LogDebug(iState == true
+                        ? "HidHide: Blacklist Mode is Enabled."
+                        : "HidHide: Blacklist is Disabled.");
+                        HidHideStatusIndicator.Content = aState == true
+                            ? iState == true ? "HidHide Status:\nBlacklist (Active)" : "HidHide Status:\nWhitelist (Active)"
+                            : "HidHide Status:\nDisabled";
+                    }
+
+                    if (Global.AutoClearHHDevList && HHCtrlServ.BlockedInstanceIds.Count >= 50)
+                    {
+                        foreach (string instanceID in HHCtrlServ.BlockedInstanceIds)
+                            HHCtrlServ.RemoveBlockedInstanceId(instanceID);
+                        App.rootHub.LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
+                    }
+
+                    HidHideUnKnownStatus(false);
+
+                    if (Global.AutoAddToHH) { sendConnectedDevicesToHidHide(); }
                 }
-                catch { return; }
-                switch (state)
+                catch (HidHideException e)
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        HidHideEnableCheckBox.IsChecked = true;
-                        HidHideStatusIndicator.Content = "HidHide Status:\nActive (Whitelist)";
-                        break;
-                    case 2:
-                        hidHideInvertWhitelistCheckbox.IsChecked = true;
-                        break;
-                    case 3:
-                        HidHideEnableCheckBox.IsChecked = true;
-                        hidHideInvertWhitelistCheckbox.IsChecked = true;
-                        HidHideStatusIndicator.Content = "HidHide Status:\nActive (Blacklist)";
-                        break;
+                    HidHideStatusIndicator.Content = "HidHide Status:\nUnknown";
+                    HidHideUnKnownStatus();
+                    App.rootHub.LogDebug("HidHide: Client busy");
+                    return;
                 }
-                if (state<4)
-                {
-                    HidHideEnableCheckBox.IsEnabled = true;
-                    hidHideInvertWhitelistCheckbox.IsEnabled = true;
-                }
-                App.rootHub.ClearHidHideDeviceListAutomatically();
-                App.rootHub.SendConnectedDevicesToHidHide();
             }
         }
+
+        private void HidHideUnKnownStatus(bool status = true)
+        {
+            HidHideEnableCheckBox.IsEnabled = !status;
+            hidHideInvertWhitelistCheckbox.IsEnabled = !status;
+            HidHideClearBox.IsEnabled = !status;
+        }
+
         private void HidHideEnableCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            try { App.rootHub.EnableHidHide(); }
-            catch
+            if (Global.hidHideInstalled)
             {
-                HidHideEnableCheckBox.IsChecked = !HidHideEnableCheckBox.IsChecked;
-                App.rootHub.LogDebug("HidHide: Client busy.");
-                return;
-            }
+                HidHideControlService HHControlServ = new();
+                try
+                {
+                    HHControlServ.IsActive = !HHControlServ.IsActive;
+                }
+                catch (HidHideException)
+                {
+                    //Client busy. Throw Log. Undo Checkbox change. Skip refreshing activity because probably busy still. 
+                    App.rootHub.LogDebug("HidHide: Client busy.");
+                    HidHideEnableCheckBox.IsChecked = !HidHideEnableCheckBox.IsChecked;
+                    return;
+                }
+            }//Refresh Status
             RefreshHidHideStatus();
         }
+
         private void hidHideInvertWhitelistCheckbox_Click(object sender, RoutedEventArgs e)
         {
             if (Global.hidHideInstalled)
             {
-                try { App.rootHub.InvertHidHide(); }
-                catch
+                try
                 {
+                    HidHideControlService HHCtrlServ = new();
+                    HHCtrlServ.IsAppListInverted = !HHCtrlServ.IsAppListInverted;
+                }
+                catch (HidHideException ex)
+                {
+                    //Client busy. Throw Log. Undo Checkbox change. Skip refreshing activity because probably busy still. 
                     App.rootHub.LogDebug("HidHide: Client busy.");
                     hidHideInvertWhitelistCheckbox.IsChecked = !hidHideInvertWhitelistCheckbox.IsChecked;
                     return;
@@ -1773,17 +1793,83 @@ Suspend support not enabled.", true);
             }//Refresh Status
             RefreshHidHideStatus();
         }
+
         private void hidHideClearWhitelistButton_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.ClearHidHideApplicationList();
+            if (Global.hidHideInstalled)
+            {
+                HidHideControlService HHCtrlServ = new();
+                try
+                {
+                    /*foreach (string app in HHCtrlServ.ApplicationPaths)
+                    {
+                        if (!app.ToLower().EndsWith("hidhideclient.exe")
+                            || !app.ToLower().EndsWith("hidhidecli.exe"))
+                        {
+                            HHCtrlServ.RemoveApplicationPath(app);
+                        }
+                    }*/
+                }
+                catch (HidHideException ex)
+                {
+                    //Client busy. Throw Log. 
+                    App.rootHub.LogDebug("HidHide: Client busy.");
+                    return;
+                }
+                App.rootHub.CheckHidHidePresence();
+            }
         }
+
         private void hidHideClearDeviceListButton_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.ClearHidHideDeviceList();
+            if (Global.hidHideInstalled)
+            {
+                HidHideControlService HHCtrlServ = new();
+
+                try
+                {
+                    List<string> list = (List<string>)HHCtrlServ.BlockedInstanceIds;
+                    foreach (string device in list)
+                    {
+                        HHCtrlServ.RemoveBlockedInstanceId(device);
+                    }
+                        App.rootHub.LogDebug("HidHide: Device list has been automatically cleared. Controllers need re-added to be hidden again.");
+                    
+                }
+                catch (HidHideException)
+                {
+                    //Client busy. Throw Log. 
+                    App.rootHub.LogDebug("HidHide: Client busy.");
+                }
+                
+            }
         }
+
         private void hidHideAutoAddDevicesCheckbox_Click(object sender, RoutedEventArgs e)
         {
-            App.rootHub.SendConnectedDevicesToHidHide();
+            sendConnectedDevicesToHidHide();
+        }
+
+        private void sendConnectedDevicesToHidHide()
+        {
+            if (!Global.AutoAddToHH || !Global.hidHideInstalled) { return; } // Skip if not on or not installed
+
+            HidHideControlService HHCtrlServ = new();
+
+            try
+            {
+                foreach (var device in DS4Devices.getDS4Controllers())
+                {
+                    string Parent = device.HidDevice.ParentPath.ToUpper();
+                    string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(device.HidDevice.DevicePath);
+
+                    if (!HHCtrlServ.BlockedInstanceIds.Contains(Parent)) { HHCtrlServ.AddBlockedInstanceId(Parent); }
+                    if (!HHCtrlServ.BlockedInstanceIds.Contains(DevHid)) { HHCtrlServ.AddBlockedInstanceId(DevHid); }
+                }
+
+                App.rootHub.LogDebug("HidHide: Added Devices to HidHide Device List");
+            }
+            catch (HidHideException e) { App.rootHub.LogDebug("HideHide: Client busy"); return; }
         }
     }
 
