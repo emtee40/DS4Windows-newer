@@ -1739,6 +1739,8 @@ Suspend support not enabled.", true);
                 }
                 Program.rootHub.ClearHidHideDeviceListAutomatically();
                 Program.rootHub.SendConnectedDevicesToHidHide();
+                Program.rootHub.RefreshExclusivStatus();
+                controllerLV.Items.Refresh();
             }
         }
         private void HidHideEnableCheckBox_Click(object sender, RoutedEventArgs e)

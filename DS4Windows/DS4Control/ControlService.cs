@@ -623,14 +623,10 @@ namespace DS4Windows
                         + (HHCtrlServ.IsActive ? "Enabled." : "Disabled."));
                     state = HHCtrlServ.IsAppListInverted ? state + 2 : state;
                     LogDebug("HidHide: Blacklist Mode is "
-                        + (HHCtrlServ.IsAppListInverted ? "Enabled.": "Disabled."));
+                        + (HHCtrlServ.IsAppListInverted ? "Enabled." : "Disabled."));
 
                     UpdateHidHideAttributes();
-                    foreach (DS4Device device in DS4Devices.getDS4Controllers())
-                    {
-                        CheckAffected(device);
-                        ChangeExclusiveStatus(device);
-                    }
+                    RefreshExclusivStatus();
 
                     return state;
                 }
@@ -643,6 +639,17 @@ namespace DS4Windows
             LogDebug("HidHide: Not Installed.");
             return 10;
         }
+
+        public void RefreshExclusivStatus()
+        {
+            foreach (DS4Device device in DS4Devices.getDS4Controllers())
+            {
+                UpdateHidHideAttributes();
+                CheckAffected(device);
+                ChangeExclusiveStatus(device);
+            }
+        }
+
         public void ClearHidHideApplicationList()
         {
             if (Global.hidHideInstalled)
@@ -768,14 +775,23 @@ namespace DS4Windows
 
         private void ChangeExclusiveStatus(DS4Device dev)
         {
-            if (Global.hidHideInstalled)
+            if (dev.IsExclusive) dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.Exclusive;
+
+            if (!Global.hidHideInstalled) return;
+
+            HidHideControlService HHCtrlServ = new();
+            try
             {
-                if (dev.CurrentExclusiveStatus == DS4Device.ExclusiveStatus.Exclusive)
+                List<string> instances = (List<string>)HHCtrlServ.BlockedInstanceIds;
+                if (instances.Contains(PnPDevice.GetInstanceIdFromInterfaceId(dev.HidDevice.DevicePath.ToUpper())))
                 {
-                    dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHidePlus;
+                    dev.CurrentExclusiveStatus = dev.IsExclusive
+                        ? DS4Device.ExclusiveStatus.HidHidePlus
+                        : DS4Device.ExclusiveStatus.HidHideAffected;
                 }
-                else dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.HidHideAffected;
             }
+            catch { LogDebug("HideHide Client busy."); }
+
         }
 
         private void TestQueueBus(Action temp)
