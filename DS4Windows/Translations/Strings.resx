@@ -464,7 +464,7 @@ Example: whyme_DS4Windows</value>
     <value>HidHide Hidden</value>
   </data>
   <data name="SharedAccess" xml:space="preserve">
-    <value>Shared Access</value>
+    <value>Visible</value>
   </data>
   <data name="RenameProfile" xml:space="preserve">
     <value>Rename</value>
