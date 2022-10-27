@@ -239,6 +239,7 @@ namespace DS4Windows
             }
 
             outputslotMan = new OutputSlotManager();
+            //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
             deviceOptions = Global.DeviceOptions;
 
             DS4Devices.RequestElevation += DS4Devices_RequestElevation;
@@ -255,6 +256,11 @@ namespace DS4Windows
             //oscListener = new UDPListener(Global.getOSCServerPortNum(), callback: oscCallback);
             //AppLogger.LogToGui("OSC LISTENER STARTED", false);
         }
+
+        //private void OutputslotMan_SlotAssigned(OutputSlotManager sender, int slotNum, OutSlotDevice outSlotDev)
+        //{
+        //    LogDebug($"Associated input controller #{outSlotDev.InputIndex + 1} ({outSlotDev.InputDisplayString}) to virtual {outSlotDev.OutputDevice.GetDeviceType()} Controller in{(outSlotDev.PermanentType != OutContType.None ? " permanent" : "")} output slot #{outSlotDev.Index + 1}");
+        //}
 
         private void CreateOSCCallback()
         {
@@ -1034,7 +1040,7 @@ namespace DS4Windows
                     OutSlotDevice.ReserveStatus.Permanent)
                 {
                     OutputDevice outDevice = EstablishOutDevice(0, slotDevice.PermanentType);
-                    outputslotMan.DeferredPlugin(outDevice, -1, outputDevices, slotDevice.PermanentType);
+                    outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, slotDevice.PermanentType);
                 }
             }
             /*OutSlotDevice slotDevice =
@@ -1089,7 +1095,6 @@ namespace DS4Windows
             }
             else if (contType == OutContType.DS4)
             {
-#if VIRTUAL_DS4_FEEDBACK_ENABLED
                 DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
                 if (tempDS4.CanUseAwaitOutputBuffer)
                 {
@@ -1215,83 +1220,82 @@ namespace DS4Windows
                     tempDS4Ext.outBufferFeedbacksDict.TryAdd(index, processOutBuffAction);
                     tempDS4Ext.StartOutputBufferThread();
                 }
-#endif
             }
             //else if (contType == OutContType.DS4)
             //{
             //    DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
             //    LightbarSettingInfo deviceLightbarSettingsInfo = Global.LightbarSettingsInfo[devIndex];
 
-            //    Nefarius.ViGEm.Client.Targets.DualShock4FeedbackReceivedEventHandler p = (sender, args) =>
-            //    {
-            //        bool useRumble = false; bool useLight = false;
-            //        byte largeMotor = args.LargeMotor;
-            //        byte smallMotor = args.SmallMotor;
-            //        //SetDevRumble(device, largeMotor, smallMotor, devIndex);
-            //        DS4Color color = new DS4Color(args.LightbarColor.Red,
-            //                args.LightbarColor.Green,
-            //                args.LightbarColor.Blue);
+                //    Nefarius.ViGEm.Client.Targets.DualShock4FeedbackReceivedEventHandler p = (sender, args) =>
+                //    {
+                //        bool useRumble = false; bool useLight = false;
+                //        byte largeMotor = args.LargeMotor;
+                //        byte smallMotor = args.SmallMotor;
+                //        //SetDevRumble(device, largeMotor, smallMotor, devIndex);
+                //        DS4Color color = new DS4Color(args.LightbarColor.Red,
+                //                args.LightbarColor.Green,
+                //                args.LightbarColor.Blue);
 
-            //        //Console.WriteLine("IN EVENT");
-            //        //Console.WriteLine("Rumble ({0}, {1}) | Light ({2}, {3}, {4}) {5}",
-            //        //    largeMotor, smallMotor, color.red, color.green, color.blue, DateTime.Now.ToString("hh:mm:ss.FFFF"));
+                //        //Console.WriteLine("IN EVENT");
+                //        //Console.WriteLine("Rumble ({0}, {1}) | Light ({2}, {3}, {4}) {5}",
+                //        //    largeMotor, smallMotor, color.red, color.green, color.blue, DateTime.Now.ToString("hh:mm:ss.FFFF"));
 
-            //        if (largeMotor != 0 || smallMotor != 0)
-            //        {
-            //            useRumble = true;
-            //        }
+                //        if (largeMotor != 0 || smallMotor != 0)
+                //        {
+                //            useRumble = true;
+                //        }
 
-            //        // Let games to control lightbar only when the mode is Passthru (otherwise DS4Windows controls the light)
-            //        if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru && (color.red != 0 || color.green != 0 || color.blue != 0))
-            //        {
-            //            useLight = true;
-            //        }
+                //        // Let games to control lightbar only when the mode is Passthru (otherwise DS4Windows controls the light)
+                //        if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru && (color.red != 0 || color.green != 0 || color.blue != 0))
+                //        {
+                //            useLight = true;
+                //        }
 
-            //        if (!useRumble && !useLight)
-            //        {
-            //            //Console.WriteLine("Fallback");
-            //            if (device.LeftHeavySlowRumble != 0 || device.RightLightFastRumble != 0)
-            //            {
-            //                useRumble = true;
-            //            }
-            //            else if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru &&
-            //                (device.LightBarColor.red != 0 ||
-            //                device.LightBarColor.green != 0 ||
-            //                device.LightBarColor.blue != 0))
-            //            {
-            //                useLight = true;
-            //            }
-            //        }
+                //        if (!useRumble && !useLight)
+                //        {
+                //            //Console.WriteLine("Fallback");
+                //            if (device.LeftHeavySlowRumble != 0 || device.RightLightFastRumble != 0)
+                //            {
+                //                useRumble = true;
+                //            }
+                //            else if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru &&
+                //                (device.LightBarColor.red != 0 ||
+                //                device.LightBarColor.green != 0 ||
+                //                device.LightBarColor.blue != 0))
+                //            {
+                //                useLight = true;
+                //            }
+                //        }
 
-            //        if (useRumble)
-            //        {
-            //            //Console.WriteLine("Perform rumble");
-            //            SetDevRumble(device, largeMotor, smallMotor, devIndex);
-            //        }
+                //        if (useRumble)
+                //        {
+                //            //Console.WriteLine("Perform rumble");
+                //            SetDevRumble(device, largeMotor, smallMotor, devIndex);
+                //        }
 
-            //        if (useLight)
-            //        {
-            //            //Console.WriteLine("Change lightbar color");
-            //            /*DS4HapticState haptics = new DS4HapticState
-            //            {
-            //                LightBarColor = color,
-            //            };
-            //            device.SetHapticState(ref haptics);
-            //            */
+                //        if (useLight)
+                //        {
+                //            //Console.WriteLine("Change lightbar color");
+                //            /*DS4HapticState haptics = new DS4HapticState
+                //            {
+                //                LightBarColor = color,
+                //            };
+                //            device.SetHapticState(ref haptics);
+                //            */
 
-            //            DS4LightbarState lightState = new DS4LightbarState
-            //            {
-            //                LightBarColor = color,
-            //            };
-            //            device.SetLightbarState(ref lightState);
-            //        }
+                //            DS4LightbarState lightState = new DS4LightbarState
+                //            {
+                //                LightBarColor = color,
+                //            };
+                //            device.SetLightbarState(ref lightState);
+                //        }
 
-            //        //Console.WriteLine();
-            //    };
+                //        //Console.WriteLine();
+                //    };
 
-            //    tempDS4.cont.FeedbackReceived += p;
-            //    tempDS4.forceFeedbacksDict.Add(index, p);
-            //}
+                //    tempDS4.cont.FeedbackReceived += p;
+                //    tempDS4.forceFeedbacksDict.Add(index, p);
+                //}
         }
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
@@ -1324,7 +1328,7 @@ namespace DS4Windows
                 slotDevice.CurrentAttachedStatus == OutSlotDevice.AttachedStatus.UnAttached)
             {
                 OutputDevice outDevice = EstablishOutDevice(-1, contType);
-                outputslotMan.DeferredPlugin(outDevice, -1, outputDevices, contType);
+                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
             }
         }
 
@@ -1334,7 +1338,7 @@ namespace DS4Windows
                 slotDevice.CurrentInputBound == OutSlotDevice.InputBound.Unbound)
             {
                 OutputDevice outDevice = EstablishOutDevice(-1, contType);
-                outputslotMan.DeferredPlugin(outDevice, -1, outputDevices, contType);
+                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
             }
         }
 
@@ -1390,7 +1394,7 @@ namespace DS4Windows
                                 }
                             }
 
-                            outputslotMan.DeferredPlugin(tempXbox, index, outputDevices, contType);
+                            outputslotMan.DeferredPlugin(tempXbox, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
                             //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
 
                             success = true;
@@ -1439,7 +1443,6 @@ namespace DS4Windows
                             DS4OutDevice tempDS4 = EstablishOutDevice(index, OutContType.DS4)
                             as DS4OutDevice;
 
-#if VIRTUAL_DS4_FEEDBACK_ENABLED
                             // Enable ViGem feedback callback handler only if DS4 lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
                             if (Global.EnableOutputDataToDS4[index])
                             {
@@ -1454,9 +1457,8 @@ namespace DS4Windows
                                     }
                                 }
                             }
-#endif
 
-                            outputslotMan.DeferredPlugin(tempDS4, index, outputDevices, contType);
+                            outputslotMan.DeferredPlugin(tempDS4, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
                             //slotDevice.CurrentInputBound = OutSlotDevice.InputBound.Bound;
 
                             success = true;
@@ -1472,7 +1474,6 @@ namespace DS4Windows
                         DS4OutDevice tempDS4 = slotDevice.OutputDevice as DS4OutDevice;
 
                         // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-#if VIRTUAL_DS4_FEEDBACK_ENABLED
                         if (Global.EnableOutputDataToDS4[index])
                         {
                             EstablishOutFeedback(index, OutContType.DS4, tempDS4, device);
@@ -1486,7 +1487,6 @@ namespace DS4Windows
                                 }
                             }
                         }
-#endif
 
                         outputDevices[index] = tempDS4;
                         slotDevice.CurrentType = contType;
@@ -1502,7 +1502,8 @@ namespace DS4Windows
                     //LogDebug("DS4 Controller #" + (index + 1) + " connected");
                 }
 
-                if (success)
+                // Need to check for possible ViGEmBus failure here
+                if (success && slotDevice.OutputDevice != null)
                 {
                     LogDebug($"Associated input controller #{index + 1} ({device.DisplayName}) to virtual {slotDevice.OutputDevice.GetDeviceType()} Controller in{(slotDevice.PermanentType != OutContType.None ? " permanent" : "")} output slot #{slotDevice.Index + 1}");
                     useDInputOnly[index] = false;
@@ -2147,8 +2148,12 @@ namespace DS4Windows
 
             device.setIdleTimeout(getIdleDisconnectTimeout(ind));
             device.setBTPollRate(getBTPollRate(ind));
+
             touchPad[ind].ResetTrackAccel(getTrackballFriction(ind));
             touchPad[ind].ResetToggleGyroModes();
+
+            //Global.TouchOutMode[ind] = TouchpadOutMode.MouseJoystick;
+            touchPad[ind].PostSetup();
 
             Global.L2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(Global.L2ModInfo[ind].maxOutput, Global.L2ModInfo[ind].maxZone) / 100.0 * 255);
             Global.R2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(Global.R2ModInfo[ind].maxOutput, Global.R2ModInfo[ind].maxZone) / 100.0 * 255);
@@ -2307,6 +2312,9 @@ namespace DS4Windows
             // Reset delta accel processors for sticks
             Mapping.deltaAccelProcessors[ind].LSProcessor.Reset();
             Mapping.deltaAccelProcessors[ind].RSProcessor.Reset();
+
+            // Reset some elements of current Mouse instance
+            touchPad[ind].Reset();
         }
 
         public void TouchPadOn(int ind, DS4Device device)
@@ -2398,7 +2406,7 @@ namespace DS4Windows
                     if (!getDInputOnly(ind))
                     {
                         touchPad[ind].ReplaceOneEuroFilterPair();
-                        touchPad[ind].ReplaceOneEuroFilterPair();
+                        //touchPad[ind].ReplaceOneEuroFilterPair();
 
                         touchPad[ind].Cursor.ReplaceOneEuroFilterPair();
                         touchPad[ind].Cursor.SetupLateOneEuroFilters();
