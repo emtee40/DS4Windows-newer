@@ -514,7 +514,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exclusive Access.
+        ///   Looks up a localized string similar to Hidden.
         /// </summary>
         public static string ExclusiveAccess {
             get {
@@ -631,7 +631,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HidGuardian Access.
+        ///   Looks up a localized string similar to HidGuardian Hidden.
         /// </summary>
         public static string HidGuardianAccess {
             get {
@@ -649,7 +649,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HidHide Access.
+        ///   Looks up a localized string similar to HidHide Hidden.
         /// </summary>
         public static string HidHideAccess {
             get {

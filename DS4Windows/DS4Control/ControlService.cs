@@ -775,6 +775,11 @@ namespace DS4Windows
 
         private void ChangeExclusiveStatus(DS4Device dev)
         {
+            if (dev.FeatureSet == VidPidFeatureSet.VendorDefinedDevice )
+            {
+                dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.Exclusive;
+                return;
+            }
             if (dev.IsExclusive) dev.CurrentExclusiveStatus = DS4Device.ExclusiveStatus.Exclusive;
 
             if (!Global.hidHideInstalled) return;
@@ -783,7 +788,8 @@ namespace DS4Windows
             try
             {
                 List<string> instances = (List<string>)HHCtrlServ.BlockedInstanceIds;
-                if (instances.Contains(PnPDevice.GetInstanceIdFromInterfaceId(dev.HidDevice.DevicePath.ToUpper())))
+                if (instances.Contains(PnPDevice.GetInstanceIdFromInterfaceId(dev.HidDevice.DevicePath.ToUpper()))
+                    && HHCtrlServ.IsActive)
                 {
                     dev.CurrentExclusiveStatus = dev.IsExclusive
                         ? DS4Device.ExclusiveStatus.HidHidePlus
@@ -791,7 +797,6 @@ namespace DS4Windows
                 }
             }
             catch { LogDebug("HideHide Client busy."); }
-
         }
 
         private void TestQueueBus(Action temp)
