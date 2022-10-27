@@ -678,6 +678,7 @@ namespace DS4Windows
             {
                 foreach (var device in DS4Devices.getDS4Controllers())
                 {
+                    if (device.FeatureSet == VidPidFeatureSet.VendorDefinedDevice) { continue; }
                     string Parent = device.HidDevice.ParentPath.ToUpper();
                     string DevHid = PnPDevice.GetInstanceIdFromInterfaceId(device.HidDevice.DevicePath);
 
