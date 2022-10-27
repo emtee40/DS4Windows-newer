@@ -1054,7 +1054,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shared Access.
+        ///   Looks up a localized string similar to Visible.
         /// </summary>
         public static string SharedAccess {
             get {
