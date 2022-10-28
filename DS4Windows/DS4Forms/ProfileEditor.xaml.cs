@@ -107,10 +107,6 @@ namespace DS4WinWPF.DS4Forms
             profileSettingsVM.TouchpadOutputIndexChanged += TouchpadOutputDisplayChange;
         }
 
-        /// <summary>
-        /// Place touchpad button mode options UserControl in active Touchpad TabItem.
-        /// Applicable TabItem control needs to contain a ContentControl
-        /// </summary>
         private void TouchpadButtonControlDisplaySetup()
         {
             ResetTouchContentControls();
@@ -122,14 +118,10 @@ namespace DS4WinWPF.DS4Forms
                     activeTouchButtonDisplayControl = touchContentControl2;
                     break;
                 case 2:
-                    touchContentControl4.Content = touchButtonUC;
-                    activeTouchButtonDisplayControl = touchContentControl4;
-                    break;
-                case 3:
                     touchContentControl3.Content = touchButtonUC;
                     activeTouchButtonDisplayControl = touchContentControl3;
                     break;
-                case 4:
+                case 3:
                     break;
 
                 case 0:

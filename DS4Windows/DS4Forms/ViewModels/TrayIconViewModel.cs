@@ -23,16 +23,13 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         private MenuItem closeItem;
 
 
-        public string TooltipText
-        {
-            get => tooltipText;
+        public string TooltipText { get => tooltipText;
             set
             {
                 string temp = value;
                 if (value.Length > 63) temp = value.Substring(0, 63);
                 if (tooltipText == temp) return;
                 tooltipText = temp;
-                //Trace.WriteLine(tooltipText);
                 TooltipTextChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -292,10 +289,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void StartPopulateText(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                PopulateToolText();
-            });
+            PopulateToolText();
             //PopulateContextMenu();
         }
 
@@ -381,19 +375,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
 
         private void UpdateForBattery(object sender, EventArgs e)
         {
-            // Force invoke from GUI thread
-            Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                PopulateToolText();
-            });
+            PopulateToolText();
         }
 
         private void ClearToolText(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                TooltipText = "DS4Windows";
-            });
+            TooltipText = "DS4Windows";
             //contextMenu.Items.Clear();
         }
 
