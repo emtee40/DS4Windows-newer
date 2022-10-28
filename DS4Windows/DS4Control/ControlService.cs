@@ -580,10 +580,9 @@ namespace DS4Windows
                 {
                     HHCtrlServ.ClearBlockedInstancesList();
                     LogDebug("HidHide: Device List cleared.");
-
-                    if (!Global.AutoAddToHH) { SendConnectedDevicesToHidHide(); }
                 } catch (HidHideException) { LogDebug("HidHide: Client busy."); }
             }
+            SendConnectedDevicesToHidHide();
             UpdateHidHideAttributes();
         }
         public void EnableHidHide()
@@ -1982,6 +1981,7 @@ namespace DS4Windows
                             PrepareConnectedInputControllerSettingEvents(numControllers, device, Index);
 
                             HotplugController?.Invoke(this, device, Index);
+                            SendConnectedDevicesToHidHide();
                             break;
                         }
                     }
