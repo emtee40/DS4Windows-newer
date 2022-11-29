@@ -19,7 +19,7 @@ Note: The Website Is No Longer Working
 
 ## Requirements
 
-- Windows 10 or newer (Thanks Microsoft)
+- Windows 7 Fully Updated or Later
 - Microsoft .NET 6.0 Runtime Desktop. [x64](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.8-windows-x64-installer) or [x86](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.8-windows-x86-installer)
 - Visual C++ 2015-2019 Redistributable. [x64](https://aka.ms/vs/16/release/vc_redist.x64.exe) or [x86](https://aka.ms/vs/16/release/vc_redist.x86.exe)
 - [ViGEmBus](https://vigem.org/) driver (DS4Windows will install it for you)
