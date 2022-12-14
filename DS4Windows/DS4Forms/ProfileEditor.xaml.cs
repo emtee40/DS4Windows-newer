@@ -1203,8 +1203,8 @@ namespace DS4WinWPF.DS4Forms
 
         private void OutConTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = outConTypeCombo.SelectedIndex;
-            if (index >= 0)
+            Global.outConTypeCombo = outConTypeCombo.SelectedIndex;
+            if (Global.outConTypeCombo >= 0)
             {
                 mappingListVM.UpdateMappingDevType(profileSettingsVM.TempConType);
             }

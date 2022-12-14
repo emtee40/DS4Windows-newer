@@ -547,6 +547,8 @@ namespace DS4Windows
         public static VirtualKBMBase outputKBMHandler = null;
         public static VirtualKBMMapping outputKBMMapping = null;
 
+        public static int outConTypeCombo = 0;
+
         public const int CONFIG_VERSION = 5;
         public const int APP_CONFIG_VERSION = 2;
         public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/DS4Windows;";

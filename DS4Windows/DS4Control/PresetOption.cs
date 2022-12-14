@@ -13,6 +13,7 @@ namespace DS4WinWPF.DS4Control
             None,
             Xbox360,
             DualShock4,
+            JoyCon,
         }
 
         protected string name;
