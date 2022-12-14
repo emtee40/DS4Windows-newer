@@ -1696,6 +1696,8 @@
                                                     <MenuItem Header="Share" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
                                                     <MenuItem Header="PS" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
                                                     <MenuItem Header="Touchpad Click" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
+                                                    <MenuItem Header="SideL" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
+                                                    <MenuItem Header="SideR" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
                                                     <MenuItem Header="Mute" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
                                                     <MenuItem Header="Always On" IsCheckable="True" Click="GyroMouseTrigMenuItem_Click" />
                                                 </ContextMenu>
