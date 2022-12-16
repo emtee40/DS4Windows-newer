@@ -1048,9 +1048,59 @@ namespace DS4Windows
 
         private bool getDS4ControlsByName(int key)
         {
-            if (Global.outConTypeCombo == 2)
+            int virtualControllerSettings = Global.getVirtualControllerSettings(deviceNum);
+            if (virtualControllerSettings == 2)
             {
                 // Joy-Con
+                switch (key)
+                {
+                    // Joy-Con
+                    case -1: return true;
+                    case 0: return s.Cross;
+                    case 1: return s.Circle;
+                    case 2: return s.Square;
+                    case 3: return s.Triangle;
+                    case 4: return s.L1;
+                    case 5: return s.L2 > 128;
+                    case 6: return s.R1;
+                    case 7: return s.R2 > 128;
+                    case 8: return s.DpadUp;
+                    case 9: return s.DpadDown;
+                    case 10: return s.DpadLeft;
+                    case 11: return s.DpadRight;
+                    case 12: return s.L3;
+                    case 13: return s.R3;
+                    case 14: return s.Capture;
+                    case 16: return s.Options;
+                    case 17: return s.Share;
+                    case 18: return s.PS;
+                    case 20: return s.Capture;
+                    default: break;
+                }
+            } 
+            else if (virtualControllerSettings == 3)
+            {
+                // Joy-Con-L
+                switch (key)
+                {
+                    case -1: return true;
+                    case 4: return s.L1;
+                    case 5: return s.L2 > 128;
+                    case 8: return s.DpadUp;
+                    case 9: return s.DpadDown;
+                    case 10: return s.DpadLeft;
+                    case 11: return s.DpadRight;
+                    case 12: return s.L3;
+                    case 17: return s.Share;
+                    case 20: return s.Capture;
+                    case 21: return s.SideL;
+                    case 22: return s.SideR;
+                    default: break;
+                }
+            }
+            else if (virtualControllerSettings == 4)
+            {
+                // Joy-Con-R
                 switch (key)
                 {
                     case -1: return true;
@@ -1058,27 +1108,17 @@ namespace DS4Windows
                     case 1: return s.Circle;
                     case 2: return s.Square;
                     case 3: return s.Triangle;
-                    case 4: return s.L1;
-                    case 5: return s.R1;
-                    case 6: return s.L2 > 128;
+                    case 6: return s.R1;
                     case 7: return s.R2 > 128;
-                    case 9: return s.Options;
-                    case 8: return s.Share;
-                    case 10: return s.L3;
-                    case 11: return s.R3;
-                    case 12: return s.DpadUp;
-                    case 13: return s.DpadDown;
-                    case 14: return s.DpadLeft;
-                    case 15: return s.DpadRight;
-                    case 16: return s.PS;
-                    case 17: return s.Mute;
-                    case 18: return s.SideL;
-                    case 19: return s.SideR;
+                    case 13: return s.R3;
+                    case 16: return s.Options;
+                    case 18: return s.PS;
                     case 20: return s.SideR;
                     case 21: return s.SideL;
                     default: break;
                 }
-            } else
+            }
+            else
             {
                 // X-Box / DS 4
                 switch (key)

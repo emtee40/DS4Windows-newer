@@ -547,8 +547,6 @@ namespace DS4Windows
         public static VirtualKBMBase outputKBMHandler = null;
         public static VirtualKBMMapping outputKBMMapping = null;
 
-        public static int outConTypeCombo = 0;
-
         public const int CONFIG_VERSION = 5;
         public const int APP_CONFIG_VERSION = 2;
         public const string ASSEMBLY_RESOURCE_PREFIX = "pack://application:,,,/DS4Windows;";
@@ -1700,6 +1698,12 @@ namespace DS4Windows
         public static int getRumbleAutostopTime(int index)
         {
             return m_Config.rumbleAutostopTime[index];
+        }
+
+        public static int[] VirtualControllerSettings => m_Config.virtualControllerSettings;
+        public static int getVirtualControllerSettings(int index)
+        {
+            return m_Config.virtualControllerSettings[index];
         }
 
         public static bool[] EnableTouchToggle => m_Config.enableTouchToggle;
@@ -2988,6 +2992,7 @@ namespace DS4Windows
             new ButtonAbsMouseInfo(), new ButtonAbsMouseInfo(), new ButtonAbsMouseInfo(),
         };
 
+		public int[] virtualControllerSettings = new int[Global.TEST_PROFILE_ITEM_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public bool[] enableTouchToggle = new bool[Global.TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         public int[] idleDisconnectTimeout = new int[Global.TEST_PROFILE_ITEM_COUNT] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public bool[] enableOutputDataToDS4 = new bool[Global.TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
@@ -3758,6 +3763,7 @@ namespace DS4Windows
                 LightbarSettingInfo lightbarSettings = lightbarSettingInfo[device];
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
 
+				XmlNode xmlVirtualControllerSettings = m_Xdoc.CreateNode(XmlNodeType.Element, "virtualControllerSettings", null); xmlVirtualControllerSettings.InnerText = virtualControllerSettings[device].ToString(); rootElement.AppendChild(xmlVirtualControllerSettings);
                 XmlNode xmlTouchToggle = m_Xdoc.CreateNode(XmlNodeType.Element, "touchToggle", null); xmlTouchToggle.InnerText = enableTouchToggle[device].ToString(); rootElement.AppendChild(xmlTouchToggle);
                 XmlNode xmlIdleDisconnectTimeout = m_Xdoc.CreateNode(XmlNodeType.Element, "idleDisconnectTimeout", null); xmlIdleDisconnectTimeout.InnerText = idleDisconnectTimeout[device].ToString(); rootElement.AppendChild(xmlIdleDisconnectTimeout);
                 XmlNode xmlOutputDataToDS4 = m_Xdoc.CreateNode(XmlNodeType.Element, "outputDataToDS4", null); xmlOutputDataToDS4.InnerText = enableOutputDataToDS4[device].ToString(); rootElement.AppendChild(xmlOutputDataToDS4);
@@ -4611,6 +4617,19 @@ namespace DS4Windows
                 // profile
                 control.PreLoadReset(device);
 
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/virtualControllerSettings"); Int32.TryParse(Item.InnerText, out virtualControllerSettings[device]); }
+                catch { missingSetting = true; }
+
+                try
+                {
+                    Item = m_Xdoc.SelectSingleNode("/" + rootname + "/idleDisconnectTimeout");
+                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
+                    {
+                        idleDisconnectTimeout[device] = temp;
+                    }
+                }
+                catch { missingSetting = true; }
+				
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchToggle"); Boolean.TryParse(Item.InnerText, out enableTouchToggle[device]); }
                 catch { missingSetting = true; }
 
@@ -8114,6 +8133,7 @@ namespace DS4Windows
             buttonAbsMouseInfos[device].Reset();
             gyroControlsInf[device].Reset();
 
+			virtualControllerSettings[device] = 0;
             enableTouchToggle[device] = true;
             idleDisconnectTimeout[device] = 0;
             enableOutputDataToDS4[device] = true;

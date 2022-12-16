@@ -566,6 +566,12 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
         }
 
+        public int VirtualControllerSettings
+        {
+            get => Global.VirtualControllerSettings[device];
+            set => Global.VirtualControllerSettings[device] = value;
+        }
+
         public bool EnableTouchpadToggle
         {
             get => Global.EnableTouchToggle[device];
