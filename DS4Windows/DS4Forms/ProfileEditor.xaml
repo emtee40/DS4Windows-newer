@@ -1512,7 +1512,7 @@
                         </TabControl>
                     </StackPanel>
                 </ScrollViewer>
-                
+
             </TabItem>
 
             <TabItem Header="Gyro">
@@ -2061,7 +2061,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Other" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
+            <TabItem Header="Other" Height="24" Margin="-2,0,-2,0" VerticalAlignment="Center">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <GroupBox Header="{lex:Loc VirtualControllerSettings}" MinHeight="50" Margin="4,4,4,0" Padding="0,4,0,4">
@@ -2083,24 +2083,24 @@
                         </GroupBox>
                         <GroupBox Header="{lex:Loc Rumble}" MinHeight="50" Margin="4,4,4,0" Padding="0,4,0,4">
                             <StackPanel>
-                            <UniformGrid Rows="1" Columns="3">
-                                <UniformGrid Columns="2" HorizontalAlignment="Left">
-                                    <DockPanel>
-                                        <Label Content="%" DockPanel.Dock="Right" />
-                                        <xctk:IntegerUpDown x:Name="RumbleBoostIUD" d:IsHidden="True" Value="{Binding RumbleBoost}" Minimum="0" Maximum="200" Increment="10"
+                                <UniformGrid Rows="1" Columns="3">
+                                    <UniformGrid Columns="2" HorizontalAlignment="Left">
+                                        <DockPanel>
+                                            <Label Content="%" DockPanel.Dock="Right" />
+                                            <xctk:IntegerUpDown x:Name="RumbleBoostIUD" d:IsHidden="True" Value="{Binding RumbleBoost}" Minimum="0" Maximum="200" Increment="10"
                                                        MinWidth="50" DockPanel.Dock="Left" />
-                                    </DockPanel>
+                                        </DockPanel>
 
-                                    <DockPanel>
-                                        <Label Content="{lex:Loc RumbleMaxSecs}" DockPanel.Dock="Right" />
-                                        <xctk:IntegerUpDown x:Name="RumbleAutostopTimeIUD" d:IsHidden="True" Value="{Binding RumbleAutostopTime}" Minimum="0" Maximum="3600" Increment="1" ToolTip="{lex:Loc RumbleMaxSecsTip}"
+                                        <DockPanel>
+                                            <Label Content="{lex:Loc RumbleMaxSecs}" DockPanel.Dock="Right" />
+                                            <xctk:IntegerUpDown x:Name="RumbleAutostopTimeIUD" d:IsHidden="True" Value="{Binding RumbleAutostopTime}" Minimum="0" Maximum="3600" Increment="1" ToolTip="{lex:Loc RumbleMaxSecsTip}"
                                                        MinWidth="50" DockPanel.Dock="Left"/>
-                                    </DockPanel>
-                                </UniformGrid>
+                                        </DockPanel>
+                                    </UniformGrid>
 
-                                <Button x:Name="heavyRumbleTestBtn" Content="Test Heavy" Margin="10,0,0,0" Click="HeavyRumbleTestBtn_Click" />
-                                <Button x:Name="lightRumbleTestBtn" Content="Test Light" Margin="10,0,0,0" Click="LightRumbleTestBtn_Click" />
-                            </UniformGrid>
+                                    <Button x:Name="heavyRumbleTestBtn" Content="Test Heavy" Margin="10,0,0,0" Click="HeavyRumbleTestBtn_Click" />
+                                    <Button x:Name="lightRumbleTestBtn" Content="Test Light" Margin="10,0,0,0" Click="LightRumbleTestBtn_Click" />
+                                </UniformGrid>
                                 <GroupBox Header="{lex:Loc DualSRumbleSpecificSettings}" Margin="0,12,0,0" Padding="2,4">
 
 

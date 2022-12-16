@@ -66,8 +66,8 @@ namespace DS4Windows
             int deltaX = 0, deltaY = 0;
             deltaX = Global.getGyroMouseHorizontalAxis(deviceNumber) == 0 ? arg.sixAxis.gyroYawFull :
                 arg.sixAxis.gyroRollFull;
-            deltaY = -arg.sixAxis.gyroPitchFull;
-            //tempDouble = arg.sixAxis.elapsed * 0.001 * 200.0; // Base default speed on 5 ms
+            deltaY = arg.sixAxis.gyroPitchFull;
+
             tempDouble = arg.sixAxis.elapsed * 200.0; // Base default speed on 5 ms
 
             GyroMouseInfo tempInfo = Global.GyroMouseInfo[deviceNumber];

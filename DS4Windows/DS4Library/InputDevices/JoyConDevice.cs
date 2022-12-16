@@ -654,13 +654,16 @@ namespace DS4Windows.InputDevices
                         ref accelX, ref accelY, ref accelZ);
 
                     // JoyCon Right axes are inverted. Adjust axes directions
-                    if (sideType == JoyConSide.Right)
+                    if (sideType == JoyConSide.Left)
                     {
-                        accelX *= -1; accelZ *= -1; // accelY *= -1;
+                        accelZ *= -1; //accelY *= -1;
+                    } else if (sideType == JoyConSide.Right)
+                    {
+                        accelX *= -1; accelZ *= -1; //accelY *= -1;
                         gyroYaw *= -1; gyroPitch *= -1; //gyroRoll *= -1;
                     }
 
-                    tempMotion.gyroYawFull = gyroYaw; tempMotion.gyroPitchFull = -gyroPitch; tempMotion.gyroRollFull = gyroRoll;
+                    tempMotion.gyroYawFull = gyroYaw; tempMotion.gyroPitchFull = gyroPitch; tempMotion.gyroRollFull = gyroRoll;
                     tempMotion.accelXFull = accelX * 2; tempMotion.accelYFull = -accelZ * 2; tempMotion.accelZFull = -accelY * 2;
 
                     tempMotion.elapsed = elapsedDeltaTime;
