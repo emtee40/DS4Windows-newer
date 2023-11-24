@@ -532,7 +532,7 @@ namespace DS4Windows
         public static string exedirpath = Directory.GetParent(exelocation).FullName;
         public static string exeFileName = Path.GetFileName(exelocation);
         public static FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(exelocation);
-        public static string exeversion = fileVersion.ProductVersion;
+        public static string exeversion = fileVersion.FileVersion;
         public static ulong exeversionLong = (ulong)fileVersion.ProductMajorPart << 48 |
             (ulong)fileVersion.ProductMinorPart << 32 | (ulong)fileVersion.ProductBuildPart << 16;
         public static ulong fullExeVersionLong = exeversionLong | (ushort)fileVersion.ProductPrivatePart;
@@ -590,6 +590,7 @@ namespace DS4Windows
 
         public const string BLANK_VIGEMBUS_VERSION = "0.0.0.0";
         public const string MIN_SUPPORTED_VIGEMBUS_VERSION = "1.16.112.0";
+        public const string MIN_TOUCHPAD_PASSTHRU_VIGEMBUS_VERSION = "1.17.333.0";
 
         //public static bool vigemInstalled = IsViGEmBusInstalled();
         public static bool vigemInstalled = false;
@@ -882,10 +883,10 @@ namespace DS4Windows
 
         public static Dictionary<TrayIconChoice, string> iconChoiceResources = new Dictionary<TrayIconChoice, string>
         {
-            [TrayIconChoice.Default] = "/DS4Windows;component/Resources/DS4W.ico",
-            [TrayIconChoice.Colored] = "/DS4Windows;component/Resources/DS4W.ico",
-            [TrayIconChoice.White] = "/DS4Windows;component/Resources/DS4W - White.ico",
-            [TrayIconChoice.Black] = "/DS4Windows;component/Resources/DS4W - Black.ico",
+            [TrayIconChoice.Default] = $"{Global.RESOURCES_PREFIX}/DS4W.ico",
+            [TrayIconChoice.Colored] = $"{Global.RESOURCES_PREFIX}/DS4W.ico",
+            [TrayIconChoice.White] = $"{Global.RESOURCES_PREFIX}/DS4W - White.ico",
+            [TrayIconChoice.Black] = $"{Global.RESOURCES_PREFIX}/DS4W - Black.ico",
         };
 
         public static void SaveWhere(string path)
@@ -1191,6 +1192,13 @@ namespace DS4Windows
             //return vigemInstalled;
             return vigemInstalled &&
                 minSupportedViGEmBusVersionInfo.CompareTo(vigemBusVersionInfo) <= 0;
+        }
+
+        public static bool IsUsingMinViGEm117333()
+        {
+            bool result = Global.vigemBusVersionInfo.CompareTo(
+                new Version(Global.MIN_TOUCHPAD_PASSTHRU_VIGEMBUS_VERSION)) >= 0;
+            return result;
         }
 
         public static void RefreshViGEmBusInfo()
