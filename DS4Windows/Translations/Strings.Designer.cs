@@ -70,7 +70,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AbsoluteMouseOptions.
+        ///   Looks up a localized string similar to Absolute Mouse Options.
         /// </summary>
         public static string AbsoluteMouseOptions {
             get {
@@ -1424,7 +1424,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Support for Switch Pro (Nintendo Switch) controllers..
+        ///   Looks up a localized string similar to Support for Switch Pro (Nintendo Switch) controllers.
         /// </summary>
         public static string FirstLaunch_SwitchProEnableText {
             get {
@@ -1928,7 +1928,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MinFactor.
+        ///   Looks up a localized string similar to Min Factor.
         /// </summary>
         public static string MinFactor {
             get {
@@ -2099,6 +2099,27 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .NET 8 Not Found.
+        /// </summary>
+        public static string Net8NoticeWin_WinTitle {
+            get {
+                return ResourceManager.GetString("Net8NoticeWin.WinTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DS4Windows version 3.3 will require the installation of the .NET 8 Desktop Runtime on your system  
+        ///[https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer)  
+        ///
+        ///Please click OK to confirm that you have read the message. Press Cancel to be reminded again on the next application launch..
+        /// </summary>
+        public static string Net8NotInstalledWinNotice {
+            get {
+                return ResourceManager.GetString("Net8NotInstalledWinNotice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
         public static string New {
@@ -2167,6 +2188,15 @@ namespace DS4WinWPF.Translations {
         public static string Notification {
             get {
                 return ResourceManager.GetString("Notification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
             }
         }
         
@@ -3326,7 +3356,7 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TestHeavy.
+        ///   Looks up a localized string similar to Test Heavy.
         /// </summary>
         public static string TestHeavy {
             get {
@@ -3686,7 +3716,11 @@ namespace DS4WinWPF.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Step 3: Connecting the DualShock 4 controller.\nTo setup wired/USB:\nSimply plug a micro-USB into your PC and DualShock 4.\n\nTo setup Bluetooth (optional): Hold the PS Button and Share for 3 seconds. The lightbar will begin to double flash..
+        ///   Looks up a localized string similar to Step 3: Connecting the DualShock 4 controller.
+        ///To setup wired/USB:
+        ///Simply plug a micro-USB into your PC and DualShock 4.
+        ///
+        ///To setup Bluetooth (optional): Hold the PS Button and Share for 3 seconds. The lightbar will begin to double flash..
         /// </summary>
         public static string Welcome_Step3HelpText {
             get {

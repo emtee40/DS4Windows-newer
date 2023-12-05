@@ -211,6 +211,33 @@ namespace DS4WinWPF.DS4Forms
 
                     Global.LastChecked = DateTime.Now;
                 }
+
+                // Check if main window closing was requested from app update.
+                // Quit task early
+                if (contextclose)
+                {
+                    return;
+                }
+
+                // Temporary nag check for the .NET 8 Desktop Runtime
+                // TODO: Remove routine before starting work on DS4Windows 3.3
+                if (!Global.Net8Check && !mainWinVM.IsNET8Available())
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        string message = string.Format(Translations.Strings.Net8NotInstalledWinNotice, Environment.Is64BitProcess ? "x64" : "x86");
+                        Net8NoticeWindow noticeWin = new Net8NoticeWindow(message);
+                        if ((bool)noticeWin.ShowDialog())
+                        {
+                            Global.Net8Check = true;
+                        }
+                    });
+                }
+                else if (!Global.Net8Check)
+                {
+                    // Flag not set but .NET 8 runtime was found. Set flag in config
+                    Global.Net8Check = true;
+                }
             });
             Util.LogAssistBackgroundTask(tempTask);
         }
@@ -256,9 +283,10 @@ namespace DS4WinWPF.DS4Forms
 
                     if (launch)
                     {
+                        // Set that the window is getting ready to close for other components
+                        contextclose = true;
                         Dispatcher.BeginInvoke((Action)(() =>
                         {
-                            contextclose = true;
                             Close();
                         }));
                     }
