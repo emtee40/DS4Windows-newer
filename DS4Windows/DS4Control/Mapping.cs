@@ -716,7 +716,7 @@ namespace DS4Windows
         private static bool stickWheelDownDir = false;
 
         //mapcustom
-        public static bool[] pressedonce = new bool[2400], macrodone = new bool[48];
+        public static bool[] pressedonce = new bool[2400], macrodone = new bool[DS4_CONTROL_MACRO_ARRAY_LEN];
         static bool[] macroControl = new bool[26];
         static uint macroCount = 0;
         static Dictionary<string, Task>[] macroTaskQueue = new Dictionary<string, Task>[Global.MAX_DS4_CONTROLLER_COUNT] { new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>(), new Dictionary<string, Task>() };
@@ -751,11 +751,12 @@ namespace DS4Windows
         /// to a direct value from DS4Controls
         /// </summary>
         private const int TOUCH_FINGER_SHIFT_TRIGGER = 26;
+        private const int DS4_CONTROL_MACRO_ARRAY_LEN = 52;
 
         // Button to index mapping used for macrodone array. Not even sure this
         // is needed. This was originally made to replace a switch test used in the DS4ControlToInt method.
         // DS4Controls -> Macro input map index
-        private static int[] ds4ControlMapping = new int[52]
+        private static int[] ds4ControlMapping = new int[DS4_CONTROL_MACRO_ARRAY_LEN]
         {
             0, // DS4Controls.None
             16, // DS4Controls.LXNeg
@@ -810,15 +811,7 @@ namespace DS4Windows
             50, // DS4Controls.BLP
             51, // DS4Controls.BRP
         };
-
-        // Define here to save some time processing.
-        // It is enough to feel a difference during gameplay.
-        // 201907: Commented out these temp variables because those were not actually used anymore (value was assigned but it was never used anywhere)
-        //private static int[] rsOutCurveModeArray = new int[4] { 0, 0, 0, 0 };
-        //private static int[] lsOutCurveModeArray = new int[4] { 0, 0, 0, 0 };
-        //static bool tempBool = false;
-        //private static double[] tempDoubleArray = new double[4] { 0.0, 0.0, 0.0, 0.0 };
-        //private static int[] tempIntArray = new int[4] { 0, 0, 0, 0 };
+        private static int macroEndIndex = DS4_CONTROL_MACRO_ARRAY_LEN - 1;
 
         // Special macros
         static bool altTabDone = true;
@@ -4078,23 +4071,30 @@ namespace DS4Windows
                                         (device + 1).ToString(), action.details, $"{d.Battery}");
 
                                     AppLogger.LogToGui(prolog, false);
-                                    LoadTempProfile(device, action.details, true, ctrl);
-                                    //LoadProfile(device, false, ctrl);
-
-                                    if (action.uTrigger.Count == 0 && !action.automaticUntrigger)
+                                    Task.Run(() =>
                                     {
-                                        // If the new profile has any actions with the same action key (controls) than this action (which doesn't have untrigger keys) then set status of those actions to wait for the release of the existing action key. 
-                                        List<string> profileActionsNext = getProfileActions(device);
-                                        for (int actionIndexNext = 0, profileListLenNext = profileActionsNext.Count; actionIndexNext < profileListLenNext; actionIndexNext++)
+                                        d.HaltReportingRunAction(() =>
                                         {
-                                            string actionnameNext = profileActionsNext[actionIndexNext];
-                                            SpecialAction actionNext = GetProfileAction(device, actionnameNext);
-                                            int indexNext = GetProfileActionIndexOf(device, actionnameNext);
+                                            LoadTempProfile(device, action.details, true, ctrl);
 
-                                            if (actionNext.controls == action.controls)
-                                                actionDone[indexNext].dev[device] = true;
-                                        }
-                                    }
+                                            //LoadProfile(device, false, ctrl);
+
+                                            if (action.uTrigger.Count == 0 && !action.automaticUntrigger)
+                                            {
+                                                // If the new profile has any actions with the same action key (controls) than this action (which doesn't have untrigger keys) then set status of those actions to wait for the release of the existing action key. 
+                                                List<string> profileActionsNext = getProfileActions(device);
+                                                for (int actionIndexNext = 0, profileListLenNext = profileActionsNext.Count; actionIndexNext < profileListLenNext; actionIndexNext++)
+                                                {
+                                                    string actionnameNext = profileActionsNext[actionIndexNext];
+                                                    SpecialAction actionNext = GetProfileAction(device, actionnameNext);
+                                                    int indexNext = GetProfileActionIndexOf(device, actionnameNext);
+
+                                                    if (actionNext.controls == action.controls)
+                                                        actionDone[indexNext].dev[device] = true;
+                                                }
+                                            }
+                                        });
+                                    });
 
                                     return;
                                 }
@@ -4866,11 +4866,11 @@ namespace DS4Windows
                 byte value = GetByteMapping(device, control, cState, eState, tp, fieldMap);
                 int wheelDir = down ? Global.outputKBMMapping.WHEEL_TICK_DOWN :
                     Global.outputKBMMapping.WHEEL_TICK_UP;
-                double ratio = value / 255.0;
-                //Debug.WriteLine(value);
+                //double ratio = value / 255.0;
+                double ratio = (1.0 - 0.05) * (value / 255.0) + 0.05;
 
-                // Use 4 runs as a full mouse wheel tick
-                double currentWheel = ratio / 4.0;
+                // Use 3 runs as a full mouse wheel tick
+                double currentWheel = ratio / 3.0;
                 stickWheel = currentWheel + stickWheelRemainder;
                 if (stickWheel >= 1.0)
                 {

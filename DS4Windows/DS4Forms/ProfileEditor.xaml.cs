@@ -143,6 +143,10 @@ namespace DS4WinWPF.DS4Forms
             axialRSStickControl.AxialVM.DeadZoneXChanged -= UpdateReadingsRsDeadZoneX;
             axialRSStickControl.AxialVM.DeadZoneYChanged -= UpdateReadingsRsDeadZoneY;
 
+            inputTimer.Stop();
+            inputTimer.Elapsed -= InputDS4;
+            inputTimer = null;
+
             StopEditorBindings();
         }
 
@@ -741,6 +745,10 @@ namespace DS4WinWPF.DS4Forms
             mappingListBox.DataContext = null;
             specialActionsTab.DataContext = null;
             lightbarRect.DataContext = null;
+
+            touchButtonUC.UnregisterDataContext();
+            axialLSStickControl.UnregisterDataContext();
+            axialRSStickControl.UnregisterDataContext();
         }
 
         private void RefreshEditorBindings()
@@ -773,7 +781,24 @@ namespace DS4WinWPF.DS4Forms
                 App.rootHub.setRumble(0, 0, profileSettingsVM.FuncDevNum);
             }
             Global.outDevTypeTemp[deviceNum] = OutContType.X360;
-            Global.LoadProfile(deviceNum, false, App.rootHub);
+            // Run profile loading in Task. Need to still wait for Task to finish
+            Task.Run(() =>
+            {
+                DS4Device device = deviceNum >= 0 && deviceNum < ControlService.CURRENT_DS4_CONTROLLER_LIMIT ?
+                    App.rootHub.DS4Controllers[deviceNum] : null;
+                if (device != null)
+                {
+                    device.HaltReportingRunAction(() =>
+                    {
+                        Global.LoadProfile(deviceNum, false, App.rootHub);
+                    });
+                }
+                else
+                {
+                    Global.LoadProfile(deviceNum, false, App.rootHub);
+                }
+            });
+
             Closed?.Invoke(this, EventArgs.Empty);
         }
 

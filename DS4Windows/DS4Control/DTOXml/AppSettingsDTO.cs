@@ -53,11 +53,23 @@ namespace DS4WinWPF.DS4Control.DTOXml
         //    set { }
         //}
 
+        public const bool SERIALIZE_HEADER_ATTRS_DEFAULT = true;
+        [XmlIgnore]
+        public bool SerializeAppAttrs
+        {
+            get; set;
+        } = SERIALIZE_HEADER_ATTRS_DEFAULT;
+
         [XmlAttribute("app_version")]
         public string AppVersion
         {
             get => Global.exeversion;
             set { }
+        }
+
+        public bool ShouldSerializeAppVersion()
+        {
+            return SerializeAppAttrs;
         }
 
         [XmlAttribute("config_version")]
@@ -67,6 +79,10 @@ namespace DS4WinWPF.DS4Control.DTOXml
             set { }
         }
 
+        public bool ShouldSerializeConfigVersion()
+        {
+            return SerializeAppAttrs;
+        }
 
         [XmlElement("useExclusiveMode")]
         public string UseExclusiveModeString
@@ -219,7 +235,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
         [XmlElement("LastChecked")]
         public string LastCheckString
         {
-            get => LastChecked.ToString();
+            get => LastChecked.ToString("MM/dd/yyyy HH:mm:ss");
             set
             {
                 if (DateTime.TryParse(value, out DateTime temp))
@@ -603,26 +619,6 @@ namespace DS4WinWPF.DS4Control.DTOXml
         }
 
         [XmlIgnore]
-        public bool Net8Check
-        {
-            get; private set;
-        }
-
-        [XmlElement("Net8Check")]
-        public string Net8CheckString
-        {
-            get => Net8Check.ToString();
-            set
-            {
-                Net8Check = XmlDataUtilities.StrToBool(value);
-            }
-        }
-        public bool ShouldSerializeNet8CheckString()
-        {
-            return Net8Check == true;
-        }
-
-        [XmlIgnore]
         public LightbarDS4WinInfo LightbarInfo1
         {
             get; private set;
@@ -841,7 +837,6 @@ namespace DS4WinWPF.DS4Control.DTOXml
             AutoProfileRevertDefaultProfile = source.autoProfileRevertDefaultProfile;
             AutoProfileSwitchNotifyChoice = source.autoProfileSwitchNotifyChoice;
             AbsRegionDisplay = source.absDisplayEDID;
-            Net8Check = source.net8Check;
 
             DeviceOptions = new InputDeviceOptions()
             {
@@ -945,8 +940,6 @@ namespace DS4WinWPF.DS4Control.DTOXml
             {
                 destination.absDisplayEDID = AbsRegionDisplay;
             }
-
-            destination.net8Check = Net8Check;
 
             destination.deviceOptions.DS4DeviceOpts.Enabled = DeviceOptions.DS4SupportSettings.Enabled;
             destination.deviceOptions.DualSenseOpts.Enabled = DeviceOptions.DualSenseSupportSettings.Enabled;
