@@ -1,5 +1,8 @@
 # DS4Windows
 
+Portuguese Version [README Português](README-PT.md)
+
+
 Like those other DS4 tools, but sexier.
 
 DS4Windows is an extract anywhere program that allows you to get the best
