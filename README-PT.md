@@ -1,5 +1,7 @@
 # DS4Windows
 
+Versão Ingles  [README](README.md)
+
 DS4Windows - Como outras mas melhor.
 
 DS4Windows é uma aplicação portátil que te permite ter a melhor experiência
